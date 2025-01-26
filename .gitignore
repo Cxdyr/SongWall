@@ -1,1 +1,5 @@
 key.env
+.vscode
+__pycache__
+instance
+*.db

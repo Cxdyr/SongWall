@@ -22,6 +22,7 @@ def get_popular_songs(playlist_id):
                 track_name = track['track']['name']
                 artist_name = track['track']['artists'][0]['name']
                 print(f"{idx}. {track_name} by {artist_name}")
+            #return tracks
         else:
             print(f"Error fetching playlist tracks. Status code: {response.status_code}")
             print(f"Response: {response.text}")
