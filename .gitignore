@@ -3,3 +3,4 @@ key.env
 __pycache__
 instance
 *.db
+config.py

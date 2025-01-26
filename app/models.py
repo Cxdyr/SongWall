@@ -1,9 +1,12 @@
-from sqlalchemy import Boolean, Column, Integer, String, create_engine
-from sqlalchemy.orm import declarative_base
+import bcrypt
+from sqlalchemy import Boolean, Column, Integer, String
+from flask_sqlalchemy import SQLAlchemy
 
-Base = declarative_base()    # NOTES , i will be using postgre sql for my actual hosted product, but for now sqlite viewer is nice so im just using what i am familiar with for development (SQLAlchemy and lite)
 
-class User(Base):
+db = SQLAlchemy()
+
+
+class User(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     email = Column(String(100), unique=True, nullable=False)
@@ -13,10 +16,21 @@ class User(Base):
 
     def __repr__(self):
         return f"<User(username='{self.username}')>"
+    
+    def is_active(self):
+        return True  
+    
+    def get_id(self):
+        return str(self.id)  
+    
+    def set_password(self, password):
+        """Hash the password and set it."""
+        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        """Check if the provided password matches the stored hash."""
+        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
 
 
 
 
-
-engine = create_engine('sqlite:///instance/songwall.db')
-Base.metadata.create_all(engine)

@@ -1,0 +1,19 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    background-color: rgb(135, 195, 222)
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+    color: rgb(0, 0, 0);
+    font-size: 3rem;
+    text-align: center;
+}
+
+footer {
+    margin-top: 2rem;
+    text-align: center;
+    color: #6e6d6d;
+    font-size: 0.9rem;
+}
