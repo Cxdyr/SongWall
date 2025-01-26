@@ -5,6 +5,8 @@ from songwall_popular_songs import get_popular_songs
 
 app = Flask(__name__)
 
+#pop_songs = get_popular_songs()   # In implementation this will need to be in a nested function that calls all once daily population operations once a day on a 24hr time loop, for dev we have it here
+
 
 @app.route('/')
 def index():
