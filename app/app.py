@@ -2,7 +2,7 @@ from flask import Flask, app, render_template, request, jsonify, redirect, url_f
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
-from models import User, db
+from models import Song, User, db
 from songwall_search import search_songs
 from songwall_popular_songs import get_popular_songs
 
@@ -92,6 +92,22 @@ def search():
 
         if not songs:
             flash("No songs found.", "danger")
+        else:
+            for song_data in songs:
+                # Check if the song already exists in the database using spotify_id
+                existing_song = Song.query.filter_by(spotify_id=song_data['spotify_id']).first()
+            
+                if not existing_song:
+                    # If song doesn't exist, create a new song entry for our DB
+                    new_song = Song(
+                        track_name=song_data['name'],  
+                        artist_name=song_data['artist'],  
+                        album_image=song_data['album_image_url'],  
+                        spotify_url=song_data['spotify_url'],
+                        spotify_id=song_data['spotify_id']  
+                    )
+                    db.session.add(new_song)
+                    db.session.commit()
 
     return render_template('search.html', songs=songs)
 

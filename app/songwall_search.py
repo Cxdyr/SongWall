@@ -28,7 +28,8 @@ def search_songs(query, access_token):
                     "artist": track['artists'][0]['name'],  # First artist
                     "album_name": track['album']['name'],
                     "album_image_url": track['album']['images'][0]['url'] if track['album']['images'] else None,
-                    "spotify_url": track['external_urls']['spotify']
+                    "spotify_url": track['external_urls']['spotify'],
+                    "spotify_id": track['id']  # Add the Spotify ID
                 }
                 song_info.append(song_details)  # Add song details to the list
                 
