@@ -46,6 +46,7 @@ class Song(db.Model):
     track_name = Column(String(255), nullable=False)
     artist_name = Column(String(255), nullable=False)
     spotify_url = db.Column(db.String(255), nullable=False)
+    album_name = db.Column(db.String(200), nullable=True)
     album_image = Column(String(255), nullable=True)
     spotify_id = db.Column(db.String(120), unique=True, nullable=True)  
 

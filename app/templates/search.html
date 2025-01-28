@@ -10,6 +10,7 @@
     <header>
         <div class="container">
             <h1>Songwall Search</h1>
+            <a href="/dashboard">Back</a>
         </div>
     </header>
 
@@ -29,19 +30,20 @@
             <div class="song-carousel">
                 <div class="song-list" id="song-list">
                     {% for song in songs %}
-                    <div class="song" style="border: 1px solid black; padding: 10px; margin: 10px;">
-                        <img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;">
-                        <h3>{{ song.name }}</h3>
-                        <p><strong>Artist:</strong> {{ song.artist }}</p>
-                        <p><strong>Album:</strong> {{ song.album_name }}</p>
-                        <a href="{{ song.spotify_url }}" target="_blank">Spotify</a>
-                    </div>
+                <div class="song" style="border: 1px solid black; padding: 10px; margin: 10px;">
+                    <img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;">
+                    <h3><a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}">{{ song['name'] }}</a></h3>
+                    <p><strong>Artist:</strong> {{ song.artist }}</p>
+                    <p><strong>Album:</strong> {{ song.album_name }}</p>
+                    <a href="{{ song.spotify_url }}" target="_blank">Spotify</a>
+                </div>
+
                     {% endfor %}
                 </div>
             </div>
         </section>
         {% else %}
-        <p>No songs found. Try another search.</p>
+        <p>No songs found. Try a search!</p>
         {% endif %}
     </main>
 

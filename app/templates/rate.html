@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Rate Song</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Rate the Song</h1>
+        </div>
+    </header>
+
+    <main>
+        <section class="song-details">
+            <div class="song">
+                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" style="width: 100px; height: 100px;">
+                <h3>{{ song.track_name }}</h3>
+                <p><strong>Artist:</strong> {{ song.artist_name }}</p>
+                <p><strong>Album:</strong> {{ song.album_name if song.album_name else 'No album info' }}</p>
+                <a href="{{ song.spotify_url }}" target="_blank">Listen on Spotify</a>
+            </div>
+        </section>
+
+        <section class="rating-form">
+            <h2>Rate this Song</h2>
+            <form action="{{ url_for('rate', spotify_id=song.spotify_id) }}" method="POST">
+                <label for="rating">Rating:</label>
+                <select name="rating" id="rating" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <br><br>
+                <label for="comment">Comment (optional):</label>
+                <textarea name="comment" id="comment" rows="4" cols="50"></textarea>
+                <br><br>
+                <button type="submit">Submit Rating</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>by Cody A. Rabie</p>
+    </footer>
+</body>
+</html>

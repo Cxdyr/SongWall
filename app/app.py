@@ -2,7 +2,7 @@ from flask import Flask, app, render_template, request, jsonify, redirect, url_f
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
-from models import Song, User, db
+from models import Rating, Song, User, db
 from songwall_search import search_songs
 from songwall_popular_songs import get_popular_songs
 
@@ -83,6 +83,7 @@ def dashboard():
     user_name = current_user.first_name
     return render_template('dashboard.html', user_name=user_name)
 
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     songs = []
@@ -104,12 +105,42 @@ def search():
                         artist_name=song_data['artist'],  
                         album_image=song_data['album_image_url'],  
                         spotify_url=song_data['spotify_url'],
-                        spotify_id=song_data['spotify_id']  
+                        spotify_id=song_data['spotify_id'],  
+                        album_name = song_data['album_name']
                     )
                     db.session.add(new_song)
                     db.session.commit()
 
     return render_template('search.html', songs=songs)
+
+
+@app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
+def rate(spotify_id):
+    song = Song.query.filter_by(spotify_id=spotify_id).first()
+    
+    if request.method == 'POST':
+        rating = request.form['rating']  # Get the rating from the form
+        comment = request.form.get('comment', '')   # get the comment or a null comment if they choose to keep it blank
+        
+        user_id = current_user.id
+
+        existing_rating = Rating.query.filter_by(song_id=song.id, user_id=user_id).first()  # checking to make sure haven't already rated this song
+
+        if existing_rating:
+            existing_rating.rating = rating    # If it does exist will just override it instead of adding a new one to our records
+            existing_rating.comment = comment   
+        else:
+            new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id)  # if this is a new rating create new record
+            db.session.add(new_rating)
+
+        db.session.commit()
+
+        flash("Rating submitted successfully!", "success")
+        return redirect(url_for('dashboard'))  # back to dashboard... where user can see their ratings
+
+    return render_template('rate.html', song=song)
+
+
 
 
 if __name__ == "__main__":
