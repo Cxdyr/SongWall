@@ -7,16 +7,34 @@
     <title>Songwall Login</title>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="POST">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
+    <header>
+        <div class="container">
+            <h1>Songwall</h1>
+            <nav>
+                <a href="/login" class="active">Login</a>
+                <a href="/register">Register</a>
+            </nav>
+        </div>
+    </header>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
+    <main>
+        <section class="form-section">
+            <h2>Login</h2>
+            <form method="POST" class="auth-form">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
 
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>by Cody A. Rabie</p>
+    </footer>
 </body>
 </html>

@@ -3,13 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css"> 
+    <link rel="stylesheet" href="/static/style.css">
     <title>Songwall</title>
 </head>
-<h1>Songwall</h1>
 <body>
-    Welcome to Songwall
-</body>
+    <header>
+        <div class="container">
+            <h1>Songwall</h1>
+            <nav>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            </nav>
+        </div>
+    </header>
 
-<footer>by cody a. rabie</footer>
+    <main>
+        <section>
+            <h2>Welcome to Songwall</h2>
+            <p>Explore and discover the most popular songs right now!</p>
+        </section>
+
+        <section class="popular-songs">
+            <h2>Popular Songs</h2>
+            <div class="song-carousel">
+                <div class="song-list" id="song-list">
+                    {% for song in pop_songs %}
+                    <div class="song" style="border: 1px solid black; padding: 10px;">
+                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" style="width: 100px; height: 100px;">
+                        <h3>{{ song.track_name }}</h3>
+                        <p>{{ song.artist_name }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="scroll-btn right" onclick="scrollRight()">&#9654;</button>
+            </div>
+            
+        </section>
+    </main>
+
+    <footer>
+        <p>by Cody A. Rabie</p>
+    </footer>
+
+    <script>
+function scrollRight() {
+    const list = document.getElementById('song-list');
+    
+    // Calculate the width of one song dynamically
+    const itemWidth = list.children[0].getBoundingClientRect().width;  // Get the exact width of the first item
+    const maxScrollLeft = list.scrollWidth - list.clientWidth; // Maximum scrollable distance
+
+    // If we're at the end, reset scroll position to the start
+    if (list.scrollLeft + itemWidth >= maxScrollLeft) {
+        list.scrollLeft = 0; // Reset to the start
+    } else {
+        // Scroll by the width of one item at a time
+        list.scrollBy({ left: itemWidth, behavior: 'smooth' });
+    }
+}
+
+
+    </script>
+</body>
 </html>

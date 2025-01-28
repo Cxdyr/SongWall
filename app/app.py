@@ -1,5 +1,6 @@
 from flask import Flask, app, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user
+from api_auth import get_access_token
 from config import Config
 from models import User, db
 from songwall_search import search_songs
@@ -19,12 +20,16 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-#pop_songs = get_popular_songs()   # In implementation this will need to be in a nested function that calls all once daily population operations once a day on a 24hr time loop, for dev we have it here
-
+access_token = get_access_token()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    pop_songs = get_popular_songs(access_token)
+    if not pop_songs or not isinstance(pop_songs, list):
+        pop_songs = []  #page will load regardless if theres an error
+    
+    return render_template('index.html', pop_songs=pop_songs)
+
 
 
 @app.route('/register', methods=['GET', 'POST'])

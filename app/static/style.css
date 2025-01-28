@@ -1,19 +1,247 @@
+/* General Styles */
 body {
-    font-family: 'Times New Roman', Times, serif;
-    text-align: center;
-    background-color: rgb(135, 195, 222)
-}
-
-h1 {
-    font-family: 'Times New Roman', Times, serif;
-    color: rgb(0, 0, 0);
-    font-size: 3rem;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1e1e2f;
+    color: #e4e4e4;
     text-align: center;
 }
 
-footer {
-    margin-top: 2rem;
+header {
+    background-color: #333;
+    padding: 1rem 0;
+    color: white;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+nav a {
+    color: #e4e4e4;
+    text-decoration: none;
+    margin: 0 1rem;
+    font-size: 1rem;
+}
+
+nav a:hover {
+    color: #a3d8f4;
+}
+
+main {
+    padding: 2rem;
+}
+
+section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* Song Carousel */
+.song-carousel {
+    position: relative;
+    max-width: 90%; /* Cap at 90% of the screen width */
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #292942;
+    padding: 1rem 0;
+}
+
+.song-list {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 1rem;
+    width: fit-content; /* Ensures the song list takes up only as much width as needed */
+}
+
+.song-list::-webkit-scrollbar {
+    display: none; /* Hide scrollbars */
+}
+
+/* Song Item */
+.song {
+    flex: 0 0 200px;
     text-align: center;
-    color: #6e6d6d;
+    background-color: #3a3a5c;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.song img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
+}
+
+.song h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.song p {
+    margin: 0.2rem 0 0;
+    color: #a3a3c2;
     font-size: 0.9rem;
+}
+
+/* Scroll Button */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease;
+    z-index: 5; /* Ensure it's clickable */
+}
+
+.scroll-btn:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.scroll-btn.right {
+    right: 10px; /* Right button */
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #999;
+    padding: 1rem 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 10;
+}
+
+/* Form Styles */
+form {
+    background-color: #292942;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 400px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #e4e4e4;
+}
+
+form input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #3a3a5c;
+    color: #e4e4e4;
+    font-size: 1rem;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #a3d8f4;
+    background-color: #292942;
+}
+
+form button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #a3d8f4;
+    border: none;
+    border-radius: 5px;
+    color: #292942;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #83c8f1;
+}
+
+form p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #a3a3c2;
+}
+
+form p a {
+    color: #a3d8f4;
+    text-decoration: none;
+}
+
+form p a:hover {
+    text-decoration: underline;
+}
+
+/* Header */
+header nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+header nav a {
+    padding: 0.5rem 1rem;
+    background-color: #3a3a5c;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+header nav a:hover {
+    background-color: #a3d8f4;
+    color: #292942;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    form {
+        padding: 1.5rem;
+    }
+
+    .song-carousel {
+        max-width: 100%;
+    }
 }
