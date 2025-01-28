@@ -24,7 +24,7 @@ access_token = get_access_token()
 
 @app.route('/')
 def index():
-    pop_songs = get_popular_songs(access_token)
+    pop_songs = get_popular_songs(access_token)  # eventually this will be a on a loop that runs periodically - ie every 24 hours or so
     if not pop_songs or not isinstance(pop_songs, list):
         pop_songs = []  #page will load regardless if theres an error
     

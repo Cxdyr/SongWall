@@ -93,30 +93,60 @@ a {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
+
+    img{
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+    }
+    h3{
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+    p{
+        margin: 0.2rem 0 0;
+        color: #a3a3c2;
+        font-size: 0.9rem;
+    }
+}
+
+/* Song Item but the version in my ratings */
+.song2 {
+    flex: 0 0 150px;
+    text-align: center;
+    background-color: #3a3a5c;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    transform: none;
+
+    h3{
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    p{
+        margin: 0.2rem 0 0;
+        color: #a3a3c2;
+        font-size: 0.9rem;
+    }
+
+    img{
+        border-radius: 1%;
+        width: 130px;
+        height: 130px;
+        margin-bottom: 1rem;
+    }
 }
 
 .song:hover {
     transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
-.song img {
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    margin-bottom: 1rem;
-}
-
-.song h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #fff;
-}
-
-.song p {
-    margin: 0.2rem 0 0;
-    color: #a3a3c2;
-    font-size: 0.9rem;
-}
 
 /* Scroll Button */
 .scroll-btn {
@@ -156,60 +186,6 @@ footer {
     color: #a3a3c2;
     font-size: 0.8rem; /* Smaller font size for footer */
 }
-
-
-
-
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    header {
-        padding: 0.5rem 0; /* Reduce header padding for mobile */
-    }
-
-    header h1 {
-        font-size: 1.8rem; /* Smaller header text for mobile */
-    }
-
-    nav a {
-        font-size: 0.9rem; /* Slightly smaller navigation links */
-    }
-
-    .song {
-        flex: 0 0 120px; /* Smaller song cards for mobile */
-    }
-
-    .song img {
-        width: 60px;
-        height: 60px; /* Smaller images for mobile */
-    }
-
-    .song-list {
-        gap: 0.5rem; /* Reduce gap between songs for mobile */
-        scroll-snap-type: x mandatory;
-        scroll-padding: 10px;
-    }
-    .form-section {
-        margin: 1rem auto;
-        padding: 1.5rem;
-    }
-
-    .form-section h2 {
-        font-size: 1.6rem;
-    }
-
-    .auth-form input {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
-
-    .auth-form button {
-        padding: 0.7rem;
-        font-size: 1rem;
-    }
-}
-
-
 
 
 /* Form Section */
@@ -304,4 +280,153 @@ footer {
 .flash.info {
     background-color: #17a2b8;
     color: white;
+}
+
+
+
+
+/* Rating Form Styles */
+.rating-form {
+    align-items: center;
+    background-color: #292942;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rating-form h2 {
+    font-size: 2rem;
+    color: #a3d8f4;
+    margin-bottom: 1.5rem;
+}
+
+.rating-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.rating-form label {
+    font-size: 1rem;
+    color: #e4e4e4;
+    text-align: left;
+    width: 100%;
+}
+
+.rating-form select, .rating-form textarea {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #1e1e2f;
+    color: #e4e4e4;
+}
+
+.rating-form select:focus, .rating-form textarea:focus {
+    border-color: #a3d8f4;
+    outline: none;
+    box-shadow: 0 0 5px rgba(163, 216, 244, 0.8);
+}
+
+.rating-form textarea {
+    resize: vertical;
+}
+
+.submit-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #a3d8f4;
+    color: #1e1e2f;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #7bb4c9;
+}
+
+
+/* Star Rating */
+.star-rating {
+    display: inline-flex;
+}
+
+.star {
+    font-size: 2.2rem;
+    cursor: pointer;
+}
+
+.star.filled {
+    color: gold; /* Gold color for filled stars */
+}
+
+.star.unfilled {
+    color: #ccc; /* Light gray for unfilled stars */
+}
+
+
+label .comment {
+    align-items: center;
+}
+
+
+
+
+
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        padding: 0.5rem 0; /* Reduce header padding for mobile */
+    }
+
+    header h1 {
+        font-size: 1.8rem; /* Smaller header text for mobile */
+    }
+
+    nav a {
+        font-size: 0.9rem; /* Slightly smaller navigation links */
+    }
+
+    .song {
+        flex: 0 0 120px; /* Smaller song cards for mobile */
+    }
+
+    .song img {
+        width: 60px;
+        height: 60px; /* Smaller images for mobile */
+    }
+
+    .song-list {
+        gap: 0.5rem; /* Reduce gap between songs for mobile */
+        scroll-snap-type: x mandatory;
+        scroll-padding: 10px;
+    }
+    .form-section {
+        margin: 1rem auto;
+        padding: 1.5rem;
+    }
+
+    .form-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .auth-form input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .auth-form button {
+        padding: 0.7rem;
+        font-size: 1rem;
+    }
+
+    .star {
+        font-size: 1.65rem;
+    }
 }

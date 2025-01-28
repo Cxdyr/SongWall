@@ -9,37 +9,41 @@
 <body>
     <header>
         <div class="container">
-            <h1>Rate the Song</h1>
+            <h1>Rate your song</song></h1>
+            <a href="/search">Back</a>
         </div>
     </header>
 
     <main>
         <section class="song-details">
-            <div class="song">
-                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" style="width: 100px; height: 100px;">
+            <div class="song2">
+                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" class="album-art">
                 <h3>{{ song.track_name }}</h3>
                 <p><strong>Artist:</strong> {{ song.artist_name }}</p>
                 <p><strong>Album:</strong> {{ song.album_name if song.album_name else 'No album info' }}</p>
-                <a href="{{ song.spotify_url }}" target="_blank">Listen on Spotify</a>
+                <a href="{{ song.spotify_url }}" target="_blank" class="spotify-link">Listen on Spotify</a>
             </div>
         </section>
+        <br>
 
         <section class="rating-form">
-            <h2>Rate this Song</h2>
+            <h2>Rate {{song.track_name}}</h2>
             <form action="{{ url_for('rate', spotify_id=song.spotify_id) }}" method="POST">
-                <label for="rating">Rating:</label>
-                <select name="rating" id="rating" required>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
+                <label for="rating"></label>
+                <div class="star-rating" id="star-rating">
+                    <!-- 10 stars, all initially empty -->
+                    <span class="star" data-value="1">☆</span>
+                    <span class="star" data-value="2">☆</span>
+                    <span class="star" data-value="3">☆</span>
+                    <span class="star" data-value="4">☆</span>
+                    <span class="star" data-value="5">☆</span>
+                    <span class="star" data-value="6">☆</span>
+                    <span class="star" data-value="7">☆</span>
+                    <span class="star" data-value="8">☆</span>
+                    <span class="star" data-value="9">☆</span>
+                    <span class="star" data-value="10">☆</span>
+                </div>
+                <input type="hidden" name="rating" id="rating-input" value="0">
                 <br><br>
                 <label for="comment">Comment (optional):</label>
                 <textarea name="comment" id="comment" rows="4" cols="50"></textarea>
@@ -47,10 +51,39 @@
                 <button type="submit">Submit Rating</button>
             </form>
         </section>
+        
     </main>
 
     <footer>
         <p>by Cody A. Rabie</p>
     </footer>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-input');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const ratingValue = parseInt(star.getAttribute('data-value'));
+
+            // updating the star ratings based on the clicked star
+            stars.forEach(star => {
+                if (parseInt(star.getAttribute('data-value')) <= ratingValue) {
+                    star.classList.add('filled');
+                    star.classList.remove('unfilled');
+                } else {
+                    star.classList.remove('filled');
+                    star.classList.add('unfilled');
+                }
+            });
+
+            // Update the hidden input field with the selected rating
+            ratingInput.value = ratingValue;
+        });
+    });
+});
+
+    </script>
 </body>
 </html>
