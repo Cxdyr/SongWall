@@ -12,6 +12,7 @@ header {
     background-color: #333;
     padding: 1rem 0;
     color: white;
+    transition: padding 0.3s ease; /* Add smooth transition for padding adjustments */
 }
 
 header .container {
@@ -53,24 +54,29 @@ section p {
     margin-bottom: 2rem;
 }
 
+a {
+    color: #e4e4e4; /* Same color as text */
+    text-decoration: none; /* Remove underline */
+    font-size: 1rem; 
+}
+
+
 /* Song Carousel */
 .song-carousel {
     position: relative;
     margin: 0 auto;
-    overflow-x: auto;
-    border-radius: 8px;
+    overflow-x: auto; /* Allow horizontal scrolling */
     background-color: #292942;
     padding: 1rem 0;
-    justify-content: flex-start;
+    scroll-behavior: smooth; /* Smooth scrolling */
 }
 
 .song-list {
     display: flex;
     gap: 1rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
     padding: 0 1rem;
-    width: fit-content; /* Ensures the song list takes up only as much width as needed */
+    width: fit-content; /* Ensure width adjusts dynamically */
+    scroll-behavior: smooth;
 }
 
 .song-list::-webkit-scrollbar {
@@ -79,18 +85,23 @@ section p {
 
 /* Song Item */
 .song {
-    flex: 0 0 200px;
+    flex: 0 0 150px;
     text-align: center;
     background-color: #3a3a5c;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.song:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 .song img {
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     margin-bottom: 1rem;
 }
 
@@ -121,127 +132,175 @@ section p {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.2s ease;
-    z-index: 5; /* Ensure it's clickable */
-}
-
-.scroll-btn:hover {
-    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease;
 }
 
 .scroll-btn.right {
-    right: 10px; /* Right button */
+    right: 10px;
+}
+
+.scroll-btn.left {
+    left: 10px;
+}
+.scroll-btn:hover {
+    opacity: 0.9;
 }
 
 /* Footer */
 footer {
-    background-color: #333;
-    color: #999;
-    padding: 1rem 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 10;
+    margin-top: 2rem;
+    padding: 0.5rem 0; /* Reduced footer height */
+    background-color: #292942;
+    color: #a3a3c2;
+    font-size: 0.8rem; /* Smaller font size for footer */
 }
 
-/* Form Styles */
-form {
-    background-color: #292942;
-    border-radius: 8px;
-    padding: 2rem;
+
+
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        padding: 0.5rem 0; /* Reduce header padding for mobile */
+    }
+
+    header h1 {
+        font-size: 1.8rem; /* Smaller header text for mobile */
+    }
+
+    nav a {
+        font-size: 0.9rem; /* Slightly smaller navigation links */
+    }
+
+    .song {
+        flex: 0 0 120px; /* Smaller song cards for mobile */
+    }
+
+    .song img {
+        width: 60px;
+        height: 60px; /* Smaller images for mobile */
+    }
+
+    .song-list {
+        gap: 0.5rem; /* Reduce gap between songs for mobile */
+        scroll-snap-type: x mandatory;
+        scroll-padding: 10px;
+    }
+    .form-section {
+        margin: 1rem auto;
+        padding: 1.5rem;
+    }
+
+    .form-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .auth-form input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .auth-form button {
+        padding: 0.7rem;
+        font-size: 1rem;
+    }
+}
+
+
+
+
+/* Form Section */
+.form-section {
     max-width: 400px;
     margin: 2rem auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    color: #e4e4e4;
-}
-
-form input {
-    width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 1.5rem;
-    border-radius: 5px;
-    border: 1px solid #444;
-    background-color: #3a3a5c;
-    color: #e4e4e4;
-    font-size: 1rem;
-}
-
-form input:focus {
-    outline: none;
-    border-color: #a3d8f4;
     background-color: #292942;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-form button {
-    width: 100%;
-    padding: 1rem;
+.form-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #a3d8f4;
+    text-align: center;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-form label {
+    font-size: 1rem;
+    text-align: left;
+    color: #e4e4e4;
+}
+
+.auth-form input {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #1e1e2f;
+    color: #e4e4e4;
+}
+
+.auth-form input:focus {
+    border-color: #a3d8f4;
+    outline: none;
+    box-shadow: 0 0 5px rgba(163, 216, 244, 0.8);
+}
+
+.auth-form button {
+    padding: 0.8rem;
+    font-size: 1.1rem;
     background-color: #a3d8f4;
+    color: #1e1e2f;
     border: none;
     border-radius: 5px;
-    color: #292942;
-    font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-form button:hover {
-    background-color: #83c8f1;
+.auth-form button:hover {
+    background-color: #82bde4;
 }
 
-form p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    color: #a3a3c2;
+.auth-form button:active {
+    transform: scale(0.98);
 }
 
-form p a {
-    color: #a3d8f4;
-    text-decoration: none;
+
+
+
+
+/* Flash Messages Styles */
+.flash-messages {
+    margin-bottom: 1rem;
 }
 
-form p a:hover {
-    text-decoration: underline;
-}
-
-/* Header */
-header nav {
-    display: flex;
-    gap: 1.5rem;
-}
-
-header nav a {
-    padding: 0.5rem 1rem;
-    background-color: #3a3a5c;
+.flash {
+    padding: 1rem;
+    margin: 0.5rem 0;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+    text-align: center;
 }
 
-header nav a:hover {
-    background-color: #a3d8f4;
-    color: #292942;
+.flash.success {
+    background-color: #56a368;
+    color: white;
 }
 
-/* Mobile Styles */
-@media (max-width: 768px) {
-    header .container {
-        flex-direction: column;
-        text-align: center;
-    }
+.flash.error {
+    background-color: #b13b46;
+    color: white;
+}
 
-    form {
-        padding: 1.5rem;
-    }
-
-    .song-carousel {
-        max-width: 100%;
-    }
+.flash.info {
+    background-color: #17a2b8;
+    color: white;
 }

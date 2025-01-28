@@ -11,7 +11,7 @@
         <div class="container">
             <h1>Songwall</h1>
             <nav>
-                <a href="/login" class="active">Login</a>
+                <a href="/">Back</a>
                 <a href="/register">Register</a>
             </nav>
         </div>
@@ -20,6 +20,16 @@
     <main>
         <section class="form-section">
             <h2>Login</h2>
+            <!-- Flash Messages -->
+             {% with messages = get_flashed_messages(with_categories=true) %}
+             {% if messages %}
+                 <div class="flash-messages">
+                     {% for category, message in messages %}
+                         <div class="flash {{ category }}">{{ message }}</div>
+                     {% endfor %}
+                 </div>
+             {% endif %}
+            {% endwith %}
             <form method="POST" class="auth-form">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>

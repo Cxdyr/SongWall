@@ -73,7 +73,7 @@ def login():
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to logged in view home page
         else:
-            flash('Login failed. Check your email and/or password.', 'danger')
+            flash('Login failed. Check your email and/or password.', 'error')
     
     return render_template('login.html')
 

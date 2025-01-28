@@ -7,7 +7,7 @@
     <title>Songwall</title>
 </head>
 <body>
-    <header>
+    <header id="header">
         <div class="container">
             <h1>Songwall</h1>
             <nav>
@@ -28,16 +28,14 @@
             <div class="song-carousel">
                 <div class="song-list" id="song-list">
                     {% for song in pop_songs %}
-                    <div class="song" style="border: 1px solid black; padding: 10px;">
-                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" style="width: 100px; height: 100px;">
+                    <div class="song">
+                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
                         <h3>{{ song.track_name }}</h3>
                         <p>{{ song.artist_name }}</p>
                     </div>
                     {% endfor %}
                 </div>
-                <button class="scroll-btn right" onclick="scrollRight()">&#9654;</button>
             </div>
-            
         </section>
     </main>
 
@@ -46,21 +44,39 @@
     </footer>
 
     <script>
-function scrollRight() {
-    const list = document.getElementById('song-list');
-    
-    // Calculate the width of one song dynamically
-    const itemWidth = list.children[0].getBoundingClientRect().width;  // Get the exact width of the first item
-    const maxScrollLeft = list.scrollWidth - list.clientWidth; // Maximum scrollable distance
+document.addEventListener('DOMContentLoaded', () => {
+    const songList = document.getElementById('song-list');
 
-    // If we're at the end, reset scroll position to the start
-    if (list.scrollLeft + itemWidth >= maxScrollLeft) {
-        list.scrollLeft = 0; // Reset to the start
-    } else {
-        // Scroll by the width of one item at a time
-        list.scrollBy({ left: itemWidth, behavior: 'smooth' });
+    // Apply smooth scrolling and adjust snapping behavior for mobile devices
+    if (window.innerWidth <= 768) {
+        songList.style.overflowX = 'auto'; // Native horizontal scrolling
+        songList.style.scrollBehavior = 'smooth'; // Smooth transitions
+
+        // Fine-tune momentum scrolling to prevent sticking
+        songList.addEventListener('touchstart', (event) => {
+            // Allow momentum to take over by temporarily disabling snapping
+            songList.style.scrollSnapType = 'none';
+        });
+
+        songList.addEventListener('touchend', (event) => {
+            // Reapply snapping behavior after momentum stops
+            setTimeout(() => {
+                songList.style.scrollSnapType = 'x mandatory';
+            }, 100); // Small delay to allow inertia to complete
+        });
+
+        songList.addEventListener('scroll', () => {
+            const maxScrollLeft = songList.scrollWidth - songList.clientWidth;
+
+            // Correct any over-scrolling and make transitions invisible
+            if (songList.scrollLeft >= maxScrollLeft - 1) {
+                songList.scrollLeft = maxScrollLeft; // Ensure at the end
+            } else if (songList.scrollLeft <= 1) {
+                songList.scrollLeft = 0; // Ensure at the start
+            }
+        });
     }
-}
+});
 
 
     </script>
