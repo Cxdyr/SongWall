@@ -56,12 +56,12 @@ section p {
 /* Song Carousel */
 .song-carousel {
     position: relative;
-    max-width: 90%; /* Cap at 90% of the screen width */
     margin: 0 auto;
-    overflow: hidden;
+    overflow-x: auto;
     border-radius: 8px;
     background-color: #292942;
     padding: 1rem 0;
+    justify-content: flex-start;
 }
 
 .song-list {

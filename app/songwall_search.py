@@ -1,10 +1,9 @@
 import requests
-import sys
 from api_auth import get_access_token
 
+access_token = get_access_token()
 # request to search endpoint on spotify given user input
-def search_songs(query):
-    access_token = get_access_token()
+def search_songs(query, access_token):
     if access_token:
         search_url = "https://api.spotify.com/v1/search"
         params = {
@@ -20,19 +19,23 @@ def search_songs(query):
         if response.status_code == 200:
             data = response.json()
             tracks = data['tracks']['items']
+            
+            song_info = []  # List to store song details
             for track in tracks:
-                print(f"Track: {track['name']} by {track['artists'][0]['name']}") # TO BE CHANGED obviously through json info not printing
-            #return tracks
+                # Extract relevant song information
+                song_details = {
+                    "name": track['name'],
+                    "artist": track['artists'][0]['name'],  # First artist
+                    "album_name": track['album']['name'],
+                    "album_image_url": track['album']['images'][0]['url'] if track['album']['images'] else None,
+                    "spotify_url": track['external_urls']['spotify']
+                }
+                song_info.append(song_details)  # Add song details to the list
+                
+            return song_info  # Return the list of songs as a dictionary
         else:
             print(f"Error searching tracks. Status code: {response.status_code}")
+            return []  # Return an empty list if the request fails
     else:
         print("No access token available.")
-
-# testing purposes for now
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        query = " ".join(sys.argv[1:])  
-        print(f"Searching for: {query}") 
-        search_songs(query)
-    else:
-        print("Please provide your query")
+        return []  # Return an empty list if no access token is available

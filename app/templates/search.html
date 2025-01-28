@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Songwall Search</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Songwall Search</h1>
+        </div>
+    </header>
+
+    <main>
+        <!-- Search Bar -->
+        <section class="search-bar">
+            <form action="{{ url_for('search') }}" method="POST">
+                <input type="text" name="search_query" placeholder="Search for a song..." required>
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <!-- Display Search Results -->
+        {% if songs %}
+        <section class="search-results">
+            <h2>Search Results</h2>
+            <div class="song-carousel">
+                <div class="song-list" id="song-list">
+                    {% for song in songs %}
+                    <div class="song" style="border: 1px solid black; padding: 10px; margin: 10px;">
+                        <img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;">
+                        <h3>{{ song.name }}</h3>
+                        <p><strong>Artist:</strong> {{ song.artist }}</p>
+                        <p><strong>Album:</strong> {{ song.album_name }}</p>
+                        <a href="{{ song.spotify_url }}" target="_blank">Listen on Spotify</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% else %}
+        <p>No songs found. Try another search.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>by Cody A. Rabie</p>
+    </footer>
+</body>
+</html>

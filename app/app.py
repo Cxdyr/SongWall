@@ -83,6 +83,17 @@ def dashboard():
     user_name = current_user.first_name
     return render_template('dashboard.html', user_name=user_name)
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    songs = []
+    if request.method == 'POST':
+        query = request.form['search_query']  # Get the search query from the form
+        songs = search_songs(query, access_token)  # Search for the song in the database or via Spotify
+
+        if not songs:
+            flash("No songs found.", "danger")
+
+    return render_template('search.html', songs=songs)
 
 
 if __name__ == "__main__":

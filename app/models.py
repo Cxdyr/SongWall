@@ -45,7 +45,8 @@ class Song(db.Model):
     id = Column(Integer, primary_key=True)
     track_name = Column(String(255), nullable=False)
     artist_name = Column(String(255), nullable=False)
-    albumn_image = Column(String(255), nullable=True)
+    spotify_url = db.Column(db.String(255), nullable=False)
+    album_image = Column(String(255), nullable=True)
     ratings = relationship('Rating', backref='song', lazy=True)
 
     def __repr__(self):
