@@ -1,5 +1,5 @@
 from flask import Flask, app, render_template, request, jsonify, redirect, url_for, flash
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
 from models import User, db
@@ -37,6 +37,7 @@ def register():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        first_name = request.form['first_name']
 
         # Check if email already exists
         existing_user = User.query.filter_by(email=email).first()
@@ -47,6 +48,7 @@ def register():
         # Create new user and set hashed password
         new_user = User(email=email)
         new_user.set_password(password)  # Hash  password
+        new_user.set_firstname(first_name)
 
         # Add user to the session and commit
         db.session.add(new_user)
@@ -78,7 +80,8 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    user_name = current_user.first_name
+    return render_template('dashboard.html', user_name=user_name)
 
 
 
