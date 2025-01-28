@@ -1,6 +1,7 @@
 import bcrypt
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 
 
 db = SQLAlchemy()
@@ -30,7 +31,28 @@ class User(db.Model):
     def check_password(self, password):
         """Check if the provided password matches the stored hash."""
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+    
+
+class Song(db.Model):
+    __tablename__ = 'songs'
+    id = Column(Integer, primary_key=True)
+    track_name = Column(String(255), nullable=False)
+    artist_name = Column(String(255), nullable=False)
+    albumn_image = Column(String(255), nullable=True)
+    ratings = relationship('Rating', backref='song', lazy=True)
+
+    def __repr__(self):
+        return f"<Song(track_name='{self.track_name}', artist_name='{self.artist_name}')>"
 
 
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+    id = Column(Integer, primary_key=True)
+    rating = Column(Integer, nullable=False)
+    comment = Column(String(600), nullable=True)
+    song_id = Column(Integer, ForeignKey('songs.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
+    def __repr__(self):
+        return f"<Rating(user_id='{self.user_id}', song_id='{self.song_id}', rating='{self.rating}')>"
 
