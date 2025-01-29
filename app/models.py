@@ -1,8 +1,9 @@
 import bcrypt
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, func
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask import Flask
+from flask_login import UserMixin
 
 
 app = Flask(__name__)
@@ -10,14 +11,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///songwall.db'  # You can chang
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String(100), nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
-    password_hash = Column(String(50), nullable=False)
-    linked_accounts = Column(String(255), nullable=True)  #will need alot more for this, probably more tables based on the social its from
-    private_messages = Column(Boolean, default=True)
+    id = db.Column(Integer, primary_key=True)
+    first_name = db.Column(String(100), nullable=False)
+    username = db.Column(String(100), unique=True, nullable=False)
+    email = db.Column(String(100), unique=True, nullable=False)
+    password_hash = db.Column(String(50), nullable=False)
+    linked_accounts = db.Column(String(255), nullable=True)  #will need alot more for this, probably more tables based on the social its from
+    private_messages = db.Column(Boolean, default=True)
 
     def __repr__(self):
         return f"<User(username='{self.username}')>"
@@ -31,6 +33,9 @@ class User(db.Model):
     def set_firstname(self, first_name):
         self.first_name = first_name
     
+    def set_username(self, username):
+        self.username = username
+    
     def set_password(self, password):
         """Hash the password and set it."""
         self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -42,12 +47,12 @@ class User(db.Model):
 
 class Song(db.Model):
     __tablename__ = 'songs'
-    id = Column(Integer, primary_key=True)
-    track_name = Column(String(255), nullable=False)
-    artist_name = Column(String(255), nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    track_name = db.Column(String(255), nullable=False)
+    artist_name = db.Column(String(255), nullable=False)
     spotify_url = db.Column(db.String(255), nullable=False)
     album_name = db.Column(db.String(200), nullable=True)
-    album_image = Column(String(255), nullable=True)
+    album_image = db.Column(String(255), nullable=True)
     spotify_id = db.Column(db.String(120), unique=True, nullable=True)  
 
     ratings = relationship('Rating', backref='song', lazy=True)
@@ -58,14 +63,25 @@ class Song(db.Model):
 
 class Rating(db.Model):
     __tablename__ = 'ratings'
-    id = Column(Integer, primary_key=True)
-    rating = Column(Integer, nullable=False)
-    comment = Column(String(600), nullable=True)
-    song_id = Column(Integer, ForeignKey('songs.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    rating = db.Column(Integer, nullable=False)
+    comment = db.Column(String(600), nullable=True)
+    song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
+    user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
         return f"<Rating(user_id='{self.user_id}', song_id='{self.song_id}', rating='{self.rating}')>"
+    
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(Integer, primary_key=True)
+    post_message = db.Column(String(255), nullable=False)
+    time_stamp = db.Column(db.DateTime, default=func.now(), nullable=False)
+    reference = db.Column(db.String(255), nullable=True)  
+    user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
+
+
 
 
 if __name__ == "__main__":

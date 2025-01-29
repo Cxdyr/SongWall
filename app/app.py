@@ -2,9 +2,10 @@ from flask import Flask, app, render_template, request, jsonify, redirect, url_f
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
-from models import Rating, Song, User, db
+from models import Song, User, db
 from songwall_search import search_songs
 from songwall_popular_songs import get_popular_songs
+from db_functions import add_or_update_rating, get_song_by_spotify_id, get_user_ratings
 
 
 app = Flask(__name__)
@@ -36,19 +37,25 @@ def index():
 def register():
     if request.method == 'POST':
         email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
         first_name = request.form['first_name']
 
         # Check if email already exists
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash('Email address already in use', 'danger')
+            flash('Email address already in use', 'error')
             return redirect(url_for('register'))
+        
+        existing_username = User.query.filter_by(username=username).first()
+        if existing_username:
+            flash('Username already in use, please try another one', 'error')
 
         # Create new user and set hashed password
         new_user = User(email=email)
         new_user.set_password(password)  # Hash  password
         new_user.set_firstname(first_name)
+        new_user.set_username(username)
 
         # Add user to the session and commit
         db.session.add(new_user)
@@ -79,12 +86,13 @@ def login():
 
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
-    user_name = current_user.first_name
-    return render_template('dashboard.html', user_name=user_name)
+    return render_template('dashboard.html')
 
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def search():
     songs = []
     if request.method == 'POST':
@@ -114,32 +122,38 @@ def search():
     return render_template('search.html', songs=songs)
 
 
+
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
+@login_required
 def rate(spotify_id):
-    song = Song.query.filter_by(spotify_id=spotify_id).first()
-    
+    song = get_song_by_spotify_id(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
+
+    if not song:
+        flash("Song not found.", "error")
+        return redirect(url_for('dashboard'))
+
     if request.method == 'POST':
         rating = request.form['rating']  # Get the rating from the form
-        comment = request.form.get('comment', '')   # get the comment or a null comment if they choose to keep it blank
-        
-        user_id = current_user.id
+        comment = request.form.get('comment', '')  #Get the comment from the form if its there
 
-        existing_rating = Rating.query.filter_by(song_id=song.id, user_id=user_id).first()  # checking to make sure haven't already rated this song
-
-        if existing_rating:
-            existing_rating.rating = rating    # If it does exist will just override it instead of adding a new one to our records
-            existing_rating.comment = comment   
+        result = add_or_update_rating(current_user.id, spotify_id, rating, comment)  # Call my add/update function to update or db 
+        if "error" in result:
+            flash(result["error"], "error")
         else:
-            new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id)  # if this is a new rating create new record
-            db.session.add(new_rating)
+            flash(result["success"], "success")
 
-        db.session.commit()
-
-        flash("Rating submitted successfully!", "success")
-        return redirect(url_for('dashboard'))  # back to dashboard... where user can see their ratings
+        return redirect(url_for('dashboard'))  
 
     return render_template('rate.html', song=song)
 
+
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    user_id = current_user.id
+    user_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
+    return render_template('profile.html', ratings=user_ratings)
 
 
 
