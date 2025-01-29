@@ -110,7 +110,7 @@ def get_recent_ratings(amount):
 
 
 def get_popular_songwall_songs(amount):
-    """Retrieve the most recent ratings from users for the recent ratings tab """
+    """Retreive the most rated - aka popular songs good or bad from our songwall db """
     pop_songs = (
         db.session.query(
             Song.id, 
