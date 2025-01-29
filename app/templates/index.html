@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
     <title>Songwall</title>
 </head>
 <body>
@@ -37,6 +38,25 @@
                 </div>
             </div>
         </section>
+
+
+
+        <section class="top-rated-songs">
+            <h2>Top Rated Songs</h2>
+            <div class="song-carousel">
+                <div class="song-list" id="top-rated-song-list">
+                    {% for item in top_rated_songs_with_avg_rating %}
+                    <div class="song">
+                        <img src="{{ item.song.album_image }}" alt="Album Art for {{ item.song.track_name }}">
+                        <h3>{{ item.song.track_name }}</h3>
+                        <p>{{ item.song.artist_name }}</p>
+                        <p>Average Rating: {{ item.avg_rating | round(1) }}</p>  <!-- Display the average rating -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        
     </main>
 
     <footer>
