@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from models import db, Rating, Song  
 
 
@@ -58,3 +59,25 @@ def add_or_update_rating(user_id, spotify_id, rating, comment=""):
 
     db.session.commit()
     return {"success": "Rating submitted successfully!"}
+
+
+
+
+def get_top_rated_songs(amount):
+    """Retrieve the top-rated songs along with their average rating."""
+    top_songs = (
+        db.session.query(
+            Song.id, 
+            Song.track_name, 
+            Song.artist_name, 
+            Song.album_image, 
+            func.avg(Rating.rating).label("avg_rating")
+        )
+        .join(Rating, Rating.song_id == Song.id)
+        .group_by(Song.id)
+        .order_by(func.avg(Rating.rating).desc())  # Sort by highest avg rating
+        .limit(amount)
+        .all()
+    )
+    
+    return top_songs

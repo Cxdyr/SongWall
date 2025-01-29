@@ -148,6 +148,23 @@ a {
 }
 
 
+.display-songs .song-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto; /* Enable scrolling */
+    padding: 10px;
+    align-items: center;
+}
+
+.display-songs .song {
+    flex: 0 0 auto;
+    width: 150px;
+    text-align: center;
+    align-items: center;
+}
+
+
+
 /* Scroll Button */
 .scroll-btn {
     position: absolute;

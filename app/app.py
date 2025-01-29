@@ -5,7 +5,7 @@ from config import Config
 from models import Song, User, db
 from songwall_search import search_songs
 from songwall_popular_songs import get_popular_songs
-from db_functions import add_or_update_rating, get_song_by_spotify_id, get_user_ratings
+from db_functions import add_or_update_rating, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings
 
 
 app = Flask(__name__)
@@ -26,10 +26,13 @@ access_token = get_access_token()
 @app.route('/')
 def index():
     pop_songs = get_popular_songs(access_token)  # eventually this will be a on a loop that runs periodically - ie every 24 hours or so
+    top_rated_songs = get_top_rated_songs(10)
+
     if not pop_songs or not isinstance(pop_songs, list):
         pop_songs = []  #page will load regardless if theres an error
+
     
-    return render_template('index.html', pop_songs=pop_songs)
+    return render_template('index.html', pop_songs=pop_songs, top_rated_songs=top_rated_songs)
 
 
 

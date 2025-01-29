@@ -66,6 +66,7 @@ class Rating(db.Model):
     id = db.Column(Integer, primary_key=True)
     rating = db.Column(Integer, nullable=False)
     comment = db.Column(String(600), nullable=True)
+    time_stamp = db.Column(db.DateTime, default=func.now(), nullable=False)
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
 
