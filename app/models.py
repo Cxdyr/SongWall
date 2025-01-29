@@ -69,6 +69,7 @@ class Rating(db.Model):
     time_stamp = db.Column(db.DateTime, default=func.now(), nullable=False)
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
+    username = db.Column(String, ForeignKey('users.username'), nullable=False)
 
     def __repr__(self):
         return f"<Rating(user_id='{self.user_id}', song_id='{self.song_id}', rating='{self.rating}')>"

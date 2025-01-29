@@ -19,6 +19,24 @@
     </header>
 <main>
 
+    <section class="display-songs">
+        <h2>Recent Ratings </h2>
+        <div class="song-carousel">
+            <div class="song-list" id="top-rated-list">
+                {% for song in recent_ratings %}
+                <div class="song">
+                    <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
+                    <h3>{{ song.track_name }}</h3>
+                    <p>{{ song.artist_name }}</p>
+                    <p>{{ song.username }}</p>
+                    <p>{{song.rating }}/10</p>
+                    <p>{{ song.time_stamp }}</p>
+                </div>
+                {% endfor %}
+            </div>                      
+        </div>
+    </section>
+
 
 
 

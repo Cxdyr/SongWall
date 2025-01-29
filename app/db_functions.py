@@ -33,7 +33,7 @@ def get_song_by_spotify_id(spotify_id):
 
 
 
-def add_or_update_rating(user_id, spotify_id, rating, comment=""):
+def add_or_update_rating(user_id, username, spotify_id, rating, comment=""):
     """
     Adds or updates a rating for a song by a specific user.
 
@@ -54,7 +54,7 @@ def add_or_update_rating(user_id, spotify_id, rating, comment=""):
         existing_rating.rating = rating  # Update existing rating
         existing_rating.comment = comment
     else:
-        new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id)
+        new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id, username=username)
         db.session.add(new_rating)
 
     db.session.commit()
@@ -71,7 +71,9 @@ def get_top_rated_songs(amount):
             Song.track_name, 
             Song.artist_name, 
             Song.album_image, 
-            func.avg(Rating.rating).label("avg_rating")
+            Song.spotify_url,
+            func.avg(Rating.rating).label("avg_rating"),
+            func.count(Rating.rating).label("rating_count")  
         )
         .join(Rating, Rating.song_id == Song.id)
         .group_by(Song.id)
@@ -81,3 +83,52 @@ def get_top_rated_songs(amount):
     )
     
     return top_songs
+
+
+def get_recent_ratings(amount):
+    """Retrieve the most recent ratings from users for the recent ratings tab """
+    recent_ratings = (
+        db.session.query(
+            Song.id, 
+            Song.track_name, 
+            Song.artist_name, 
+            Song.album_image, 
+            Song.spotify_url,
+            Rating.username,
+            Rating.rating,
+            Rating.time_stamp
+        )
+        .join(Rating, Rating.song_id == Song.id)
+        .group_by(Song.id)
+        .order_by(Rating.time_stamp.desc())  # Sort by highest avg rating
+        .limit(amount)
+        .all()
+    )
+    
+    return recent_ratings
+
+
+
+def get_popular_songwall_songs(amount):
+    """Retrieve the most recent ratings from users for the recent ratings tab """
+    pop_songs = (
+        db.session.query(
+            Song.id, 
+            Song.track_name, 
+            Song.artist_name, 
+            Song.album_image, 
+            Song.spotify_url,
+            func.avg(Rating.rating).label("avg_rating"),
+            func.count(Rating.rating).label("rating_count")  
+        )
+        .join(Rating, Rating.song_id == Song.id)
+        .group_by(Song.id)
+        .order_by(func.count(Rating.rating).desc())  # Sort by highest avg rating
+        .limit(amount)
+        .all()
+    )
+    
+    return pop_songs
+
+
+

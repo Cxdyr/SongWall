@@ -5,7 +5,7 @@ from config import Config
 from models import Song, User, db
 from songwall_search import search_songs
 from songwall_popular_songs import get_popular_songs
-from db_functions import add_or_update_rating, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings
+from db_functions import add_or_update_rating, get_popular_songwall_songs, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
 
 
 app = Flask(__name__)
@@ -25,12 +25,8 @@ access_token = get_access_token()
 
 @app.route('/')
 def index():
-    pop_songs = get_popular_songs(access_token)  # eventually this will be a on a loop that runs periodically - ie every 24 hours or so
+    pop_songs = get_popular_songwall_songs(10)
     top_rated_songs = get_top_rated_songs(10)
-
-    if not pop_songs or not isinstance(pop_songs, list):
-        pop_songs = []  #page will load regardless if theres an error
-
     
     return render_template('index.html', pop_songs=pop_songs, top_rated_songs=top_rated_songs)
 
@@ -88,10 +84,11 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    recent_ratings = get_recent_ratings(10)
+    return render_template('dashboard.html', recent_ratings=recent_ratings)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -139,7 +136,7 @@ def rate(spotify_id):
         rating = request.form['rating']  # Get the rating from the form
         comment = request.form.get('comment', '')  #Get the comment from the form if its there
 
-        result = add_or_update_rating(current_user.id, spotify_id, rating, comment)  # Call my add/update function to update or db 
+        result = add_or_update_rating(current_user.id, current_user.username, spotify_id, rating, comment)  # Call my add/update function to update or db 
         if "error" in result:
             flash(result["error"], "error")
         else:

@@ -30,9 +30,10 @@
                 <div class="song-list" id="top-rated-list">
                     {% for song in pop_songs %}
                     <div class="song">
-                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"></a>
                         <h3>{{ song.track_name }}</h3>
                         <p>{{ song.artist_name }}</p>
+                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} ratings)</p>  
                     </div>
                     {% endfor %}
                 </div>
@@ -45,10 +46,10 @@
                 <div class="song-list" id="top-rated-list">
                     {% for song in top_rated_songs %}
                     <div class="song">
-                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"></a>
                         <h3>{{ song.track_name }}</h3>
                         <p>{{ song.artist_name }}</p>
-                        <p>⭐ {{ song.avg_rating|round(1) }}/10</p>  
+                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} ratings)</p>  
                     </div>
                     {% endfor %}
                 </div>
