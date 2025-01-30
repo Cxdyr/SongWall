@@ -5,3 +5,4 @@ instance
 *.db
 config.py
 *.pyc
+*.env

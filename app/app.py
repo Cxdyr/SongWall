@@ -1,15 +1,37 @@
 from flask import Flask, app, g, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
-from config import Config
 from models import Rating, Song, User, db
 from songwall_search import search_songs
 from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
 
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')  # Default if not set
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///songwall.db')
+
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)  # Required for SQLAlchemy
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 scheduler = BackgroundScheduler()  # this is scheduler used to refresh the popular songs and top rated songs on 24 hour loop
 
@@ -21,24 +43,22 @@ access_token = None
 # Function to update the cache every 24 hours
 def update_cached_data():
     global pop_songs_cache, top_rated_songs_cache
-    pop_songs_cache = get_popular_songwall_songs(10)
-    top_rated_songs_cache = get_top_rated_songs(10)
+    pop_songs_cache = get_popular_songwall_songs(9)
+    top_rated_songs_cache = get_top_rated_songs(9)
     print(f"Cache updated at {datetime.now()}")
 
-    
-app.config.from_object(Config)
-db.init_app(app)
+# this starts the scheduler to update each day
+scheduler.add_job(func=update_cached_data, trigger='interval', hours=24)
+scheduler.start()
 
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+@app.before_request
+def initialize_cache():
+    """Ensure popular songs and top rated are populated before first request"""
+    update_cached_data()
 
 @app.before_request
 def check_token():
-    """Ensures a valid access token is available for API requests."""
+    """Ensures a valid access token is available for API requests"""
     global access_token
     if 'access_token' not in g or access_token is None:
         access_token = get_access_token()
@@ -122,9 +142,9 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    recent_ratings = get_recent_ratings(10)
-    recent_posts = get_recent_posts(limit=10)  # Get posts with usernames
-    return render_template('dashboard.html', recent_ratings=recent_ratings, recent_posts=recent_posts)
+    recent_ratings = get_recent_ratings(9)
+    #recent_posts = get_recent_posts(limit=10)  # Get posts with usernames
+    return render_template('dashboard.html', recent_ratings=recent_ratings)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -242,9 +262,6 @@ def view_profile(username):
 
     
 
-# this starts the scheduler to update each day
-scheduler.add_job(func=update_cached_data, trigger='interval', hours=24)
-scheduler.start()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
