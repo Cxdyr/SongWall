@@ -7,7 +7,7 @@
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
     <title>{{ profile_info.user.username }}'s Profile</title>
 </head>
-<body style="--theme-color: {{ current_user.theme_color or '#333' }};">
+<body style="--theme-color: {{ profile_info.user.theme_color or '#333' }};">
     <header>
         <div class="container">
             <h1>{{ profile_info.user.username }}'s Songwall</h1>
