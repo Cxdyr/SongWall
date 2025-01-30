@@ -28,7 +28,7 @@
                         <div class="rating-info">
                             <h3>{{ rating.song.track_name }} - {{ rating.song.artist_name }}</h3>
                             <p>{{rating.song.album_name}}</p>
-                            <p>Rating: ⭐ {{ rating.rating }}/10</p>
+                            <p>Rating: ⭐ <strong>{{ rating.rating }}/10</strong></p>
                             {% if rating.comment %}
                                 <p>Comment: "{{ rating.comment }}"</p>
                             {% endif %}

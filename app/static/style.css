@@ -29,6 +29,11 @@ header h1 {
     margin: 0;
 }
 
+p {
+    color: rgb(179, 174, 174);
+}
+
+
 nav a {
     color: #e4e4e4;
     text-decoration: none;
@@ -479,7 +484,7 @@ label .comment {
     overflow-y: auto;
     padding: 5px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.1);
+    background: #333;
 }
 
 .ratings-container {
@@ -492,6 +497,7 @@ label .comment {
     display: flex;
     align-items: center;
     background: rgb(255, 255, 255);
+    box-shadow: 0 6px 11px rgba(0, 0, 0, 0.582);
     margin: 10px 0;
     padding: 15px;
     border-radius: 8px;
@@ -681,7 +687,7 @@ label .comment {
         overflow-y: auto;
         padding:5px;
         border-radius: 10px;
-        background: rgba(0, 0, 0, 0.1);
+        background: #333;
     }
 
 }
