@@ -10,8 +10,11 @@
 <body>
     <header>
         <div class="container">
-        <h1>{{ current_user.username }}'s Profile</h1>
-        <a href="/dashboard">Back</a>
+            <h1>{{ current_user.username }}'s Profile</h1>
+            <nav>
+                <a href="/dashboard">Back</a>
+                <a href="/settings">Settings</a>
+            </nav>
         </div>
     </header>
     <br>

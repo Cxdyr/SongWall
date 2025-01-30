@@ -2,9 +2,9 @@ from flask import Flask, app, g, render_template, request, redirect, url_for, fl
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
-from models import Song, User, db
+from models import Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 
@@ -202,6 +202,33 @@ def profile():
     user_id = current_user.id
     user_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
     return render_template('profile.html', ratings=user_ratings)
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def profile_settings():
+    user_id = current_user.id
+    
+    # getting all ratings for this user
+    ratings = Rating.query.filter_by(user_id=user_id).join(Song).all()
+
+    if request.method == 'POST':
+       #if user does a post request is for deleting songs
+        spotify_id = request.form.get('spotify_id')
+        
+        #finds rating to delete 
+        rating_to_delete = get_rating_by_spotify_id(user_id, spotify_id)
+        
+        if rating_to_delete:
+            db.session.delete(rating_to_delete)
+            db.session.commit()
+            flash('Rating successfully deleted!', 'success')
+        else:
+            flash('Rating not found for this song.', 'danger')
+
+        return redirect(url_for('profile_settings'))  # Redirect to avoid resubmission on refresh
+    
+    return render_template('settings.html', ratings=ratings)
 
 
 @app.route('/view/<string:username>', methods=['GET'])

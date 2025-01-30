@@ -23,6 +23,14 @@ def get_user_ratings(user_id):
 
 
 
+def get_rating_by_spotify_id(user_id, spotify_id):
+    """"Gets rating by spotify id used in settings for removal"""
+    rating = Rating.query.join(Song).filter(
+        Song.spotify_id == spotify_id, Rating.user_id == user_id
+    ).first()
+
+    return rating
+
 
 def get_song_by_spotify_id(spotify_id):
     """
@@ -36,7 +44,7 @@ def get_song_by_spotify_id(spotify_id):
 
 
 
-def add_or_update_rating(user_id, username, spotify_id, rating, comment=""):
+def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     """
     Adds or updates a rating for a song by a specific user.
 
@@ -155,6 +163,7 @@ def get_profile_info(username):
                     'song': song,
                     'rating': rating.rating,
                     'comment': rating.comment,
+                    'album_name': song.album_name
                     
                 })
         

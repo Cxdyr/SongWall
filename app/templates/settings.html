@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css"> 
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
+    <title>{{ current_user.username }}'s Profile Settings</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>{{ current_user.username }}'s Settings</h1>
+            <nav>
+                <a href="/profile">Back</a>
+            </nav>
+        </div>
+    </header>
+    <br>
+    <h2>{{current_user.first_name}}'s Information</h2>
+    <p><strong>Username:</strong> {{ current_user.username }}</p>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    <p><strong>First Name:</strong> {{ current_user.first_name }}</p>
+
+    <br><br>
+    <form method="POST">
+        <label for="song_name">Select:</label>
+        <select name="spotify_id" id="song_name" required>
+            <option value="" disabled selected>Select a song</option>
+            {% for rating in ratings %}
+                <option value="{{ rating.song.spotify_id }}">
+                    {{ rating.song.track_name }} - {{ rating.song.artist_name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Remove Rating</button>
+    </form>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <p>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </p>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
