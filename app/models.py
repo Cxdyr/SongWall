@@ -6,6 +6,7 @@ from flask import Flask
 from flask_login import UserMixin
 
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///songwall.db'  # You can change the URI to match your preferred database
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,6 +21,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(String(50), nullable=False)
     linked_accounts = db.Column(String(255), nullable=True)  #will need alot more for this, probably more tables based on the social its from
     private_messages = db.Column(Boolean, default=True)
+    theme_color = db.Column(String(7), default="#333")
 
     def __repr__(self):
         return f"<User(username='{self.username}')>"
@@ -29,6 +31,9 @@ class User(db.Model, UserMixin):
     
     def get_id(self):
         return str(self.id)  
+    
+    def set_theme_color(self, color):
+        self.theme_color = color
     
     def set_firstname(self, first_name):
         self.first_name = first_name

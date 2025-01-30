@@ -6,6 +6,7 @@ from songwall_search import search_songs
 from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
+from flask_migrate import Migrate
 from dotenv import load_dotenv
 import os
 
@@ -25,6 +26,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+migrate = Migrate(app,db)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -233,8 +235,13 @@ def profile_settings():
     ratings = Rating.query.filter_by(user_id=user_id).join(Song).all()
 
     if request.method == 'POST':
-       #if user does a post request is for deleting songs
+       #if user does a post request is for deleting songs or changing color
         spotify_id = request.form.get('spotify_id')
+        new_color = request.form.get('theme_color')
+        if new_color:
+            current_user.theme_color = new_color
+            db.session.commit()
+            flash('Theme updated successfully!', 'success')
         
         #finds rating to delete 
         rating_to_delete = get_rating_by_spotify_id(user_id, spotify_id)
@@ -249,6 +256,18 @@ def profile_settings():
         return redirect(url_for('profile_settings'))  # Redirect to avoid resubmission on refresh
     
     return render_template('settings.html', ratings=ratings)
+
+
+@app.route('/update_theme', methods=['POST'])
+@login_required
+def update_theme():
+    color = request.form.get("theme_color")
+    if color:
+        current_user.theme_color = color
+        db.session.commit()
+        flash("Theme updated successfully!", "success")
+    return redirect(url_for("profile_settings"))
+
 
 
 @app.route('/view/<string:username>', methods=['GET'])
