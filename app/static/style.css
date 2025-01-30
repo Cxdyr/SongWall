@@ -480,7 +480,7 @@ label .comment {
 }
 
 .ratings-wrapper {
-    max-height: 550px; /* Limits height and enables scrolling */
+    max-height: 620px; /* Limits height and enables scrolling */
     overflow-y: auto;
     padding: 5px;
     border-radius: 10px;
@@ -683,7 +683,7 @@ label .comment {
     }
     
     .ratings-wrapper{
-        max-height: 420px;
+        max-height: 452px;
         overflow-y: auto;
         padding:5px;
         border-radius: 10px;
