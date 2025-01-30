@@ -45,6 +45,11 @@ def check_token():
         g.access_token = access_token  # Store token in request context
     if not access_token:
         return redirect(url_for('songwall_down'))
+    
+    
+@app.route('/songwall_down')
+def songwall_down():
+    return render_template('songwall_down.html')
 
 
 @app.route('/')

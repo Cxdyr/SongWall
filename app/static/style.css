@@ -135,6 +135,36 @@ a {
 }
 
 /* Song Item but the version in my ratings */
+.song-default {
+    flex: 0 0 150px;
+    text-align: center;
+    background-color: #3a3a5c;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    transform: none;
+
+    h3{
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    p{
+        margin: 0.2rem 0 0;
+        color: #a3a3c2;
+        font-size: 0.9rem;
+    }
+
+    img{
+        border-radius: 1%;
+        width: 130px;
+        height: 130px;
+        margin-bottom: 1rem;
+    }
+}
+/* Song Item but the version in my ratings */
 .song2 {
     flex: 0 0 150px;
     text-align: center;
@@ -490,31 +520,7 @@ label .comment {
 
 
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    header {
-        padding: 0.5rem 0; /* Reduce header padding for mobile */
-    }
 
-    header h1 {
-        font-size: 1.8rem; /* Smaller header text for mobile */
-    }
-
-    nav a {
-        font-size: 0.9rem; /* Slightly smaller navigation links */
-    }
-
-    .song {
-        flex: 0 0 120px; /* Smaller song cards for mobile */
-    }
-
-    .song img {
-        width: 60px;
-        height: 60px; /* Smaller images for mobile */
-    }
-
-    .song-carousel{
-        overflow-x: auto;
         /* Responsive Styles */
 @media (max-width: 768px) {
     header {
@@ -556,8 +562,8 @@ label .comment {
     .song {
         flex: 0 0 auto;
         scroll-snap-align: start;
-        width: 100px; /* Smaller width for mobile */
-        height: 130px; /* Shorter height */
+        width: 90px; /* Smaller width for mobile */
+        height: 140px; /* Shorter height */
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -568,16 +574,55 @@ label .comment {
         overflow: hidden;
     }
 
+    /* 🎵 Fix Song Cards */
+    .song2 {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 100px; /* Smaller width for mobile */
+        height: 200px; /* Shorter height */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        background: #222;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        /* 🎨 Fix Image Sizes */
+        .song2 img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            width: 60px;
+            height: 60px;
+        }
+    
+        /* 📝 Fix Text Overflow */
+        .song2 h3, .song2 p {
+            font-size: 0.7rem;
+            margin: 2px 0;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis; 
+            max-width: 90px; 
+        }
+    
+
     /* 🎨 Fix Image Sizes */
     .song img {
         width: 50px;
         height: 50px;
         border-radius: 5px;
+        width: 60px;
+        height: 60px;
     }
 
     /* 📝 Fix Text Overflow */
     .song h3, .song p {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin: 2px 0;
         text-align: center;
         overflow: hidden;
@@ -585,17 +630,14 @@ label .comment {
         text-overflow: ellipsis; 
         max-width: 90px; 
     }
-}
-
-    }
 
     .song-list {
         gap: 0.5rem; /* Reduce gap between songs for mobile */
         scroll-snap-type: x mandatory;
-        overflow-x: auto;
         scroll-padding: 10px;
         min-width: 100%; /* Ensure the song list spans full width */
         overflow-x: auto;
+        overflow-y: auto;
         display: flex;
     }
     .form-section {
@@ -636,5 +678,5 @@ label .comment {
         background: rgba(0, 0, 0, 0.1);
     }
 
-
 }
+

@@ -74,6 +74,7 @@ def get_top_rated_songs(amount):
             Song.track_name, 
             Song.artist_name, 
             Song.album_image, 
+            Song.album_name,
             Song.spotify_url,
             func.avg(Rating.rating).label("avg_rating"),
             func.count(Rating.rating).label("rating_count")  
@@ -119,6 +120,7 @@ def get_popular_songwall_songs(amount):
             Song.id, 
             Song.track_name, 
             Song.artist_name, 
+            Song.album_name,
             Song.album_image, 
             Song.spotify_url,
             func.avg(Rating.rating).label("avg_rating"),
