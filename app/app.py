@@ -1,10 +1,10 @@
-from flask import Flask, app, render_template, request, redirect, url_for, flash
+from flask import Flask, app, g, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
 from models import Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 
@@ -15,6 +15,8 @@ scheduler = BackgroundScheduler()  # this is scheduler used to refresh the popul
 
 pop_songs_cache = None
 top_rated_songs_cache = None
+access_token = None  
+
 
 # Function to update the cache every 24 hours
 def update_cached_data():
@@ -34,7 +36,15 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-access_token = get_access_token()
+@app.before_request
+def check_token():
+    """Ensures a valid access token is available for API requests."""
+    global access_token
+    if 'access_token' not in g or access_token is None:
+        access_token = get_access_token()
+        g.access_token = access_token  # Store token in request context
+    if not access_token:
+        return redirect(url_for('songwall_down'))
 
 
 @app.route('/')
@@ -108,7 +118,8 @@ def logout():
 @login_required
 def dashboard():
     recent_ratings = get_recent_ratings(10)
-    return render_template('dashboard.html', recent_ratings=recent_ratings)
+    recent_posts = get_recent_posts(limit=10)  # Get posts with usernames
+    return render_template('dashboard.html', recent_ratings=recent_ratings, recent_posts=recent_posts)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -117,7 +128,7 @@ def search():
     songs = []
     if request.method == 'POST':
         query = request.form['search_query']  # Get the search query from the form
-        songs = search_songs(query, access_token)  # Search for the song in the database or via Spotify
+        songs = search_songs(query, g.access_token)  # Search for the song in the database or via Spotify
 
         if not songs:
             flash("No songs found.", "danger")
@@ -141,6 +152,18 @@ def search():
 
     return render_template('search.html', songs=songs)
 
+
+@app.route('/search_friends', methods=['POST'])
+@login_required
+def search_friends():
+    username = request.form.get('username')
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        return redirect(url_for('view_profile', username=user.username))
+    else:
+        flash('User not found.', 'danger')
+        return redirect(url_for('dashboard'))
 
 
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
@@ -177,7 +200,6 @@ def profile():
 
 
 @app.route('/view/<string:username>', methods=['GET'])
-@login_required
 def view_profile(username):
     profile_info = get_profile_info(username)
     

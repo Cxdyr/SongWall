@@ -83,6 +83,11 @@ class Post(db.Model):
     reference = db.Column(db.String(255), nullable=True)  
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
 
+    user = relationship('User', backref='posts')
+
+    def __repr__(self):
+        return f"<Post(user_id='{self.user_id}', post_message='{self.post_message}')>"
+
 
 
 

@@ -10,13 +10,14 @@
 <body>
     <header>
         <div class="container">
-            <h1>{{ profile_info.user.first_name }}'s Profile</h1>
-            <a href="/dashboard">Back</a>
+            <h1>{{ profile_info.user.first_name }}'s Songwall</h1>
+            <a href="/dashboard">Home</a>
         </div>
     </header>
+    <br>
+    <h1>{{ profile_info.user.first_name }}'s Songs</h1>
     
     <div class="profile-container">
-        <h1>{{ profile_info.user.first_name }}'s Top Rated Songs</h1>
         <div class="ratings-wrapper">
             <div class="ratings-container">
                 {% for rating in profile_info.ratings %}

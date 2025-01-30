@@ -14,8 +14,9 @@
         <a href="/dashboard">Back</a>
         </div>
     </header>
+    <br>
+    <h1>{{ current_user.first_name }}'s Rated Songs</h1>
     <div class="profile-container">
-        <h1>{{ current_user.first_name }}'s Top Rated Songs</h1>
         <div class="ratings-wrapper">
             <div class="ratings-container">
                 {% for rating in ratings %}

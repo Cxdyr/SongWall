@@ -10,40 +10,51 @@
 <body>
     <header>
         <div class="container">
-            <h1>{{current_user.first_name}}'s SongWall</h1>
+            <h1>{{ current_user.first_name }}'s Songwall Dashboard</h1>
             <nav>
                 <a href="/search">Search</a>
                 <a href="/profile">Profile</a>
-                <a href="{{ url_for('logout')}}">Logout</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
     </header>
-<main>
+    <main>
+        <section class="friend-search">
+            <h2>Search Friends</h2>
+            <form action="{{ url_for('search_friends') }}" method="POST">
+                <input type="text" name="username" placeholder="Enter a username" required>
+                <button type="submit">Search</button>
+            </form>
+        </section>
 
-    <section class="display-songs">
-        <h2>Recent Ratings </h2>
-        <div class="song-carousel">
-            <div class="song-list" id="top-rated-list">
-                {% for song in recent_ratings %}
-                <div class="song">
-                    <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
-                    <h3>{{ song.track_name }}</h3>
-                    <p>{{ song.artist_name }}</p>
-                    <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
-                    <p>{{song.rating }}/10</p>
-                    <p>{{ song.time_stamp }}</p>
-                </div>
-                {% endfor %}
-            </div>                      
-        </div>
-    </section>
+        <section class="display-songs-default">
+            <h2>Recent Ratings</h2>
+            <div class="song-carousel-default">
+                <div class="song-list-default" id="top-rated-list">
+                    {% for song in recent_ratings %}
+                    <div class="song2">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
+                        <h3>{{ song.track_name }}</h3>
+                        <p>{{ song.artist_name }}</p>
+                        <p>{{ song.album_name }}</p>
+                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
+                        <p>⭐{{ song.rating }}/10</p>
+                        <p>{{ song.time_stamp }}</p>
+                    </div>
+                    {% endfor %}
+                </div>                      
+            </div>
+        </section>
 
 
-
+        
 
 </main>
-<footer>
-    <p>by Cody A. Rabie</p>
-</footer>
+    <footer>
+        <p>&copy; 2025 Songwall by Cody A. Rabie. All rights reserved</p>
+    </footer>
 </body>
 </html>
+
+
+

@@ -1,5 +1,8 @@
+from datetime import datetime
+from flask_login import current_user
 from sqlalchemy import func
-from models import User, db, Rating, Song  
+from models import Post, User, db, Rating, Song  
+
 
 
 
@@ -159,5 +162,35 @@ def get_profile_info(username):
         }
     else:
         return None
+
+
+
+
+# Function to get recent posts with usernames
+def get_recent_posts(limit=10):
+    posts = Post.query.order_by(Post.time_stamp.desc()).limit(limit).all()
+    # Include the username of the user who posted each message
+    posts_with_usernames = []
+    for post in posts:
+        user = User.query.get(post.user_id)  # Get the user who posted this
+        posts_with_usernames.append({
+            'post': post,
+            'username': user.username if user else "Unknown"
+        })
+    return posts_with_usernames
+
+
+# Function to add a new post
+def add_post(post_message):
+    if post_message:
+        new_post = Post(
+            post_message=post_message,
+            user_id=current_user.id,
+            time_stamp=datetime()
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        return new_post
+    return None
 
 

@@ -72,6 +72,16 @@ a {
     scroll-behavior: smooth; /* Smooth scrolling */
 }
 
+.song-carousel-default {
+    position: relative;
+    margin: 0 auto;
+    overflow-x: auto; /* Allow horizontal scrolling */
+    background-color: #292942;
+    padding: 1rem 0;
+    scroll-behavior: smooth; /* Smooth scrolling */
+}
+
+
 .song-list {
     display: flex;
     gap: 1rem;
@@ -84,6 +94,18 @@ a {
     display: none; /* Hide scrollbars */
 }
 
+
+.song-list-default {
+    display: flex;
+    gap: 1rem;
+    padding: 0 1rem;
+    width: fit-content; /* Ensure width adjusts dynamically */
+    scroll-behavior: smooth;
+}
+
+.song-list-default::-webkit-scrollbar {
+    display: none; /* Hide scrollbars */
+}
 /* Song Item */
 .song {
     flex: 0 0 150px;
@@ -157,6 +179,27 @@ a {
 }
 
 .display-songs .song {
+    flex: 0 0 auto;
+    width: 150px;
+    text-align: center;
+    align-items: center;
+}
+
+
+
+
+
+
+
+.display-songs-default .song-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto; /* Enable scrolling */
+    padding: 10px;
+    align-items: center;
+}
+
+.display-songs-default .song {
     flex: 0 0 auto;
     width: 150px;
     text-align: center;
@@ -470,10 +513,90 @@ label .comment {
         height: 60px; /* Smaller images for mobile */
     }
 
+    .song-carousel{
+        overflow-x: auto;
+        /* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        padding: 0.5rem 0; /* Reduce header padding for mobile */
+    }
+
+    header h1 {
+        font-size: 1.8rem; /* Smaller header text for mobile */
+    }
+
+    nav a {
+        font-size: 0.9rem; /* Slightly smaller navigation links */
+    }
+
+    /* 🎵 Ensure BOTH carousels scroll properly */
+    .song-carousel {
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+
+    .song-carousel::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for cleaner UI */
+    }
+
+    /* 🎶 Fix BOTH song lists */
+    .song-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding: 10px;
+        min-width: 100%; /* Ensure the song list spans full width */
+    }
+
+    /* 🎵 Fix Song Cards */
+    .song {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 100px; /* Smaller width for mobile */
+        height: 130px; /* Shorter height */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        background: #222;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* 🎨 Fix Image Sizes */
+    .song img {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+    }
+
+    /* 📝 Fix Text Overflow */
+    .song h3, .song p {
+        font-size: 0.75rem;
+        margin: 2px 0;
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis; 
+        max-width: 90px; 
+    }
+}
+
+    }
+
     .song-list {
         gap: 0.5rem; /* Reduce gap between songs for mobile */
         scroll-snap-type: x mandatory;
+        overflow-x: auto;
         scroll-padding: 10px;
+        min-width: 100%; /* Ensure the song list spans full width */
+        overflow-x: auto;
+        display: flex;
     }
     .form-section {
         margin: 1rem auto;
