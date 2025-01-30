@@ -1,17 +1,30 @@
-from flask import Flask, app, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, app, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from config import Config
 from models import Song, User, db
 from songwall_search import search_songs
-from songwall_popular_songs import get_popular_songs
-from db_functions import add_or_update_rating, get_popular_songwall_songs, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
 
 
 app = Flask(__name__)
+
+scheduler = BackgroundScheduler()  # this is scheduler used to refresh the popular songs and top rated songs on 24 hour loop
+
+pop_songs_cache = None
+top_rated_songs_cache = None
+
+# Function to update the cache every 24 hours
+def update_cached_data():
+    global pop_songs_cache, top_rated_songs_cache
+    pop_songs_cache = get_popular_songwall_songs(10)
+    top_rated_songs_cache = get_top_rated_songs(10)
+    print(f"Cache updated at {datetime.now()}")
+
+    
 app.config.from_object(Config)
-
-
 db.init_app(app)
 
 login_manager = LoginManager(app)
@@ -23,13 +36,12 @@ def load_user(user_id):
 
 access_token = get_access_token()
 
+
 @app.route('/')
 def index():
-    pop_songs = get_popular_songwall_songs(10)
-    top_rated_songs = get_top_rated_songs(10)
-    
-    return render_template('index.html', pop_songs=pop_songs, top_rated_songs=top_rated_songs)
-
+    if pop_songs_cache is None or top_rated_songs_cache is None:
+        update_cached_data()
+    return render_template('index.html', pop_songs=pop_songs_cache, top_rated_songs=top_rated_songs_cache)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -82,6 +94,14 @@ def login():
             flash('Login failed. Check your email and/or password.', 'error')
     
     return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been logged out successfully!', 'info')
+    return redirect(url_for('login'))
+
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -156,6 +176,21 @@ def profile():
     return render_template('profile.html', ratings=user_ratings)
 
 
+@app.route('/view/<string:username>', methods=['GET'])
+@login_required
+def view_profile(username):
+    profile_info = get_profile_info(username)
+    
+    if profile_info:
+        return render_template('view_profile.html', profile_info=profile_info)
+    else:
+        return redirect(url_for('dashboard'))
+
+    
+
+# this starts the scheduler to update each day
+scheduler.add_job(func=update_cached_data, trigger='interval', hours=24)
+scheduler.start()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

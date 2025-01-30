@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from models import db, Rating, Song  
+from models import User, db, Rating, Song  
 
 
 
@@ -130,5 +130,34 @@ def get_popular_songwall_songs(amount):
     
     return pop_songs
 
+
+def get_profile_info(username):
+    """Retreive user profile information for view route"""
+    # Query the user by username
+    user = db.session.query(User).filter_by(username=username).first()
+    
+    # Check if the user exists
+    if user:
+        # Get the ratings for this user (songs they've rated)
+        ratings = db.session.query(Rating).filter_by(user_id=user.id).order_by(Rating.rating.desc()).all()
+        user_ratings = []
+        
+        # Gather song details for each rating
+        for rating in ratings:
+            song = db.session.query(Song).filter_by(id=rating.song_id).first()
+            if song:
+                user_ratings.append({
+                    'song': song,
+                    'rating': rating.rating,
+                    'comment': rating.comment,
+                    
+                })
+        
+        return {
+            'user': user,
+            'ratings': user_ratings
+        }
+    else:
+        return None
 
 

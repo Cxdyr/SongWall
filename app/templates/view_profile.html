@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css"> 
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
+    <title>{{ profile_info.user.username }}'s Profile</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>{{ profile_info.user.first_name }}'s Profile</h1>
+            <a href="/dashboard">Back</a>
+        </div>
+    </header>
+    
+    <div class="profile-container">
+        <h1>{{ profile_info.user.first_name }}'s Top Rated Songs</h1>
+        <div class="ratings-wrapper">
+            <div class="ratings-container">
+                {% for rating in profile_info.ratings %}
+                    <div class="rating-item">
+                        <a href="{{ rating.song.spotify_url }}" target="_blank">
+                            <img src="{{ rating.song.album_image }}" alt="Album Art">
+                        </a> 
+                        <div class="rating-info">
+                            <h3>{{ rating.song.track_name }} - {{ rating.song.artist_name }}</h3>
+                            <p>Rating: ⭐ {{ rating.rating }}/10</p>
+                            {% if rating.comment %}
+                                <p>Comment: "{{ rating.comment }}"</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
