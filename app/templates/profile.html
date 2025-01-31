@@ -20,6 +20,9 @@
     <div class="profile-container">
         <div class="ratings-wrapper">
             <div class="ratings-container">
+                {% if not ratings %}
+                <p>{{ current_user.username }} has not rated any songs.</p>
+                {% else %}
                 {% for rating in ratings %}
                     <div class="rating-item">
                         <a href="{{ rating.song.spotify_url }}" target="_blank"> <img src="{{ rating.song.album_image }}" alt="Album Art"></a> 
@@ -33,6 +36,7 @@
                         </div>
                     </div>
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

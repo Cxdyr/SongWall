@@ -27,6 +27,9 @@
         <section class="display-songs">
             <h2>Popular Songs</h2>
             <div class="song-carousel">
+                {% if not pop_songs %}
+                <p>There are no popular songs currently</p>
+                {% else %}
                 <div class="song-list" id="top-rated-list">
                     {% for song in pop_songs %}
                     <div class="song2">
@@ -37,6 +40,7 @@
                         <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} rates)</p>  
                     </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -44,6 +48,9 @@
         <section class="display-songs">
             <h2>Top Rated Songs</h2>
             <div class="song-carousel">
+                {% if not top_rated_songs %}
+                <p>There are no top rated songs currently</p>
+                {% else %}
                 <div class="song-list" id="top-rated-list">
                     {% for song in top_rated_songs %}
                     <div class="song2">
@@ -54,6 +61,7 @@
                         <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} ratings)</p>  
                     </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </section>

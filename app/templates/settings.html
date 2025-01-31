@@ -21,8 +21,14 @@
     <p><strong>Username:</strong> {{ current_user.username }}</p>
     <p><strong>Email:</strong> {{ current_user.email }}</p>
     <p><strong>First Name:</strong> {{ current_user.first_name }}</p>
-
-    <br><br>
+    <br>
+    <form method="POST">
+        <label for="theme_color">Select Theme Color:</label>
+        <input type="color" id="theme_color" name="theme_color" value="{{ current_user.theme_color or '#333' }}">
+        <button type="submit">Save Theme</button>
+    </form>
+    
+    <br>
     <form method="POST">
         <label for="song_name">Select:</label>
         <select name="spotify_id" id="song_name" required>
@@ -35,6 +41,7 @@
         </select>
         <button type="submit">Remove Rating</button>
     </form>
+
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

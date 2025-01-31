@@ -30,8 +30,11 @@
         <section class="display-songs">
             <h2>Recent Ratings</h2>
             <div class="song-carousel">
+                {% if not recent_ratings %}
+                <p>There are no recent ratings</p>
+                {% else %}
                 <div class="song-list" id="top-rated-list">
-                    {% for song in recent_ratings %}
+                {% for song in recent_ratings %}
                     <div class="song2">
                         <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
                         <h3>{{ song.track_name }}</h3>
@@ -42,9 +45,13 @@
                         <p>{{ song.time_stamp }}</p>
                     </div>
                     {% endfor %}
+                    {% endif %}
+    
                 </div>                      
             </div>
+
         </section>
+
 
 
         

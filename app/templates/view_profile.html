@@ -18,6 +18,9 @@
     <div class="profile-container">
         <div class="ratings-wrapper">
             <div class="ratings-container">
+                {% if not profile_info.ratings %}
+                <p>{{ profile_info.user.username }} has not rated any songs.</p>
+                {% else %}
                 {% for rating in profile_info.ratings %}
                     <div class="rating-item">
                         <a href="{{ rating.song.spotify_url }}" target="_blank">
@@ -33,6 +36,7 @@
                         </div>
                     </div>
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
