@@ -57,7 +57,8 @@ class Song(db.Model):
     artist_name = db.Column(String(255), nullable=False)
     spotify_url = db.Column(db.String(255), nullable=False)
     album_name = db.Column(db.String(200), nullable=True)
-    album_image = db.Column(String(255), nullable=True)
+    album_image = db.Column(db.String(255), nullable=True)
+    release_date = db.Column(db.String(255), nullable=True)
     spotify_id = db.Column(db.String(120), unique=True, nullable=True)  
 
     ratings = relationship('Rating', backref='song', lazy=True)

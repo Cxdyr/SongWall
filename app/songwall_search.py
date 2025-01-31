@@ -29,7 +29,9 @@ def search_songs(query, access_token):
                     "album_name": track['album']['name'],
                     "album_image_url": track['album']['images'][0]['url'] if track['album']['images'] else None,
                     "spotify_url": track['external_urls']['spotify'],
-                    "spotify_id": track['id']  # Add the Spotify ID
+                    "spotify_id": track['id'],  # Add the Spotify ID
+                    "release_date": track['album']['release_date']  # Extract release date
+
                 }
                 song_info.append(song_details)  # Add song details to the list
                 

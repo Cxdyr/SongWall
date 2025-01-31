@@ -172,7 +172,8 @@ def search():
                         album_image=song_data['album_image_url'],  
                         spotify_url=song_data['spotify_url'],
                         spotify_id=song_data['spotify_id'],  
-                        album_name = song_data['album_name']
+                        album_name = song_data['album_name'],
+                        release_date = song_data['release_date']
                     )
                     db.session.add(new_song)
                     db.session.commit()
