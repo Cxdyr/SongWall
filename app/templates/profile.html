@@ -11,6 +11,7 @@
     <header>
         <div class="container">
             <h1>{{ current_user.username }}'s Profile</h1>
+            <p class="profile">Avg: <strong>{{avg_ratings}}/10, </strong>  Rated: <strong>{{ratings_ct}}</strong></p>
             <nav>
                 <a href="/dashboard">Back</a>
                 <a href="/settings">Settings</a>
@@ -18,7 +19,7 @@
         </div>
     </header>
     <div class="profile-container">
-       <p class="profile"> {{current_user.username}}'s average rating: <strong>{{avg_ratings}}/10</strong> , songs rated: <strong>{{ratings_ct}}</strong> </p>
+       <p class="profile"> {{current_user.bio}} </p>
     </div>
     <div class="profile-container">
         <div class="ratings-wrapper">

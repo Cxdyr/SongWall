@@ -17,11 +17,22 @@
         </div>
     </header>
     <br>
+    <div class="profile-container">
     <h2>{{current_user.first_name}}'s Information</h2>
     <p><strong>Username:</strong> {{ current_user.username }}</p>
     <p><strong>Email:</strong> {{ current_user.email }}</p>
     <p><strong>First Name:</strong> {{ current_user.first_name }}</p>
+    <p><strong>{{current_user.first_name}}'s Biography:</strong> {{current_user.bio}}</p>
     <br>
+    </div>
+
+    <form method="POST">
+        <label for="biography">Set Biography:</label>
+        <input type="text" id="biography" name="biography">
+        <button type="submit">Save Bio</button>
+    </form>
+    <br>
+
     <form method="POST">
         <label for="theme_color">Select Theme Color:</label>
         <input type="color" id="theme_color" name="theme_color" value="{{ current_user.theme_color or '#333' }}">

@@ -55,6 +55,18 @@
                 <button type="submit">Submit Rating</button>
             </form>
         </section>
+
+
+            
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <p>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </p>
+    {% endif %}
+{% endwith %}
         
     </main>
 

@@ -264,6 +264,8 @@ def profile_settings():
        #if user does a post request is for deleting songs or changing color
         spotify_id = request.form.get('spotify_id')
         new_color = request.form.get('theme_color')
+        new_bio = request.form.get('biography')
+
         if new_color:
             current_user.theme_color = new_color
             db.session.commit()
@@ -276,8 +278,11 @@ def profile_settings():
             db.session.delete(rating_to_delete)
             db.session.commit()
             flash('Rating successfully deleted!', 'success')
-        else:
-            flash('Rating not found for this song.', 'danger')
+
+        if new_bio:
+            current_user.bio = new_bio
+            db.session.commit()
+            flash('Biography updated successfully!', 'success')
 
         return redirect(url_for('profile_settings'))  # Redirect to avoid resubmission on refresh
     

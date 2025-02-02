@@ -11,14 +11,14 @@
     <header>
         <div class="container">
             <h1>{{ profile_info.user.username }}'s Songwall</h1>
+            <p class="profile">Avg: <strong>{{profile_info.avg_rating}}/10, </strong>  Rated: <strong>{{profile_info.ratings_ct}}</strong></p>
             <nav>
             <a href="/dashboard">Home</a>
         </nav>
         </div>
     </header>
     <div class="profile-container">
-        <p class="profile"> Average rating: <strong>{{profile_info.avg_rating}}/10</strong> </p>
-        <p class="profile">Songs rated: <strong>{{profile_info.ratings_ct}}</strong> </p>
+        <p class="profile"> {{current_user.bio }}</p>
      </div>
     <div class="profile-container">
         <div class="ratings-wrapper">
