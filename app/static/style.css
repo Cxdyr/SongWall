@@ -27,6 +27,7 @@ header .container {
 header h1 {
     font-size: 2.5rem;
     margin: 0;
+    text-shadow: .5px .5px 1px black;
 }
 
 p {
@@ -35,6 +36,7 @@ p {
 
 p.profile {
     color: rgb(255, 255, 255);
+    font-size: 1.03rem;
     text-shadow: 1px 1px 2px #000000;
 }
 
@@ -687,6 +689,9 @@ label .comment {
 
     header h1 {
         font-size: 1.8rem; /* Smaller header text for mobile */
+        margin: 0;
+        text-shadow: .5px .5px 1px black;
+
     }
 
     nav a {
