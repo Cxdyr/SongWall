@@ -33,6 +33,11 @@ p {
     color: rgb(179, 174, 174);
 }
 
+p.profile {
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 2px #000000;
+}
+
 
 nav a {
     color: #e4e4e4;
@@ -588,44 +593,85 @@ label .comment {
     background-color: #169c47;
 }
 
-/* Ratings Section */
-.ratings-container {
-    margin-top: 2rem;
+
+
+
+
+
+/* Ratings Container */
+.ratings-songview-container {
+    max-width: 600px; /* Set a fixed width */
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #2a2a40;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.ratings-container h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #e4e4e4;
-}
-
-.list-group {
+/* Scrollable Reviews List */
+.ratings-list {
+    max-height: 350px; /* Limits height and enables scrolling */
+    overflow-y: auto;
+    padding-right: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-
-
-.rating-user {
-    font-size: 1.2rem;
-    color: #000000;
-    margin: 0;
+/* Rating Card */
+.rating-card {
+    background-color: #ffffff;
+    padding: 12px;
+    max-width: 550px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
 }
 
+/* Username and Rating Score */
+.rating-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* Username */
+.rating-user {
+    color: #1a1a1a;
+    text-decoration: none;
+}
+
+.rating-user:hover {
+    text-decoration: underline;
+}
+
+/* Rating Score */
+.rating-score {
+    background-color: #04aef1;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Comment */
 .rating-comment {
     font-style: italic;
     font-size: 1rem;
-    color: #000000;
+    margin-top: 5px;
+    color: #333;
+}
+
+/* Rating Date */
+.rating-date {
+    font-size: 0.9rem;
+    color: #666;
     margin-top: 5px;
 }
 
-.no-ratings {
-    text-align: center;
-    padding: 1rem;
-    font-size: 1rem;
-    color: #a3a3c2;
-}
 
 
 
@@ -809,22 +855,37 @@ label .comment {
     }
 
 
-    /* Ratings Section */
-    .ratings-container h3 {
-        font-size: 1.2rem; /* Reduced font size for headings */
+
+    .ratings-songview-container {
+        max-width: 100%;
+        padding: 1rem;
     }
 
-    .rating-user {
-        font-size: 1rem; /* Smaller font size for user ratings */
+    .ratings-list {
+        max-height: 300px; /* Adjusted height for smaller screens */
+    }
+
+    .rating-card {
+        padding: 10px;
+    }
+
+    .rating-header {
+        font-size: 1rem;
+    }
+
+    .rating-score {
+        padding: 2px 6px;
     }
 
     .rating-comment {
-        font-size: 0.9rem; /* Reduced font size for comments */
+        font-size: 0.95rem;
     }
 
-    .no-ratings {
-        font-size: 0.9rem; /* Smaller font size for 'No ratings' text */
+    .rating-date {
+        font-size: 0.85rem;
     }
+
+
 
     .spotify-btn {
         display: inline-block;

@@ -13,13 +13,29 @@ def get_user_ratings(user_id):
     :param user_id: The ID of the user whose ratings are being fetched.
     :return: A list of Rating objects joined with Song data.
     """
-    return (
+    ratings = (
         Rating.query
         .filter_by(user_id=user_id)
         .join(Song, Rating.song_id == Song.id)
         .order_by(Rating.rating.desc())  # Sort by highest rating first
         .all()
     )
+
+    ratings_ct = Rating.query.filter_by(user_id=user_id).count()
+
+    avg_rating = (
+        db.session.query(func.avg(Rating.rating)).filter_by(user_id=user_id).scalar()
+    )
+    if avg_rating is None:
+        avg_rating = 0  
+    else:
+        avg_rating = round(avg_rating, 2)  # 2 decimal
+
+
+    return ratings, ratings_ct, avg_rating
+
+
+
 
 
 
@@ -185,6 +201,16 @@ def get_profile_info(username):
     if user:
         # Get the ratings for this user (songs they've rated)
         ratings = db.session.query(Rating).filter_by(user_id=user.id).order_by(Rating.rating.desc()).all()
+        ratings_ct = Rating.query.filter_by(user_id=user.id).count()
+        avg_rating = (
+            db.session.query(func.avg(Rating.rating)).filter_by(user_id=user.id).scalar()
+        )
+        if avg_rating is None:
+            avg_rating = 0  
+        else:
+            avg_rating = round(avg_rating,2)
+
+
         user_ratings = []
         
         # Gather song details for each rating
@@ -196,21 +222,26 @@ def get_profile_info(username):
                     'rating': rating.rating,
                     'comment': rating.comment,
                     'album_name': song.album_name
-                    
                 })
         
         return {
             'user': user,
-            'ratings': user_ratings
+            'ratings': user_ratings,
+            'ratings_ct':ratings_ct,
+            'avg_rating':avg_rating
         }
     else:
         return None
+    
+
+
 
 
 
 
 # Function to get recent posts with usernames
 def get_recent_posts(limit=10):
+
     posts = Post.query.order_by(Post.time_stamp.desc()).limit(limit).all()
     # Include the username of the user who posted each message
     posts_with_usernames = []

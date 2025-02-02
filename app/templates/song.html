@@ -36,24 +36,27 @@
         </div>
     </div>
 
-        <div class="ratings-container">
-            <h3>Recent Ratings</h3>
-            <div class="list-group">
-                {% if ratings %}
-                    {% for rating in ratings %}
-                        <div class="list-group-item rating-item">
-                            <h5 class="rating-user">@{{ rating.username }}, <strong>{{ rating.rating }}/10</strong></h5>
-                            {% if rating.comment %}
-                                <p class="rating-comment">"{{ rating.comment }}"</p>
-                            {% endif %}
-                            <small class="rating-comment">Rated on {{ rating.time_stamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+    <div class="ratings-songview-container">
+        <h3>Recent Ratings</h3>
+        <div class="ratings-list">
+            {% if ratings %}
+                {% for rating in ratings %}
+                    <div class="rating-card">
+                        <div class="rating-header">
+                            <a href="{{ url_for('view_profile', username=rating.username) }}" class="rating-user">@{{ rating.username }}</a>
+                            <span class="rating-score">{{ rating.rating }}/10</span>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="alert alert-secondary no-ratings">No recent ratings yet.</div>
-                {% endif %}
-            </div>
+                        {% if rating.comment %}
+                            <p class="rating-comment">"{{ rating.comment }}"</p>
+                        {% endif %}
+                        <small class="rating-date">Rated on {{ rating.time_stamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-ratings">No recent ratings yet.</div>
+            {% endif %}
         </div>
     </div>
+    
 </body>
 </html>

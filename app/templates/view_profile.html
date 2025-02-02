@@ -14,10 +14,11 @@
             <nav>
             <a href="/dashboard">Home</a>
         </nav>
-
         </div>
     </header>
-
+    <div class="profile-container">
+        <p class="profile"> {{profile_info.user.username}}'s average rating: <strong>{{profile_info.avg_rating}}/10</strong> , songs rated: <strong>{{profile_info.ratings_ct}}</strong> </p>
+     </div>
     <div class="profile-container">
         <div class="ratings-wrapper">
             <div class="ratings-container">

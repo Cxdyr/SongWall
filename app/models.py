@@ -86,10 +86,12 @@ class Post(db.Model):
     id = db.Column(Integer, primary_key=True)
     post_message = db.Column(String(255), nullable=False)
     time_stamp = db.Column(db.DateTime, default=func.now(), nullable=False)
-    reference = db.Column(db.String(255), nullable=True)  
+    reference = db.Column(db.String(255), nullable=False)  
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
+    song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
 
     user = relationship('User', backref='posts')
+    song = relationship('Song', backref='posts')
 
     def __repr__(self):
         return f"<Post(user_id='{self.user_id}', post_message='{self.post_message}')>"

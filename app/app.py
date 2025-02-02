@@ -248,8 +248,8 @@ def search_view_song(spotify_id):
 @login_required
 def profile():
     user_id = current_user.id
-    user_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
-    return render_template('profile.html', ratings=user_ratings)
+    user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
+    return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
