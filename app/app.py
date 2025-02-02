@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_song_by_spotify_id, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -216,6 +216,29 @@ def rate(spotify_id):
         return redirect(url_for('dashboard'))  
 
     return render_template('rate.html', song=song)
+
+
+@app.route('/view/<int:song_id>', methods=['GET'])
+def view_song(song_id):
+    song_info = get_song_by_id(song_id)
+    ratings = get_song_recent_ratings(song_id)
+
+    if not song_info:
+        return "Song not found", 404  # Handle case where song doesn't exist
+
+    return render_template('song.html', song_info=song_info, ratings=ratings)
+
+
+@app.route('/search/view/<string:spotify_id>', methods=['GET'])
+def search_view_song(spotify_id):
+    song_info = get_song_by_spotify_id(spotify_id)
+    ratings = get_search_song_recent_ratings(spotify_id)
+
+    if not song_info:
+        return "Song not found", 404  # Handle case where song doesn't exist
+
+    return render_template('song.html', song_info=song_info, ratings=ratings)
+
 
 
 

@@ -11,7 +11,9 @@
     <header>
         <div class="container">
             <h1>Songwall Search</h1>
+            <nav>
             <a href="/dashboard">Back</a>
+        </nav>
         </div>
     </header>
 
@@ -32,11 +34,11 @@
                 <div class="song-list-default" id="song-list-default">
                     {% for song in songs %}
                 <div class="song2" style="border: 1px solid black; padding: 10px; margin: 10px;">
-                    <img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;">
-                    <h3><a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}">{{ song['name'] }}</a></h3>
+                    <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}"><img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;"></a>
+                    <h3> <a href="{{url_for('search_view_song', spotify_id = song.spotify_id)}}">{{  song['name'] }}</a></h3>
                     <p><strong>Artist:</strong> {{ song.artist }}</p>
-                    <p><strong>Album:</strong> {{ song.album_name }}</p>
-                    <a href="{{ song.spotify_url }}" target="_blank">Spotify</a>
+                    <p><strong>Album:</strong> {{ song.album_name }}</p> 
+                    <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
                 </div>
 
                     {% endfor %}

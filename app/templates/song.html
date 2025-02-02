@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ song_info.track_name }} - {{ song_info.artist_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>{{ song_info.track_name }} - {{song_info.artist_name }}  Songwall</h1>
+            <nav>
+                <a href="/dashboard">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container song-view-container">
+        <div class="song-header">
+            <img src="{{ song_info.album_image }}" class="album-cover" alt="Album Cover">
+            <div class="song-details">
+                <h2 class="song-title">{{ song_info.track_name }}</h2>
+                <p>{{ song_info.artist_name }}</p>
+                {% if song_info.album_name %}
+                    <p><strong>Album:</strong> {{ song_info.album_name }}</p>
+                {% endif %}
+                {% if song_info.release_date %}
+                    <p><strong>Release Date:</strong> {{ song_info.release_date }}</p>
+                {% endif %}
+                <a href="{{ song_info.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="ratings-container">
+            <h3>Recent Ratings</h3>
+            <div class="list-group">
+                {% if ratings %}
+                    {% for rating in ratings %}
+                        <div class="list-group-item rating-item">
+                            <h5 class="rating-user">@{{ rating.username }}, <strong>{{ rating.rating }}/10</strong></h5>
+                            {% if rating.comment %}
+                                <p class="rating-comment">"{{ rating.comment }}"</p>
+                            {% endif %}
+                            <small class="rating-comment">Rated on {{ rating.time_stamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-secondary no-ratings">No recent ratings yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

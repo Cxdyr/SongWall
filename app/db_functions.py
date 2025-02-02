@@ -31,6 +31,9 @@ def get_rating_by_spotify_id(user_id, spotify_id):
 
     return rating
 
+def get_song_by_id(song_id):
+    """Uses my database to get song info"""
+    return Song.query.filter_by(id=song_id).first()
 
 def get_song_by_spotify_id(spotify_id):
     """
@@ -111,13 +114,40 @@ def get_recent_ratings(amount):
             Rating.time_stamp
         )
         .join(Rating, Rating.song_id == Song.id)
-        .group_by(Song.id)
         .order_by(Rating.time_stamp.desc())  # Sort by highest avg rating
         .limit(amount)
         .all()
     )
     
     return recent_ratings
+
+
+def get_song_recent_ratings(song_id):
+    """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
+
+    song = db.session.query(Song).filter_by(id = song_id).first()
+
+    if song:
+        ratings = db.session.query(Rating).filter_by(song_id=song.id).order_by(Rating.time_stamp.desc()).all()
+
+        return ratings
+    
+
+
+def get_search_song_recent_ratings(spotify_id):
+    """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
+
+    song = db.session.query(Song).filter_by(spotify_id = spotify_id).first()
+
+    if song:
+        ratings = db.session.query(Rating).filter_by(song_id=song.id).order_by(Rating.time_stamp.desc()).all()
+
+        return ratings
+
+
+
+
+
 
 
 
