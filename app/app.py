@@ -33,7 +33,8 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    with db.session() as session:
+        return session.get(User, int(user_id))
 
 scheduler = BackgroundScheduler()  # this is scheduler used to refresh the popular songs and top rated songs on 24 hour loop
 
@@ -55,8 +56,10 @@ scheduler.start()
 
 @app.before_request
 def initialize_cache():
-    """Ensure popular songs and top rated are populated before first request"""
-    update_cached_data()
+    """Ensure popular songs and top-rated songs are populated before the first request."""
+    global pop_songs_cache, top_rated_songs_cache
+    if pop_songs_cache is None or top_rated_songs_cache is None:
+        update_cached_data()  # Only update if cache is empty
 
 @app.before_request
 def check_token():
@@ -76,28 +79,30 @@ def songwall_down():
 
 @app.route('/')
 def index():
-    if pop_songs_cache is None or top_rated_songs_cache is None:
-        update_cached_data()
     return render_template('index.html', pop_songs=pop_songs_cache, top_rated_songs=top_rated_songs_cache)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
-        username = request.form['username']
+        email = request.form['email'].strip().lower()
+        username = request.form['username'].strip()
         password = request.form['password']
         first_name = request.form['first_name']
-
+        
+        if len(password)<5:
+            flash('Password must be more than 5 characters', 'error')
+            return redirect(url_for('register'))
         # Check if email already exists
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash('Email address already in use', 'error')
             return redirect(url_for('register'))
         
-        existing_username = User.query.filter_by(username=username).first()
+        existing_username = User.query.filter(db.func.lower(User.username) == username.lower()).first()
         if existing_username:
             flash('Username already in use, please try another one', 'error')
+            return redirect(url_for('register'))
 
         # Create new user and set hashed password
         new_user = User(email=email)

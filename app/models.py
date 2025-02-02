@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
     linked_accounts = db.Column(String(255), nullable=True)  #will need alot more for this, probably more tables based on the social its from
     private_messages = db.Column(Boolean, default=True)
     theme_color = db.Column(String(7), default="#333")
-    bio = db.Column(String(255), nullable=True)
+    bio = db.Column(String(255), default="No bio", nullable=True)
 
     def __repr__(self):
         return f"<User(username='{self.username}')>"
