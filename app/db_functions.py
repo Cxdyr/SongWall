@@ -31,9 +31,11 @@ def get_rating_by_spotify_id(user_id, spotify_id):
 
     return rating
 
+
 def get_song_by_id(song_id):
     """Uses my database to get song info"""
     return Song.query.filter_by(id=song_id).first()
+
 
 def get_song_by_spotify_id(spotify_id):
     """

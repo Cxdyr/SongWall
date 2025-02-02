@@ -11,7 +11,9 @@
     <header>
         <div class="container">
             <h1>Rate your song</song></h1>
+            <nav>
             <a href="/search">Back</a>
+            </nav>
         </div>
     </header>
 
@@ -22,7 +24,8 @@
                 <h3>{{ song.track_name }}</h3>
                 <p><strong>Artist:</strong> {{ song.artist_name }}</p>
                 <p><strong>Album:</strong> {{ song.album_name if song.album_name else 'No album info' }}</p>
-                <a href="{{ song.spotify_url }}" target="_blank" class="spotify-link">Listen on Spotify</a>
+                <br>
+                <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank" class="spotify-link">Spotify</a>
             </div>
         </section>
         <br>

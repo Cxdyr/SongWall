@@ -218,6 +218,8 @@ def rate(spotify_id):
     return render_template('rate.html', song=song)
 
 
+
+#View page for my songs, still need to add average ratings but can do this easily
 @app.route('/view/<int:song_id>', methods=['GET'])
 def view_song(song_id):
     song_info = get_song_by_id(song_id)
@@ -228,7 +230,7 @@ def view_song(song_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings)
 
-
+#View page for song that appear from the search view, may not be in the database yet so we use spotify id for checking
 @app.route('/search/view/<string:spotify_id>', methods=['GET'])
 def search_view_song(spotify_id):
     song_info = get_song_by_spotify_id(spotify_id)
