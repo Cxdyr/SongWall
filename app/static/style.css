@@ -1,6 +1,6 @@
 /* General Styles */
 
-html, body {
+html {
     height: 100%;
     overflow-x: hidden; /* Disable horizontal scrolling */
 }

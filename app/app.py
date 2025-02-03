@@ -147,6 +147,12 @@ def logout():
 @login_required
 def dashboard():
     recent_ratings = get_recent_ratings(9)  #getting the 10 recent ratings
+    return render_template('dashboard.html', recent_ratings=recent_ratings)
+
+
+@app.route('/posts', methods=['GET', 'POST'])
+@login_required
+def posts():
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
 
@@ -157,8 +163,8 @@ def dashboard():
         if song_id and post_message:
             add_post(current_user.id, song_id, post_message) # add post to db 
             return redirect(url_for('dashboard'))  # Refresh after posting
+    return render_template('posts.html', recent_posts=recent_posts, user_songs=user_songs)
 
-    return render_template('dashboard.html', recent_ratings=recent_ratings, recent_posts=recent_posts, user_songs=user_songs)
 
 
 #Load more posts route
@@ -286,38 +292,37 @@ def profile():
 @login_required
 def profile_settings():
     user_id = current_user.id
-    
-    # getting all ratings for this user
+    user = User.query.get(user_id)
     ratings = Rating.query.filter_by(user_id=user_id).join(Song).all()
 
     if request.method == 'POST':
-       #if user does a post request is for deleting songs or changing color
-        spotify_id = request.form.get('spotify_id')
-        new_color = request.form.get('theme_color')
-        new_bio = request.form.get('biography')
+        form_type = request.form.get("form_type")  # Identify which form was submitted
 
-        if new_color:
-            current_user.theme_color = new_color
-            db.session.commit()
-            flash('Theme updated successfully!', 'success')
-        
-        #finds rating to delete 
-        rating_to_delete = get_rating_by_spotify_id(user_id, spotify_id)
-        
-        if rating_to_delete:
-            db.session.delete(rating_to_delete)
-            db.session.commit()
-            flash('Rating successfully deleted!', 'success')
+        if form_type == "bio":
+            new_bio = request.form.get("biography")
+            if new_bio:
+                user.bio = new_bio
+                db.session.commit()
+                flash("Biography updated successfully!", "success")
 
-        if new_bio:
-            current_user.bio = new_bio
-            db.session.commit()
-            flash('Biography updated successfully!', 'success')
+        elif form_type == "theme":
+            new_color = request.form.get("theme_color")
+            if new_color:
+                user.theme_color = new_color
+                db.session.commit()
+                flash("Theme updated successfully!", "success")
 
-        return redirect(url_for('profile_settings'))  # Redirect to avoid resubmission on refresh
-    
+        elif form_type == "remove_song":
+            spotify_id = request.form.get("spotify_id")
+            rating_to_delete = Rating.query.filter_by(user_id=user_id, song_id=spotify_id).first()
+            if rating_to_delete:
+                db.session.delete(rating_to_delete)
+                db.session.commit()
+                flash("Rating successfully deleted!", "success")
+
+        return redirect(url_for('profile_settings'))  # Prevent form resubmission on refresh
+
     return render_template('settings.html', ratings=ratings)
-
 #Update color theme route
 @app.route('/update_theme', methods=['POST'])
 @login_required

@@ -14,6 +14,7 @@
             <nav>
                 <a href="/search">Search</a>
                 <a href="/profile">Profile</a>
+                <a href="/posts">Posts</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
@@ -50,71 +51,6 @@
             </div>
         </section>
 
-        <h2>User Posts</h2>
-        <section class="post-form">
-            <form method="POST" action="{{ url_for('dashboard') }}">
-                <select name="song_id" required>
-                    {% for song in user_songs %}
-                    <option value="{{ song.id }}">{{ song.track_name }} by {{ song.artist_name }}</option>
-                    {% endfor %}
-                </select>
-                <textarea name="post_message" placeholder="What's on your mind?" required></textarea>
-                <button type="submit">Post</button>
-            </form>
-        </section>
-
-        <section class="display-posts">
-            <div id="posts-container">
-                {% for post in recent_posts %}
-                <div class="post">
-                    <div class="post-left">
-                        <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
-                        <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
-                    </div>
-                    <div class="post-right">
-                        <p class="post-message">{{ post.post_message }}</p>
-                        <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <button id="load-more" data-offset="10">Load More</button>
-        </section>
-
-        <script>
-        document.getElementById('load-more').addEventListener('click', function() {
-            let button = this;
-            let offset = parseInt(button.getAttribute('data-offset'));
-
-            fetch(`/load_more_posts?offset=${offset}`)
-                .then(response => response.json())
-                .then(data => {
-                    let container = document.getElementById('posts-container');
-                    data.forEach(post => {
-                        let postElement = document.createElement('div');
-                        postElement.classList.add('post');
-                        postElement.innerHTML = `
-                            <div class="post-left">
-                                <p><strong><a href="${post.profile_url}">${post.username}</a></strong></p>
-                                <p class="post-song"><a href="${post.spotify_url}" target="_blank">🎵 ${post.song_name} - ${post.artist_name}</a></p>
-                            </div>
-                            <div class="post-right">
-                                <p class="post-message">${post.post_message}</p>
-                                <p class="timestamp">${post.timestamp}</p>
-                            </div>
-                        `;
-                        container.appendChild(postElement);
-                    });
-
-                    offset += 10;
-                    button.setAttribute('data-offset', offset);
-
-                    if (data.length < 10) {
-                        button.style.display = 'none';
-                    }
-                });
-        });
-        </script>
 
     </main>
     <footer>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css"> 
+    <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
     <title>{{ current_user.username }}'s Profile</title>
 </head>
@@ -11,7 +11,6 @@
     <header>
         <div class="container">
             <h1>{{ current_user.username }}'s Profile</h1>
-            <p class="profile">Avg: <strong>{{avg_ratings}}/10, </strong>  Rated: <strong>{{ratings_ct}}</strong></p>
             <nav>
                 <a href="/dashboard">Back</a>
                 <a href="/settings">Settings</a>
@@ -20,6 +19,7 @@
     </header>
     <div class="profile-container">
        <p class="profile"> {{current_user.bio}} </p>
+       <p class="profile">Average: <strong>{{avg_ratings}}/10, </strong>  Rated: <strong>{{ratings_ct}}</strong></p>
     </div>
     <div class="profile-container">
         <div class="ratings-wrapper">
