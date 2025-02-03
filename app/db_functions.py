@@ -1,7 +1,7 @@
-from datetime import datetime
 from flask_login import current_user
 from sqlalchemy import func
 from models import Post, User, db, Rating, Song  
+from sqlalchemy.orm import joinedload
 
 
 
@@ -235,36 +235,34 @@ def get_profile_info(username):
     
 
 
+def get_rated_songs_by_user(user_id):
+    """
+    Fetch all songs rated by a specific user.
+    Returns a list of (song_id, track_name, artist_name).
+    """
+    songs = (db.session.query(Song.id, Song.track_name, Song.artist_name).join(Rating, Rating.song_id == Song.id).filter(Rating.user_id == user_id).order_by(Rating.time_stamp.desc()).distinct().all())
+    return songs
+
+
+def add_post(user_id, song_id, post_message):
+    """
+    Add a new post into the database.
+    """
+    new_post = Post(
+        post_message=post_message,
+        user_id=user_id,
+        song_id=song_id #this is our reference per say.
+    )
+    db.session.add(new_post)
+    db.session.commit()
+    return new_post
 
 
 
-
-# Function to get recent posts with usernames
-def get_recent_posts(limit=10):
-
-    posts = Post.query.order_by(Post.time_stamp.desc()).limit(limit).all()
-    # Include the username of the user who posted each message
-    posts_with_usernames = []
-    for post in posts:
-        user = User.query.get(post.user_id)  # Get the user who posted this
-        posts_with_usernames.append({
-            'post': post,
-            'username': user.username if user else "Unknown"
-        })
-    return posts_with_usernames
-
-
-# Function to add a new post
-def add_post(post_message):
-    if post_message:
-        new_post = Post(
-            post_message=post_message,
-            user_id=current_user.id,
-            time_stamp=datetime()
-        )
-        db.session.add(new_post)
-        db.session.commit()
-        return new_post
-    return None
-
-
+def get_recent_posts(limit=10, offset=0):
+    """
+    Get recent posts with user and song details, ordered by timestamp.
+    Supports pagination via limit and offset.
+    """
+    posts = (db.session.query(Post).options(joinedload(Post.user), joinedload(Post.song)).order_by(Post.time_stamp.desc()).limit(limit).offset(offset).all())
+    return posts

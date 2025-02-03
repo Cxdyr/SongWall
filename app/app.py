@@ -1,9 +1,9 @@
-from flask import Flask, app, g, render_template, request, redirect, url_for, flash
+from flask import Flask, app, g, jsonify, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
 from models import Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, get_popular_songwall_songs, get_profile_info, get_rating_by_spotify_id, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, add_post, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -12,7 +12,6 @@ import os
 
 
 load_dotenv()
-
 
 app = Flask(__name__)
 
@@ -42,7 +41,6 @@ pop_songs_cache = None
 top_rated_songs_cache = None
 access_token = None  
 
-
 # Function to update the cache every 24 hours
 def update_cached_data():
     global pop_songs_cache, top_rated_songs_cache
@@ -71,17 +69,16 @@ def check_token():
     if not access_token:
         return redirect(url_for('songwall_down'))
     
-    
 @app.route('/songwall_down')
 def songwall_down():
     return render_template('songwall_down.html')
 
-
+#Home page
 @app.route('/')
 def index():
     return render_template('index.html', pop_songs=pop_songs_cache, top_rated_songs=top_rated_songs_cache)
 
-
+#Register page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -119,7 +116,7 @@ def register():
 
     return render_template('register.html')
 
-
+#Login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -137,7 +134,7 @@ def login():
     
     return render_template('login.html')
 
-
+#Logout route
 @app.route('/logout')
 def logout():
     logout_user()
@@ -145,15 +142,47 @@ def logout():
     return redirect(url_for('login'))
 
 
-
-@app.route('/dashboard', methods=['GET', 'POST'])
+#Logged in home page
+@app.route('/dashboard', methods=['GET', 'POST']) 
 @login_required
 def dashboard():
-    recent_ratings = get_recent_ratings(9)
-    #recent_posts = get_recent_posts(limit=10)  # Get posts with usernames
-    return render_template('dashboard.html', recent_ratings=recent_ratings)
+    recent_ratings = get_recent_ratings(9)  #getting the 10 recent ratings
+    recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
+    user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
+
+    if request.method == 'POST':  #if post method it means a user is posting a message so we get the song id for reference FK and the info in the message and post it to db before redirecting back
+        song_id = request.form.get('song_id')
+        post_message = request.form.get('post_message')
+
+        if song_id and post_message:
+            add_post(current_user.id, song_id, post_message) # add post to db 
+            return redirect(url_for('dashboard'))  # Refresh after posting
+
+    return render_template('dashboard.html', recent_ratings=recent_ratings, recent_posts=recent_posts, user_songs=user_songs)
 
 
+#Load more posts route
+@app.route('/load_more_posts', methods=['GET'])   # t his is going to load more posts for the user if they scroll to bottom and want to view more
+@login_required
+def load_more_posts():
+    offset = int(request.args.get('offset', 0))
+    posts = get_recent_posts(10, offset)
+
+    posts_data = [
+        {
+            "username": post.user.username,
+            "post_message": post.post_message,
+            "song_name": post.song.track_name,
+            "artist_name": post.song.artist_name,
+            "timestamp": post.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for post in posts
+    ]
+    
+    return jsonify(posts_data)
+
+
+#Search page
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
@@ -185,7 +214,7 @@ def search():
 
     return render_template('search.html', songs=songs)
 
-
+#Search friends route
 @app.route('/search_friends', methods=['POST'])
 @login_required
 def search_friends():
@@ -198,7 +227,7 @@ def search_friends():
         flash('User not found.', 'danger')
         return redirect(url_for('dashboard'))
 
-
+#Rate page
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
 @login_required
 def rate(spotify_id):
@@ -222,9 +251,7 @@ def rate(spotify_id):
 
     return render_template('rate.html', song=song)
 
-
-
-#View page for my songs, still need to add average ratings but can do this easily
+#View page for songs by our db id
 @app.route('/view/<int:song_id>', methods=['GET'])
 def view_song(song_id):
     song_info = get_song_by_id(song_id)
@@ -235,7 +262,7 @@ def view_song(song_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings)
 
-#View page for song that appear from the search view, may not be in the database yet so we use spotify id for checking
+#View page for songs by spotify id
 @app.route('/search/view/<string:spotify_id>', methods=['GET'])
 def search_view_song(spotify_id):
     song_info = get_song_by_spotify_id(spotify_id)
@@ -246,9 +273,7 @@ def search_view_song(spotify_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings)
 
-
-
-
+#Logged in user profile page, includes settings redirect
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile():
@@ -256,7 +281,7 @@ def profile():
     user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
     return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
 
-
+#Logged in user settings page
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def profile_settings():
@@ -293,7 +318,7 @@ def profile_settings():
     
     return render_template('settings.html', ratings=ratings)
 
-
+#Update color theme route
 @app.route('/update_theme', methods=['POST'])
 @login_required
 def update_theme():
@@ -304,8 +329,7 @@ def update_theme():
         flash("Theme updated successfully!", "success")
     return redirect(url_for("profile_settings"))
 
-
-
+#View profile page, for anyone by username
 @app.route('/view/<string:username>', methods=['GET'])
 def view_profile(username):
     profile_info = get_profile_info(username)
@@ -314,9 +338,6 @@ def view_profile(username):
         return render_template('view_profile.html', profile_info=profile_info)
     else:
         return redirect(url_for('dashboard'))
-
-    
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

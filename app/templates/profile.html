@@ -31,7 +31,7 @@
                     <div class="rating-item">
                         <a href="{{ rating.song.spotify_url }}" target="_blank"> <img src="{{ rating.song.album_image }}" alt="Album Art"></a> 
                         <div class="rating-info">
-                            <h3> <a href="{{url_for('view_song', song_id = rating.song.id)}}">{{ rating.song.track_name }} - {{rating.song.artist_name }}</a></h3>
+                          <h3><a class="black" href="{{url_for('view_song', song_id = rating.song.id)}}">{{ rating.song.track_name }} - {{rating.song.artist_name }}</a></h3>
                             <p>{{rating.song.album_name}}</p>
                             <p>Rating: ⭐ <strong>{{ rating.rating }}/10 </strong></p>
                             {% if rating.comment %}
