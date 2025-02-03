@@ -1,6 +1,6 @@
 from flask_login import current_user
 from sqlalchemy import func
-from models import Post, User, db, Rating, Song  
+from models import Follow, Post, User, db, Rating, Song  
 from sqlalchemy.orm import joinedload
 
 
@@ -266,3 +266,66 @@ def get_recent_posts(limit=10, offset=0):
     """
     posts = (db.session.query(Post).options(joinedload(Post.user), joinedload(Post.song)).order_by(Post.time_stamp.desc()).limit(limit).offset(offset).all())
     return posts
+
+
+
+def follow_user(followed_id):
+    """Adds a follow relationship if not already followed."""
+    if followed_id == current_user.id:
+        return {"success": False, "message": "You cannot follow yourself!"}
+
+    existing_follow = Follow.query.filter_by(follower_id=current_user.id, followed_id=followed_id).first()
+
+    if existing_follow:
+        return {"success": False, "message": "You are already following this user!"}
+
+    new_follow = Follow(follower_id=current_user.id, followed_id=followed_id)
+    db.session.add(new_follow)
+    db.session.commit()
+    return {"success": True, "message": "You are now following this user!"}
+
+
+def unfollow_user(followed_id):
+    """Removes a follow relationship if it exists."""
+    follow = Follow.query.filter_by(follower_id=current_user.id, followed_id=followed_id).first()
+
+    if not follow:
+        return {"success": False, "message": "You are not following this user."}
+
+    db.session.delete(follow)
+    db.session.commit()
+    return {"success": True, "message": "You have unfollowed this user."}
+
+
+
+def get_recent_follow_ratings(user_id, amount=10):
+    """Retrieve the most recent ratings from users that the given user is following."""
+    # Get the list of user IDs that the current user is following
+    following_ids = (
+        db.session.query(Follow.followed_id)
+        .filter(Follow.follower_id == user_id)
+        .all()
+    )
+    # Flatten the list of tuples to get just the user ids
+    following_ids = [followed_id[0] for followed_id in following_ids]
+
+    # Fetch the recent ratings from followed users
+    recent_ratings = (
+        db.session.query(
+            Song.id, 
+            Song.track_name, 
+            Song.artist_name, 
+            Song.album_image, 
+            Song.spotify_url,
+            Rating.username,
+            Rating.rating,
+            Rating.time_stamp
+        )
+        .join(Rating, Rating.song_id == Song.id)
+        .filter(Rating.user_id.in_(following_ids))  # Filter by followed users
+        .order_by(Rating.time_stamp.desc())  # Sort by most recent
+        .limit(amount)
+        .all()
+    )
+
+    return recent_ratings

@@ -51,6 +51,19 @@ class User(db.Model, UserMixin):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
     
 
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    id = db.Column(Integer, primary_key=True)
+    follower_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)  # The user who follows
+    followed_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)  # The user being followed
+
+    follower = relationship('User', foreign_keys=[follower_id])
+    followed = relationship('User', foreign_keys=[followed_id])
+
+    def __repr__(self):
+        return f"<Follow(follower_id={self.follower_id}, followed_id={self.followed_id})>"
+
+
 class Song(db.Model):
     __tablename__ = 'songs'
     id = db.Column(Integer, primary_key=True)

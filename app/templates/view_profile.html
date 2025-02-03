@@ -12,6 +12,15 @@
         <div class="container">
             <h1>{{ profile_info.user.username }}'s Songwall</h1>
             <nav>
+            <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
+                <button type="submit">Follow</button>
+            </form>
+            
+            <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
+                <button type="submit">Unfollow</button>
+            </form>
+        </nav>
+            <nav>
             <a href="/dashboard">Home</a>
         </nav>
         </div>

@@ -161,6 +161,20 @@ a.black {
     }
 }
 
+form button {
+    color: rgb(255, 255, 255);
+    background-color: blue;
+    border-radius: 2px;
+    padding: 2px;
+}
+
+form button:hover{
+    color: rgb(255, 255, 255);
+    background-color: rgb(39, 39, 160);
+    border-radius: 2px;
+    padding: 2px;
+}
+
 /* Song Item but the version in my ratings */
 .song-default {
     flex: 0 0 150px;

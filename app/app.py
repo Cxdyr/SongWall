@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings
+from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_follow_ratings, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -146,8 +146,9 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST']) 
 @login_required
 def dashboard():
+    followed_ratings = get_recent_follow_ratings(current_user.id)
     recent_ratings = get_recent_ratings(9)  #getting the 10 recent ratings
-    return render_template('dashboard.html', recent_ratings=recent_ratings)
+    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings)
 
 
 @app.route('/posts', methods=['GET', 'POST'])
@@ -162,7 +163,7 @@ def posts():
 
         if song_id and post_message:
             add_post(current_user.id, song_id, post_message) # add post to db 
-            return redirect(url_for('dashboard'))  # Refresh after posting
+            return redirect(url_for('posts'))  # Refresh after posting
     return render_template('posts.html', recent_posts=recent_posts, user_songs=user_songs)
 
 
@@ -286,6 +287,22 @@ def profile():
     user_id = current_user.id
     user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
     return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
+
+
+@app.route('/follow/<int:followed_id>', methods=['POST'])
+@login_required
+def follow_route(followed_id):
+    result = follow_user(followed_id)
+    flash(result["message"], "success" if result["success"] else "danger")
+    return redirect(url_for('dashboard'))
+
+@app.route('/unfollow/<int:followed_id>', methods=['POST'])
+@login_required
+def unfollow_route(followed_id):
+    result = unfollow_user(followed_id)
+    flash(result["message"], "success" if result["success"] else "danger")
+    return redirect(url_for('dashboard'))
+
 
 #Logged in user settings page
 @app.route('/settings', methods=['GET', 'POST'])

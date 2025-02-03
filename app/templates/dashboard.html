@@ -51,6 +51,29 @@
             </div>
         </section>
 
+        <h2>Recent Friends Ratings</h2>
+        <section class="display-songs">
+            <div class="song-carousel">
+                {% if not followed_ratings %}
+                <p>There are no recent ratings</p>
+                {% else %}
+                <div class="song-list" id="top-rated-list">
+                {% for song in followed_ratings %}
+                    <div class="song2">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
+                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                        <p>{{ song.artist_name }}</p>
+                        <p>{{ song.album_name }}</p>
+                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
+                        <p>⭐ {{ song.rating }}/10</p>
+                        <p>{{ song.time_stamp }}</p>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>                      
+            </div>
+        </section>
+
 
     </main>
     <footer>
