@@ -103,8 +103,8 @@ class Post(db.Model):
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
 
-    user = relationship('User', backref='posts')
-    song = relationship('Song', backref='posts')
+    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+    song = db.relationship('Song', backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f"<Post(user_id='{self.user_id}', post_message='{self.post_message}')>"
