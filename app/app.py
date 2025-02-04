@@ -3,15 +3,11 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
+from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
-from dotenv import load_dotenv
 import os
-
-
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -150,7 +146,7 @@ def dashboard():
     recent_ratings = get_recent_ratings(9)  #getting the 10 recent ratings
     return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings)
 
-
+#Page for posting and viewing posts from users
 @app.route('/posts', methods=['GET', 'POST'])
 @login_required
 def posts():
@@ -291,7 +287,7 @@ def profile():
     user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
     return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
 
-
+#Route for following users
 @app.route('/follow/<int:followed_id>', methods=['POST'])
 @login_required
 def follow_route(followed_id):
@@ -299,6 +295,7 @@ def follow_route(followed_id):
     flash(result["message"], "success" if result["success"] else "danger")
     return redirect(url_for('dashboard'))
 
+#Route for unfollowing users
 @app.route('/unfollow/<int:followed_id>', methods=['POST'])
 @login_required
 def unfollow_route(followed_id):
@@ -374,11 +371,21 @@ def view_profile(username):
     else:
         return redirect(url_for('dashboard'))
     
-
+#View user posts page, for anyone by username will show posts from this user
 @app.route('/user_posts/<string:username>', methods=['GET'])
 def view_posts(username):
     posts_info, userinfo = get_recent_user_posts(username)
     return render_template('user_posts.html', posts_info=posts_info, userinfo=userinfo)
+
+
+#Admin panel page, will only  work for people with password, and allows for simulation, viewing of all database data, data anaylsis, and moderation of accounts
+@app.route('/admin/<string:password>', methods=['POST', 'GET'])
+def simulate(password):
+    if password != os.environ.get('SIM_KEY'):
+        return redirect(url_for('index'))
+    
+    #Loading tons of user data for anaylsis and simulation including db info and more
+    return render_template('admin.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

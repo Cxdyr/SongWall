@@ -4,8 +4,9 @@ from models import Follow, Post, User, db, Rating, Song
 from sqlalchemy.orm import joinedload
 
 
+#------------------GENERAL FUNCTIONS ---------------------
 
-
+#User ratings by user id, used for profile view and view/username 
 def get_user_ratings(user_id):
     """
     Fetch all ratings for a given user, sorted by highest rating first.
@@ -34,11 +35,7 @@ def get_user_ratings(user_id):
 
     return ratings, ratings_ct, avg_rating
 
-
-
-
-
-
+#Get rating by sporify id, used for deleting ratings from a users rated songs in the settings page
 def get_rating_by_spotify_id(user_id, spotify_id):
     """"Gets rating by spotify id used in settings for removal"""
     rating = Rating.query.join(Song).filter(
@@ -47,12 +44,12 @@ def get_rating_by_spotify_id(user_id, spotify_id):
 
     return rating
 
-
+#Get song by id, used to get full song info by our db song id
 def get_song_by_id(song_id):
     """Uses my database to get song info"""
     return Song.query.filter_by(id=song_id).first()
 
-
+#Get song by spotify id, used to get full song info by spotify_id in our db
 def get_song_by_spotify_id(spotify_id):
     """
     Fetches a song from the database using its Spotify ID.
@@ -62,9 +59,7 @@ def get_song_by_spotify_id(spotify_id):
     """
     return Song.query.filter_by(spotify_id=spotify_id).first()
 
-
-
-
+#Add / update rating, used to add ratings to the db by user id, spotify_id, and then adding their inputed comment / rating int
 def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     """
     Adds or updates a rating for a song by a specific user.
@@ -92,9 +87,7 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     db.session.commit()
     return {"success": "Rating submitted successfully!"}
 
-
-
-
+#Getting the top rated songs, takes amount usually 9 or 10, and gets the top rated songs and average rating for the index page 
 def get_top_rated_songs(amount):
     """Retrieve the top-rated songs along with their average rating."""
     top_songs = (
@@ -117,7 +110,7 @@ def get_top_rated_songs(amount):
     
     return top_songs
 
-
+#Get recent ratings from any users, used in the dashboard view to populate simple recent ratings and promote community as anyone can see anyones recent ratings
 def get_recent_ratings(amount):
     """Retrieve the most recent ratings from users for the recent ratings tab """
     recent_ratings = (
@@ -139,7 +132,7 @@ def get_recent_ratings(amount):
     
     return recent_ratings
 
-
+#Get recent song ratings by song id specifically, used in the song view page 
 def get_song_recent_ratings(song_id):
     """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
 
@@ -150,8 +143,7 @@ def get_song_recent_ratings(song_id):
 
         return ratings
     
-
-
+#Get search song recent ratings, used in song view page through the search feature as some songs on here may or may not be in our database so it uses the spotify id versus our db id
 def get_search_song_recent_ratings(spotify_id):
     """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
 
@@ -162,13 +154,7 @@ def get_search_song_recent_ratings(spotify_id):
 
         return ratings
 
-
-
-
-
-
-
-
+#Get popular songwall songs, takes the amount of popular songs we want, the highest count of ratings in our songwall db are the most popular bad or good and we return these for display
 def get_popular_songwall_songs(amount):
     """Retreive the most rated - aka popular songs good or bad from our songwall db """
     pop_songs = (
@@ -191,7 +177,7 @@ def get_popular_songwall_songs(amount):
     
     return pop_songs
 
-
+#Get profile info by username, returns the average rating, the user info, the rating amount, and the ratings the user has rated, this is used in the view profile page
 def get_profile_info(username):
     """Retreive user profile information for view route"""
     # Query the user by username
@@ -234,7 +220,7 @@ def get_profile_info(username):
         return None
     
 
-
+#Gets all of the rated songs by a user in time descening order by user id, this is used in the settings page for deleting songs they dont want rated anymore
 def get_rated_songs_by_user(user_id):
     """
     Fetch all songs rated by a specific user.
@@ -243,7 +229,7 @@ def get_rated_songs_by_user(user_id):
     songs = (db.session.query(Song.id, Song.track_name, Song.artist_name).join(Rating, Rating.song_id == Song.id).filter(Rating.user_id == user_id).order_by(Rating.time_stamp.desc()).distinct().all())
     return songs
 
-
+#Post post, this takes the user id song id and post message and creates a post entry to the database
 def add_post(user_id, song_id, post_message):
     """
     Add a new post into the database.
@@ -258,7 +244,7 @@ def add_post(user_id, song_id, post_message):
     return new_post
 
 
-
+#Get recent posts in general, theis gets all recent posts from all users for the post display page
 def get_recent_posts(limit=10, offset=0):
     """
     Get recent posts with user and song details, ordered by timestamp.
@@ -268,6 +254,7 @@ def get_recent_posts(limit=10, offset=0):
     return posts
 
 
+#Get recent posts from specific user by username, this will popular the view_posts/username page where we can see specific users posts.
 def get_recent_user_posts(username, limit=10, offset=0):
     """
     Get recent posts with user and song details for a specific user, ordered by timestamp.
@@ -286,7 +273,7 @@ def get_recent_user_posts(username, limit=10, offset=0):
     return posts, userinfo
 
 
-
+#Function for creating follow relationship for users, this is used in the view_profile/username page so users can follow and updates db accordingly.
 def follow_user(followed_id):
     """Adds a follow relationship if not already followed."""
     if followed_id == current_user.id:
@@ -302,7 +289,7 @@ def follow_user(followed_id):
     db.session.commit()
     return {"success": True, "message": "You are now following this user!"}
 
-
+#Function for removing the follow relationship
 def unfollow_user(followed_id):
     """Removes a follow relationship if it exists."""
     follow = Follow.query.filter_by(follower_id=current_user.id, followed_id=followed_id).first()
@@ -315,7 +302,7 @@ def unfollow_user(followed_id):
     return {"success": True, "message": "You have unfollowed this user."}
 
 
-
+#Get recent follow ratings, this will find follow relationships and populate our follwed ratings caresoul in the dashboard 
 def get_recent_follow_ratings(user_id, amount=10):
     """Retrieve the most recent ratings from users that the given user is following."""
     # Get the list of user IDs that the current user is following
@@ -347,3 +334,7 @@ def get_recent_follow_ratings(user_id, amount=10):
     )
 
     return recent_ratings
+
+
+
+#-------------------ADMIN FUNCTIONS ----------------------
