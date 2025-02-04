@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
+from db_functions import add_or_update_rating, add_post, follow_user, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -384,8 +384,11 @@ def simulate(password):
     if password != os.environ.get('SIM_KEY'):
         return redirect(url_for('index'))
     
+    users = get_all_user_info()
+    songs = get_all_song_info()
+    
     #Loading tons of user data for anaylsis and simulation including db info and more
-    return render_template('admin.html')
+    return render_template('admin.html', users=users, songs=songs)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

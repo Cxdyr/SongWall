@@ -338,3 +338,11 @@ def get_recent_follow_ratings(user_id, amount=10):
 
 
 #-------------------ADMIN FUNCTIONS ----------------------
+
+def get_all_user_info():
+    users = db.session.query(User).all()
+    return users
+
+def get_all_song_info():
+    songs = db.session.query(Song).all()
+    return songs

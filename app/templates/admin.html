@@ -12,6 +12,62 @@
         <h1>Welcome to the Admin Panel</h1>
     </header>
 
+    <p>Users table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Theme Color</th>
+                <th>Private Messages</th>
+                <th>Bio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.theme_color }}</td>
+                <td>{{ user.private_messages }}</td>
+                <td>{{ user.bio }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>Songs table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Track Name</th>
+                <th>Artist name</th>
+                <th>Spotify URL</th>
+                <th>Album name</th>
+                <th>Release date</th>
+                <th>Spotify id</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in songs %}
+            <tr>
+                <td>{{ song.id }}</td>
+                <td>{{ song.track_name }}</td>
+                <td>{{ song.artist_name }}</td>
+                <td>{{ song.spotify_url }}</td>
+                <td>{{ song.album_name }}</td>
+                <td>{{ song.release_date }}</td>
+                <td>{{ song.spotify_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     
 </body>
 </html>

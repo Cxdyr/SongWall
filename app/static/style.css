@@ -861,6 +861,25 @@ h3 {
 }
 
 
+table {
+    margin: 0 auto; /* This will center the table horizontally */
+    padding: 10px;
+    border-collapse: collapse; /* This is to avoid spacing between cells */
+}
+
+table, th, td {
+    border: 1px solid black; /* Border for the table and its cells */
+}
+
+thead {
+    text-align: center; /* This will center the text in the header row */
+}
+
+tbody {
+    text-align: center; /* This will center the text in the body rows */
+}
+
+
 
         /* Responsive Styles */
 @media (max-width: 768px) {

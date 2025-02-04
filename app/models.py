@@ -110,6 +110,17 @@ class Post(db.Model):
         return f"<Post(user_id='{self.user_id}', post_message='{self.post_message}')>"
 
 
+class Recommendation(db.Model):
+    __tablename__ = 'recommendations'
+    id = db.Column(Integer, primary_key=True)
+    user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
+    song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
+    recommendation_score = db.Column(db.Float, nullable=False)  # A score indicating how much the user might like the song
+
+    user = db.relationship('User', backref=db.backref('recommendations', lazy=True))
+    song = db.relationship('Song', backref=db.backref('recommendations', lazy=True))
+
+
 
 
 if __name__ == "__main__":
