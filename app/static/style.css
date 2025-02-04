@@ -163,16 +163,16 @@ a.black {
 
 form button {
     color: rgb(255, 255, 255);
-    background-color: blue;
-    border-radius: 2px;
+    background-color: rgb(102, 102, 155);
+    border-radius: 7px;
     padding: 2px;
 }
 
 form button:hover{
     color: rgb(255, 255, 255);
     background-color: rgb(39, 39, 160);
-    border-radius: 2px;
-    padding: 2px;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
 /* Song Item but the version in my ratings */
@@ -541,7 +541,7 @@ label .comment {
 .rating-item {
     display: flex;
     align-items: center;
-    background: rgb(255, 255, 255);
+    background: rgb(238, 230, 230);
     box-shadow: 0 6px 11px rgba(0, 0, 0, 0.582);
     margin: 10px 0;
     padding: 15px;
@@ -555,7 +555,7 @@ label .comment {
 .rating-item img {
     width: 60px;
     height: 60px;
-    border-radius: 1px;
+    border-radius: 2px;
     margin-right: 15px;
 }
 
@@ -574,7 +574,12 @@ label .comment {
     }
 }
 
-
+h3 {
+    font-size: 1.2rem;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    text-shadow: .2px .2px .2px black;
+}
 
 
 
@@ -1081,6 +1086,74 @@ label .comment {
         font-weight: bold;
         transition: background 0.3s;
     }
+
+
+    /* Styling the Posts Container */
+.display-posts {
+    width: 90%;
+    max-width: none;
+    margin: 10px auto;
+    padding: 15px;
+    background: #292942;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;  /* Ensure padding is included in width */
+}
+
+/* Adjust the Post Elements */
+.post {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    box-sizing: border-box;  /* Ensure padding doesn't add extra width */
+}
+
+/* Load More Button */
+#load-more {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px auto;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+#load-more:hover {
+    background: #0056b3;
+}
+
+
+/* Form container */
+.post-form {
+    width: 91%;
+    max-width: none;
+    margin: 10px auto;
+    padding: 15px;
+    background: #292942;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;  /* Ensure padding is included in width */
+}
+
+/* Form Elements */
+.post-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.post-form select, .post-form textarea {
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
 
 
 

@@ -268,6 +268,24 @@ def get_recent_posts(limit=10, offset=0):
     return posts
 
 
+def get_recent_user_posts(username, limit=10, offset=0):
+    """
+    Get recent posts with user and song details for a specific user, ordered by timestamp.
+    Supports pagination via limit and offset.
+    """
+    posts = (db.session.query(Post).join(User)  # Join the User table to filter by username
+             .filter(User.username == username)  # Filter by the given username
+             .options(joinedload(Post.user), joinedload(Post.song))  # Eager loading for user and song
+             .order_by(Post.time_stamp.desc())  # Order by timestamp in descending order
+             .limit(limit)  # Apply the limit
+             .offset(offset)  # Apply the offset
+             .all())  # Execute the query and return the results
+    
+    userinfo = db.session.query(User).filter_by(username=username).first()
+
+    return posts, userinfo
+
+
 
 def follow_user(followed_id):
     """Adds a follow relationship if not already followed."""

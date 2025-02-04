@@ -1,9 +1,9 @@
 from flask import Flask, app, g, jsonify, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api_auth import get_access_token
-from models import Rating, Song, User, db
+from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_follow_ratings, get_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
+from db_functions import add_or_update_rating, add_post, follow_user, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_rating_by_spotify_id, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -168,8 +168,8 @@ def posts():
 
 
 
-#Load more posts route
-@app.route('/load_more_posts', methods=['GET'])   # t his is going to load more posts for the user if they scroll to bottom and want to view more
+# Load more posts route
+@app.route('/load_more_posts', methods=['GET'])
 @login_required
 def load_more_posts():
     offset = int(request.args.get('offset', 0))
@@ -178,15 +178,18 @@ def load_more_posts():
     posts_data = [
         {
             "username": post.user.username,
-            "post_message": post.post_message,
+            "profile_url": url_for('view_profile', username=post.user.username),  # URL to the profile page
             "song_name": post.song.track_name,
             "artist_name": post.song.artist_name,
+            "song_id": post.song.id,  # Song ID for the song page
+            "post_message": post.post_message,
             "timestamp": post.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
         }
         for post in posts
     ]
     
     return jsonify(posts_data)
+
 
 
 #Search page
@@ -311,6 +314,7 @@ def profile_settings():
     user_id = current_user.id
     user = User.query.get(user_id)
     ratings = Rating.query.filter_by(user_id=user_id).join(Song).all()
+    posts = Post.query.filter_by(user_id=user_id).join(User).all()
 
     if request.method == 'POST':
         form_type = request.form.get("form_type")  # Identify which form was submitted
@@ -337,9 +341,18 @@ def profile_settings():
                 db.session.commit()
                 flash("Rating successfully deleted!", "success")
 
+        elif form_type == "remove_post":
+            post_id = request.form.get("post_id")
+            post_to_delete = Post.query.filter_by(user_id=user_id, id =post_id).first()
+            if post_to_delete:
+                db.session.delete(post_to_delete)
+                db.session.commit()
+                flash("Post deleted", "success")
+
         return redirect(url_for('profile_settings'))  # Prevent form resubmission on refresh
 
-    return render_template('settings.html', ratings=ratings)
+    return render_template('settings.html', ratings=ratings, posts=posts)
+
 #Update color theme route
 @app.route('/update_theme', methods=['POST'])
 @login_required
@@ -360,6 +373,12 @@ def view_profile(username):
         return render_template('view_profile.html', profile_info=profile_info)
     else:
         return redirect(url_for('dashboard'))
+    
+
+@app.route('/user_posts/<string:username>', methods=['GET'])
+def view_posts(username):
+    posts_info, userinfo = get_recent_user_posts(username)
+    return render_template('user_posts.html', posts_info=posts_info, userinfo=userinfo)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
