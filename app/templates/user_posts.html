@@ -19,6 +19,7 @@
 
     <section class="display-posts">
         <div id="posts-container">
+            {% if posts %}
             {% for post in posts_info %}
             <div class="post">
                 <div class="post-left">
@@ -31,6 +32,9 @@
                 </div>
             </div>
             {% endfor %}
+            {% else %}
+            <div class="no-ratings">{{userinfo.username}} has not posted yet.</div>
+            {% endif %}
         </div>
         <button id="load-more" data-offset="10">Load More</button>
     </section>

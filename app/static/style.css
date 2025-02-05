@@ -719,8 +719,9 @@ h3 {
     margin: 20px auto;
     padding: 20px;
     background: #292942;
+    
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Each post container */

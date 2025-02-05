@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, follow_user, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
+from db_functions import add_or_update_rating, add_post, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -237,7 +237,7 @@ def search_friends():
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
 @login_required
 def rate(spotify_id):
-    song = get_song_by_spotify_id(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
+    song, average_rating = get_song_by_spotify_id(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
 
     if not song:
         flash("Song not found.", "error")
@@ -260,24 +260,26 @@ def rate(spotify_id):
 #View page for songs by our db id
 @app.route('/view/<int:song_id>', methods=['GET'])
 def view_song(song_id):
-    song_info = get_song_by_id(song_id)
+    song_info, average_rating = get_song_by_id(song_id)
     ratings = get_song_recent_ratings(song_id)
+    posts = get_songs_recent_posts(song_id)
 
     if not song_info:
         return "Song not found", 404  # Handle case where song doesn't exist
 
-    return render_template('song.html', song_info=song_info, ratings=ratings)
+    return render_template('song.html', song_info=song_info, ratings=ratings, posts=posts, average_rating=average_rating)
 
 #View page for songs by spotify id
 @app.route('/search/view/<string:spotify_id>', methods=['GET'])
 def search_view_song(spotify_id):
-    song_info = get_song_by_spotify_id(spotify_id)
+    song_info, average_rating= get_song_by_spotify_id(spotify_id)
     ratings = get_search_song_recent_ratings(spotify_id)
+    posts = get_search_song_recent_posts(spotify_id)
 
     if not song_info:
         return "Song not found", 404  # Handle case where song doesn't exist
 
-    return render_template('song.html', song_info=song_info, ratings=ratings)
+    return render_template('song.html', song_info=song_info, ratings=ratings, average_rating=average_rating, posts=posts)
 
 #Logged in user profile page, includes settings redirect
 @app.route('/profile', methods=['GET'])
@@ -386,9 +388,11 @@ def simulate(password):
     
     users = get_all_user_info()
     songs = get_all_song_info()
+    ratings = get_all_ratings_info()
+    posts = get_all_posts_info()
     
     #Loading tons of user data for anaylsis and simulation including db info and more
-    return render_template('admin.html', users=users, songs=songs)
+    return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

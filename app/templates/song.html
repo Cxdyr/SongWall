@@ -31,6 +31,7 @@
                 {% if song_info.release_date %}
                     <p><strong>Release Date:</strong> {{ song_info.release_date }}</p>
                 {% endif %}
+                <p><strong>Average Rating: </strong> {{average_rating}}</p>
                 <a href="{{ song_info.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
             </div>
         </div>
@@ -53,10 +54,35 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="no-ratings">No recent ratings yet.</div>
+                <div class="no-ratings">Be the first to rate this song!</div>
             {% endif %}
         </div>
     </div>
+
+
+    <section class="display-posts">
+        <div id="posts-container">
+            <h3>Recent Posts</h3>
+            {% if posts %}
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-left">
+                    <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
+                    <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
+                </div>
+                <div class="post-right">
+                    <p class="post-message">{{ post.post_message }}</p>
+                    <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-ratings">Be the first to post about this song!</dv>
+            {% endif %}
+        </div>
+        </section>
+
+
     
 </body>
 </html>

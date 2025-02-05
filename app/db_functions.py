@@ -44,21 +44,45 @@ def get_rating_by_spotify_id(user_id, spotify_id):
 
     return rating
 
-#Get song by id, used to get full song info by our db song id
+#Get song by id, used to get full song info by our db song id and avg rating
 def get_song_by_id(song_id):
+    """Uses my database to get song info and avg rating"""
+    song = Song.query.filter_by(id=song_id).first()
+    average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
+    average_rating = round(average_rating, 2)
+
+    return song, average_rating
+
+def get_song_id_meth(song_id):
     """Uses my database to get song info"""
-    return Song.query.filter_by(id=song_id).first()
+    song = Song.query.filter_by(id=song_id).first()
+
+    return song
+
+#Get song by spotify id, used to get full song info by spotify_id in our db and avg rating
+def get_song_by_spotify_id(spotify_id):
+    """
+    Fetches a song from the database using its Spotify ID.
+    
+    :param spotify_id: The unique Spotify ID of the song.
+    :return: The song object or None if not found and avg rating
+    """
+    song = get_song_spotify_id_meth(spotify_id)
+    song_id = song.id
+    average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
+    return song, average_rating
 
 #Get song by spotify id, used to get full song info by spotify_id in our db
-def get_song_by_spotify_id(spotify_id):
+def get_song_spotify_id_meth(spotify_id):
     """
     Fetches a song from the database using its Spotify ID.
     
     :param spotify_id: The unique Spotify ID of the song.
     :return: The song object or None if not found.
     """
-    return Song.query.filter_by(spotify_id=spotify_id).first()
-
+    song = Song.query.filter_by(spotify_id=spotify_id).first()
+  
+    return song
 #Add / update rating, used to add ratings to the db by user id, spotify_id, and then adding their inputed comment / rating int
 def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     """
@@ -337,6 +361,35 @@ def get_recent_follow_ratings(user_id, amount=10):
 
 
 
+
+def get_songs_recent_posts(song_id):
+    posts = (
+        db.session.query(Post)
+        .filter_by(song_id=song_id)
+        .order_by(Post.time_stamp)
+        .options(joinedload(Post.user), joinedload(Post.song))  # Eager loading
+        .limit(6)
+        .all()
+    )
+    return posts
+
+
+def get_search_song_recent_posts(spotfiy_id):
+    song = get_song_spotify_id_meth(spotfiy_id)
+    song_id = song.id
+    posts = (
+        db.session.query(Post)
+        .filter_by(song_id=song_id)
+        .order_by(Post.time_stamp)
+        .options(joinedload(Post.user), joinedload(Post.song))  # Eager loading
+        .limit(6)
+        .all()
+    )
+    return posts
+
+
+
+
 #-------------------ADMIN FUNCTIONS ----------------------
 
 def get_all_user_info():
@@ -346,3 +399,11 @@ def get_all_user_info():
 def get_all_song_info():
     songs = db.session.query(Song).all()
     return songs
+
+def get_all_ratings_info():
+    ratings = db.session.query(Rating).all()
+    return ratings
+
+def get_all_posts_info():
+    posts = db.session.query(Post).all()
+    return posts
