@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songwall Tables Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Tables Panel</h1>
+    </header>
+
+    <p>Users table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Theme Color</th>
+                <th>Private Messages</th>
+                <th>Bio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.theme_color }}</td>
+                <td>{{ user.private_messages }}</td>
+                <td>{{ user.bio }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>Songs table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Track Name</th>
+                <th>Artist name</th>
+                <th>Spotify URL</th>
+                <th>Album name</th>
+                <th>Release date</th>
+                <th>Spotify id</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in songs %}
+            <tr>
+                <td>{{ song.id }}</td>
+                <td>{{ song.track_name }}</td>
+                <td>{{ song.artist_name }}</td>
+                <td>{{ song.spotify_url }}</td>
+                <td>{{ song.album_name }}</td>
+                <td>{{ song.release_date }}</td>
+                <td>{{ song.spotify_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Ratings table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Time stamp </th>
+                <th>Song id </th>
+                <th>User id</th>
+                <th>Username </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rating in ratings %}
+            <tr>
+                <td>{{ rating.id }}</td>
+                <td>{{ rating.rating }}</td>
+                <td>{{ rating.comment }}</td>
+                <td>{{ rating.time_stamp }}</td>
+                <td>{{ rating.song_id }}</td>
+                <td>{{ rating.user_id }}</td>
+                <td>{{ rating.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Posts table</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Message</th>
+                <th>Time stamp</th>
+                <th>User id </th>
+                <th>Song id </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.id }}</td>
+                <td>{{ post.post_message }}</td>
+                <td>{{ post.time_stamp }}</td>
+                <td>{{ post.useR_id }}</td>
+                <td>{{ post.song_id }}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

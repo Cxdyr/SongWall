@@ -363,6 +363,18 @@ def view_posts(username):
     posts_info, userinfo = get_recent_user_posts(username)
     return render_template('user_posts.html', posts_info=posts_info, userinfo=userinfo)
 
+#Table view page
+@app.route('/admin/<string:password>/tables', methods=['GET', 'POST'])
+def tables(password):
+    if password != os.environ.get('SIM_KEY'):
+        return redirect(url_for('index'))
+    songs = get_all_song_info()
+    posts = get_all_posts_info()
+    ratings = get_all_ratings_info()
+    users = get_all_user_info()
+
+    return render_template('tables.html', songs=songs, users=users, posts=posts, ratings=ratings)
+
 
 #Admin panel page, will only  work for people with password, and allows for simulation, viewing of all database data, data anaylsis, and moderation of accounts
 @app.route('/admin/<string:password>', methods=['POST', 'GET'])
@@ -370,11 +382,6 @@ def simulate(password):
     if password != os.environ.get('SIM_KEY'):
         return redirect(url_for('index'))
     
-    users = get_all_user_info()
-    songs = get_all_song_info()
-    ratings = get_all_ratings_info()
-    posts = get_all_posts_info()
-
     if request.method == 'POST':
         form_type = request.form.get("form_type")  # Identify which form was submitted
 
@@ -385,28 +392,20 @@ def simulate(password):
                 if amount:
                     create_users(amount)
                     flash("Users simulated successfully!", "success")
-                    users = get_all_user_info()
-                    return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+                    return render_template('admin.html')
             except:
                 flash("Invalid number of users!", "error")
         elif form_type =="search_sim":
             search_sim()
             flash("40 random song queries performed, song database should be more populated", "success")
-            songs = get_all_song_info()
-            users = get_all_user_info()
-            return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+            return render_template('admin.html')
         elif form_type == "rate_sim":
             rate_sim()
             flash("Users have rated randomly selected songs","success")
-            users = get_all_user_info()
-            songs = get_all_song_info()
-            ratings = get_all_ratings_info()
-            return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+            return render_template('admin.html')
 
-                    
-    
     #Loading tons of user data for anaylsis and simulation including db info and more
-    return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+    return render_template('admin.html', password=password)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
