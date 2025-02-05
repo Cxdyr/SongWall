@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_recent_ratings, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, unfollow_user
+from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -143,7 +143,7 @@ def logout():
 @login_required
 def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
-    recent_ratings = get_recent_ratings(9)  #getting the 10 recent ratings
+    recent_ratings = get_recent_ratings(20)  #getting the 10 recent ratings
     return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings)
 
 #Page for posting and viewing posts from users
@@ -200,23 +200,7 @@ def search():
         if not songs:
             flash("No songs found.", "danger")
         else:
-            for song_data in songs:
-                # Check if the song already exists in the database using spotify_id
-                existing_song = Song.query.filter_by(spotify_id=song_data['spotify_id']).first()
-            
-                if not existing_song:
-                    # If song doesn't exist, create a new song entry for our DB
-                    new_song = Song(
-                        track_name=song_data['name'],  
-                        artist_name=song_data['artist'],  
-                        album_image=song_data['album_image_url'],  
-                        spotify_url=song_data['spotify_url'],
-                        spotify_id=song_data['spotify_id'],  
-                        album_name = song_data['album_name'],
-                        release_date = song_data['release_date']
-                    )
-                    db.session.add(new_song)
-                    db.session.commit()
+            add_songs_to_db(songs)
 
     return render_template('search.html', songs=songs)
 
@@ -237,7 +221,7 @@ def search_friends():
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
 @login_required
 def rate(spotify_id):
-    song, average_rating = get_song_by_spotify_id(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
+    song = get_song_id_meth(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
 
     if not song:
         flash("Song not found.", "error")
@@ -390,6 +374,36 @@ def simulate(password):
     songs = get_all_song_info()
     ratings = get_all_ratings_info()
     posts = get_all_posts_info()
+
+    if request.method == 'POST':
+        form_type = request.form.get("form_type")  # Identify which form was submitted
+
+        if form_type == "user_sim":
+            amount = request.form.get("user_sim")
+            try:
+                amount = int(amount)
+                if amount:
+                    create_users(amount)
+                    flash("Users simulated successfully!", "success")
+                    users = get_all_user_info()
+                    return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+            except:
+                flash("Invalid number of users!", "error")
+        elif form_type =="search_sim":
+            search_sim()
+            flash("40 random song queries performed, song database should be more populated", "success")
+            songs = get_all_song_info()
+            users = get_all_user_info()
+            return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+        elif form_type == "rate_sim":
+            rate_sim()
+            flash("Users have rated randomly selected songs","success")
+            users = get_all_user_info()
+            songs = get_all_song_info()
+            ratings = get_all_ratings_info()
+            return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)
+
+                    
     
     #Loading tons of user data for anaylsis and simulation including db info and more
     return render_template('admin.html', users=users, songs=songs, ratings=ratings, posts=posts)

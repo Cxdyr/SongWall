@@ -1,9 +1,15 @@
+import random
+import string
 from flask_login import current_user
 from sqlalchemy import func
+from songwall_search import search_songs
 from models import Follow, Post, User, db, Rating, Song  
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import IntegrityError
+from faker import Faker
+from api_auth import get_access_token
 
-
+fake = Faker() #for admin panel simulation
 #------------------GENERAL FUNCTIONS ---------------------
 
 #User ratings by user id, used for profile view and view/username 
@@ -177,6 +183,44 @@ def get_search_song_recent_ratings(spotify_id):
         ratings = db.session.query(Rating).filter_by(song_id=song.id).order_by(Rating.time_stamp.desc()).all()
 
         return ratings
+    
+
+
+def add_songs_to_db(songs):
+    new_songs = []
+    seen_ids = set()  # Track `spotify_id`s already added in this batch
+    
+    for song_data in songs:
+        if song_data['spotify_id'] in seen_ids:  # Skip duplicates in this batch
+            continue
+        
+        existing_song = Song.query.filter_by(spotify_id=song_data['spotify_id']).first()
+        
+        if not existing_song:
+            new_song = Song(
+                track_name=song_data['name'],
+                artist_name=song_data['artist'],
+                album_image=song_data['album_image_url'],
+                spotify_url=song_data['spotify_url'],
+                spotify_id=song_data['spotify_id'],
+                album_name=song_data['album_name'],
+                release_date=song_data['release_date']
+            )
+            new_songs.append(new_song)
+            seen_ids.add(song_data['spotify_id'])  # Add to seen list
+    
+    if new_songs:
+        try:
+            db.session.bulk_save_objects(new_songs)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            print("Duplicate song detected, skipping commit.")
+
+    return f"{len(new_songs)} songs added successfully!"
+
+
+
 
 #Get popular songwall songs, takes the amount of popular songs we want, the highest count of ratings in our songwall db are the most popular bad or good and we return these for display
 def get_popular_songwall_songs(amount):
@@ -393,17 +437,82 @@ def get_search_song_recent_posts(spotfiy_id):
 #-------------------ADMIN FUNCTIONS ----------------------
 
 def get_all_user_info():
-    users = db.session.query(User).all()
+    users = User.query.all() #this method will not require a session to get all information, as an admin panel should
     return users
 
 def get_all_song_info():
-    songs = db.session.query(Song).all()
+    songs = Song.query.all()
     return songs
 
 def get_all_ratings_info():
-    ratings = db.session.query(Rating).all()
+    ratings = Rating.query.all()
     return ratings
 
 def get_all_posts_info():
-    posts = db.session.query(Post).all()
+    posts = Post.query.all()
     return posts
+
+def random_userinfo(): #Generating fake user info
+    username = fake.user_name() + str(random.randint(100,999)) #from the Faker library for all fields
+    email = fake.email()
+    password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+    return username, email, password
+
+def create_users(amount):
+    users = []
+    for _ in range(amount):
+        username, email, password = random_userinfo() # collecting our fake user info
+
+        user = User(
+            first_name=username,
+            username=username,
+            email = email
+        )
+        user.set_password(password)
+
+        db.session.add(user)
+        users.append(user)
+    
+    db.session.commit()
+
+
+def search_sim(): # Gets access token, then searches through 40 queries updating our database with each iteration so we have songs
+    token = get_access_token()
+    infos= []
+    for _ in range(40):
+        song_name = fake.text(max_nb_chars=20).strip() 
+        info = search_songs(song_name,token)
+        infos.extend(info)
+    add_songs_to_db(infos)
+
+def select_random_song(): # randomly selects a song from our existing songs in our database
+    song_am = db.session.query(Song).count()
+    id = random.randint(1,song_am)
+    return id
+
+def rate_song(user, id): # randomly selects a rating, lowest rating being 4 to give average round 6-7 median
+    rating = random.randint(4,10)
+    existing_rating = Rating.query.filter_by(song_id=id, user_id=user.id).first()
+
+    if existing_rating:
+        existing_rating.rating = rating  # Update existing rating
+        existing_rating.comment = ""
+    else:
+        new_rating = Rating(rating=rating, comment="", song_id=id, user_id=user.id, username=user.username)
+        db.session.add(new_rating)
+
+    db.session.commit()
+    
+
+def rate_sim(): # Looping through each testing user and getting an amount of songs between 6 and 10, and randomly rating each of these songs
+    test_users = db.session.query(User).filter(User.email.like('%@example%')).all()
+    for user in test_users:
+        amount_ratings = random.randint(6,10)
+        for _ in range(amount_ratings):
+            song = select_random_song()
+            rate_song(user, song)
+    
+
+        
+
+
