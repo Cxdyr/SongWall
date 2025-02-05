@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
+from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -221,11 +221,10 @@ def search_friends():
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
 @login_required
 def rate(spotify_id):
-    song = get_song_id_meth(spotify_id)  #User selects song from the search page and we are able to query our database for said song from spotify id now
+    song = get_song_spotify_id_meth(spotify_id)  # User selects song from the search page and we are able to query our database for said song from spotify id now
 
     if not song:
-        flash("Song not found.", "error")
-        return redirect(url_for('dashboard'))
+        flash("Song not found", "error")
 
     if request.method == 'POST':
         rating = request.form['rating']  # Get the rating from the form
@@ -270,8 +269,8 @@ def search_view_song(spotify_id):
 @login_required
 def profile():
     user_id = current_user.id
-    user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
-    return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
+    user_ratings, recent_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
+    return render_template('profile.html', ratings=user_ratings,recent_ratings=recent_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
 
 #Route for following users
 @app.route('/follow/<int:followed_id>', methods=['POST'])
@@ -317,8 +316,8 @@ def profile_settings():
                 flash("Theme updated successfully!", "success")
 
         elif form_type == "remove_song":
-            spotify_id = request.form.get("spotify_id")
-            rating_to_delete = Rating.query.filter_by(user_id=user_id, song_id=spotify_id).first()
+            song_id = request.form.get("song_id")
+            rating_to_delete = Rating.query.filter_by(user_id=user_id, song_id=song_id).first()
             if rating_to_delete:
                 db.session.delete(rating_to_delete)
                 db.session.commit()
@@ -351,9 +350,10 @@ def update_theme():
 @app.route('/view/<string:username>', methods=['GET'])
 def view_profile(username):
     profile_info = get_profile_info(username)
+    recent_ratings = get_recent_ratings_username(username)
     
     if profile_info:
-        return render_template('view_profile.html', profile_info=profile_info)
+        return render_template('view_profile.html', profile_info=profile_info, recent_ratings=recent_ratings)
     else:
         return redirect(url_for('dashboard'))
     

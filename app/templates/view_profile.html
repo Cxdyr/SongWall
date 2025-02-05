@@ -32,7 +32,7 @@
      </div>
     <div class="profile-container">
         <div class="ratings-wrapper">
-            <h3>{{profile_info.user.first_name}}'s Top Songs</h3>
+            <h4>{{profile_info.user.first_name}}'s Top Songs</h4>
             <div class="ratings-container">
                 {% if not profile_info.ratings %}
                 <p>{{ profile_info.user.username }} has not rated any songs.</p>
@@ -57,5 +57,35 @@
             </div>
         </div>
     </div>
+
+    <div class="profile-container">
+        <div class="ratings-wrapper">
+            <h4>{{profile_info.user.first_name}}'s Ratings</h4>
+            <div class="ratings-container">
+                {% if not recent_ratings %}
+                <p>{{ profile_info.user.username }} has not rated any songs.</p>
+                {% else %}
+                {% for rating in recent_ratings %}
+                    <div class="rating-item">
+                        <a href="{{ rating.song.spotify_url }}" target="_blank">
+                            <img src="{{ rating.song.album_image }}" alt="Album Art">
+                        </a> 
+                        <div class="rating-info">
+                            <h3> <a class="black" href="{{url_for('view_song', song_id = rating.song.id)}}">{{ rating.song.track_name }} - {{rating.song.artist_name }}</a></h3>
+                            <p>{{rating.song.album_name}}</p>
+                            <p>{{rating.song.release_date[:4]}}</p>
+                            <p>Rating: <strong>{{ rating.rating }}/10</strong></p>
+                            {% if rating.comment %}
+                                <p>"{{ rating.comment }}"</p>
+                            {% endif %}
+                            <p><strong>{{ rating.time_stamp.strftime('%Y-%m-%d') }}</strong></p>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

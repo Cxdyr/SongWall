@@ -20,11 +20,20 @@ def get_user_ratings(user_id):
     :param user_id: The ID of the user whose ratings are being fetched.
     :return: A list of Rating objects joined with Song data.
     """
-    ratings = (
+    top_ratings = (
         Rating.query
         .filter_by(user_id=user_id)
         .join(Song, Rating.song_id == Song.id)
-        .order_by(Rating.rating.desc())  # Sort by highest rating first
+        .order_by(Rating.rating.desc())
+        .limit(10)
+        .all()
+    )
+
+    recent_ratings = (
+        Rating.query
+        .filter_by(user_id=user_id)
+        .join(Song, Rating.song_id == Song.id)
+        .order_by(Rating.time_stamp.desc())
         .all()
     )
 
@@ -39,7 +48,7 @@ def get_user_ratings(user_id):
         avg_rating = round(avg_rating, 2)  # 2 decimal
 
 
-    return ratings, ratings_ct, avg_rating
+    return top_ratings, recent_ratings, ratings_ct, avg_rating
 
 #Get rating by sporify id, used for deleting ratings from a users rated songs in the settings page
 def get_rating_by_spotify_id(user_id, spotify_id):
@@ -89,6 +98,7 @@ def get_song_spotify_id_meth(spotify_id):
     song = Song.query.filter_by(spotify_id=spotify_id).first()
   
     return song
+
 #Add / update rating, used to add ratings to the db by user id, spotify_id, and then adding their inputed comment / rating int
 def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     """
@@ -100,7 +110,7 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     :param comment: An optional comment for the rating.
     :return: Success message or error.
     """
-    song = get_song_by_spotify_id(spotify_id)
+    song = get_song_spotify_id_meth(spotify_id)
 
     if not song:
         return {"error": "Song not found."}
@@ -245,6 +255,17 @@ def get_popular_songwall_songs(amount):
     
     return pop_songs
 
+def get_recent_ratings_username(username):
+
+    user = db.session.query(User).filter_by(username=username).first()
+
+    if user:
+        recent_ratings = (db.session.query(Rating).options(joinedload(Rating.song)).filter_by(user_id=user.id).order_by(Rating.time_stamp.desc()).all())
+
+        return recent_ratings
+    else:
+        return None
+
 #Get profile info by username, returns the average rating, the user info, the rating amount, and the ratings the user has rated, this is used in the view profile page
 def get_profile_info(username):
     """Retreive user profile information for view route"""
@@ -277,6 +298,8 @@ def get_profile_info(username):
                     'comment': rating.comment,
                     'album_name': song.album_name
                 })
+
+
         
         return {
             'user': user,

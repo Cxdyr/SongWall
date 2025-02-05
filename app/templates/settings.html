@@ -44,11 +44,11 @@
 <!-- Remove Rating Form (Already Works) -->
 <form method="POST">
     <input type="hidden" name="form_type" value="remove_song">
-    <label for="song_name">Select a song to remove:</label>
-    <select name="spotify_id" id="song_name" required>
+    <label for="song_id">Select a song to remove:</label>
+    <select name="song_id" id="song_id" required>
         <option value="" disabled selected>Select a song</option>
         {% for rating in ratings %}
-            <option value="{{ rating.song.spotify_id }}">
+            <option value="{{ rating.song.id }}">
                 {{ rating.song.track_name }} - {{ rating.song.artist_name }}
             </option>
         {% endfor %}
