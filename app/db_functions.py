@@ -534,8 +534,28 @@ def rate_sim(): # Looping through each testing user and getting an amount of son
         for _ in range(amount_ratings):
             song = select_random_song()
             rate_song(user, song)
-    
 
+
+
+def delete_example_users():
+    """
+    Deletes all users with '@example' in their email address
+    Returns: (success, message)
+    """
+    try:
+        # Find all test users with @example in email
+        test_users = User.query.filter(User.email.ilike('%@example%')).all()
         
+        if not test_users:
+            return True, "No test users found with @example emails"
 
-
+        # Delete all found users
+        for user in test_users:
+            db.session.delete(user)
+        
+        db.session.commit()
+        return True, f"Successfully deleted {len(test_users)} test users"
+        
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error deleting test users: {str(e)}"

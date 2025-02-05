@@ -24,6 +24,13 @@ class User(db.Model, UserMixin):
     theme_color = db.Column(String(7), default="#333")
     bio = db.Column(String(255), default="", nullable=True)
 
+       # Relationships with cascade settings
+    posts = db.relationship('Post', back_populates='user', cascade='all, delete-orphan')
+    ratings = db.relationship('Rating', back_populates='user', cascade='all, delete-orphan')
+    recommendations = db.relationship('Recommendation', back_populates='user', cascade='all, delete-orphan')
+    following = db.relationship('Follow', foreign_keys='Follow.follower_id', cascade='all, delete-orphan')
+    followers = db.relationship('Follow', foreign_keys='Follow.followed_id', cascade='all, delete-orphan')
+
     def __repr__(self):
         return f"<User(username='{self.username}')>"
     
@@ -57,12 +64,20 @@ class Follow(db.Model):
     follower_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)  # The user who follows
     followed_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)  # The user being followed
 
-    follower = relationship('User', foreign_keys=[follower_id])
-    followed = relationship('User', foreign_keys=[followed_id])
+    follower = db.relationship(
+        'User', 
+        foreign_keys=[follower_id],
+        back_populates='following'
+    )
+    
+    followed = db.relationship(
+        'User',
+        foreign_keys=[followed_id],
+        back_populates='followers'
+    )
 
-    def __repr__(self):
-        return f"<Follow(follower_id={self.follower_id}, followed_id={self.followed_id})>"
-
+def __repr__(self):
+    return f"<Follow(follower='{self.follower.username}', followed='{self.followed.username}')>"
 
 class Song(db.Model):
     __tablename__ = 'songs'
@@ -75,7 +90,9 @@ class Song(db.Model):
     release_date = db.Column(db.String(255), nullable=True)
     spotify_id = db.Column(db.String(120), unique=True, nullable=True)  
 
-    ratings = relationship('Rating', backref='song', lazy=True)
+    ratings = db.relationship('Rating', back_populates='song', cascade='all, delete-orphan')
+    posts = db.relationship('Post', back_populates='song', cascade='all, delete-orphan')
+    recommendations = db.relationship('Recommendation', back_populates='song', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Song(track_name='{self.track_name}', artist_name='{self.artist_name}')>"
@@ -89,7 +106,11 @@ class Rating(db.Model):
     time_stamp = db.Column(db.DateTime, default=func.now(), nullable=False)
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
-    username = db.Column(String, ForeignKey('users.username'), nullable=False)
+    username = db.Column(String, nullable=False)
+
+    # Explicitly specify the foreign key for the relationship
+    user = db.relationship('User', foreign_keys=[user_id], back_populates='ratings')
+    song = db.relationship('Song', back_populates='ratings')
 
     def __repr__(self):
         return f"<Rating(user_id='{self.user_id}', song_id='{self.song_id}', rating='{self.rating}')>"
@@ -103,8 +124,8 @@ class Post(db.Model):
     user_id = db.Column(Integer, ForeignKey('users.id'), nullable=False)
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
 
-    user = db.relationship('User', backref=db.backref('posts', lazy=True))
-    song = db.relationship('Song', backref=db.backref('posts', lazy=True))
+    user = db.relationship('User', back_populates='posts')
+    song = db.relationship('Song', back_populates='posts')
 
     def __repr__(self):
         return f"<Post(user_id='{self.user_id}', post_message='{self.post_message}')>"
@@ -117,9 +138,8 @@ class Recommendation(db.Model):
     song_id = db.Column(Integer, ForeignKey('songs.id'), nullable=False)
     recommendation_score = db.Column(db.Float, nullable=False)  # A score indicating how much the user might like the song
 
-    user = db.relationship('User', backref=db.backref('recommendations', lazy=True))
-    song = db.relationship('Song', backref=db.backref('recommendations', lazy=True))
-
+    user = db.relationship('User', back_populates='recommendations')
+    song = db.relationship('Song', back_populates='recommendations')
 
 
 

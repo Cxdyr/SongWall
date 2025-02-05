@@ -9,10 +9,12 @@
 </head>
 <body>
     <header>
+        <div class="container">
         <h1>Welcome to the Admin Panel</h1>
         <nav>
             <a href="{{url_for('tables', password=password )}}">Tables</a>
         </nav>
+    </div>
     </header>
 
     <p>Simulate Users </p>
@@ -22,7 +24,6 @@
         <input type="number" id="user_sim" name="user_sim">
         <button type="submit">Submit</button>
     </form>
-
 
     <p>Simulate Searches </p>
     <form method="POST">
@@ -38,11 +39,29 @@
         <button type="submit">Submit</button>
     </form>
 
+    <br>
+    <p>Delete Test Users</p>
+    <form method="POST">
+        <input type="hidden" name="form_type" value="delete_example_users">
+        <label>Delete all users with @example emails:</label>
+        <button type="submit" onclick="return confirm('Are you sure you want to delete ALL test users?')">
+            Delete Test Users
+        </button>
+    </form>
 
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+               {% endwith %}
 
     <footer>
         <p>&copy; 2025 Songwall by Cody A. Rabie. All rights reserved</p>
     </footer>
 </body>
-
 </html>

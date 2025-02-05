@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from api_auth import get_access_token
 from models import Post, Rating, Song, User, db
 from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
+from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, delete_example_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -403,6 +403,10 @@ def simulate(password):
             rate_sim()
             flash("Users have rated randomly selected songs","success")
             return render_template('admin.html')
+        elif form_type == "delete_example_users":
+            success, message = delete_example_users()
+            flash(message, "success" if success else "error")
+            return render_template('admin.html', password=password)
 
     #Loading tons of user data for anaylsis and simulation including db info and more
     return render_template('admin.html', password=password)
