@@ -27,11 +27,13 @@
         </section>
 
         <!-- Display Search Results -->
-        {% if songs %}
-        <section class="search-results">
-            <h2>Search Results</h2>
-            <div class="song-carousel-default">
-                <div class="song-list-default" id="song-list-default">
+        <h2>Search Results</h2>
+        <section class="display-songs">
+            <div class="song-carousel">
+                {% if not songs %}
+                <p>No songs found. Try a search!</p>
+                {% else %}
+                <div class="song-list" id="top-rated-list">
                     {% for song in songs %}
                 <div class="song2" style="border: 1px solid black; padding: 10px; margin: 10px;">
                     <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}"><img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;"></a>
@@ -42,12 +44,10 @@
                 </div>
 
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </section>
-        {% else %}
-        <p>No songs found. Try a search!</p>
-        {% endif %}
     </main>
 
 </body>

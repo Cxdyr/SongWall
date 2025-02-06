@@ -317,7 +317,7 @@ def get_rated_songs_by_user(user_id):
     Fetch all songs rated by a specific user.
     Returns a list of (song_id, track_name, artist_name).
     """
-    songs = (db.session.query(Song.id, Song.track_name, Song.artist_name).join(Rating, Rating.song_id == Song.id).filter(Rating.user_id == user_id).order_by(Rating.time_stamp.desc()).distinct().all())
+    songs = (db.session.query(Song.id, Song.track_name, Song.artist_name, Rating.time_stamp).join(Rating, Rating.song_id == Song.id).filter(Rating.user_id == user_id).order_by(Rating.time_stamp.desc()).all())
     return songs
 
 #Post post, this takes the user id song id and post message and creates a post entry to the database
