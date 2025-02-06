@@ -1,22 +1,29 @@
 from flask import Flask, app, g, jsonify, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from api_auth import get_access_token
-from models import Post, Rating, Song, User, db
-from songwall_search import search_songs
-from db_functions import add_or_update_rating, add_post, add_songs_to_db, create_users, delete_example_users, follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings, get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts, get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth, get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs, get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
+from app.api_auth import get_access_token
+from app.models import Post, Rating, Song, User, db
+from app.songwall_search import search_songs
+from app.db_functions import (
+    add_or_update_rating, add_post, add_songs_to_db, create_users, delete_example_users,
+    follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info,
+    get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
+    get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
+    get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth,
+    get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs,
+    get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
+)
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
 import os
 
+# Create the Flask app and configure it.
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')  # Default if not set
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///songwall.db')
-
 if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)  # Required for SQLAlchemy
-
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -413,3 +420,7 @@ def simulate(password):
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+
+#if __name__ == "__main__":
+#    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))

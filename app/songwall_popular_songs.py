@@ -1,4 +1,4 @@
-from api_auth import get_access_token
+from app.api_auth import get_access_token
 import requests
 import json
 

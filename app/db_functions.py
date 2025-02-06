@@ -2,12 +2,12 @@ import random
 import string
 from flask_login import current_user
 from sqlalchemy import func
-from songwall_search import search_songs
-from models import Follow, Post, User, db, Rating, Song  
+from app.songwall_search import search_songs
+from app.models import Follow, Post, User, db, Rating, Song  
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from faker import Faker
-from api_auth import get_access_token
+from app.api_auth import get_access_token
 
 fake = Faker() #for admin panel simulation
 #------------------GENERAL FUNCTIONS ---------------------

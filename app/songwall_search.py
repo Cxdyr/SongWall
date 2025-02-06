@@ -1,5 +1,5 @@
 import requests
-from api_auth import get_access_token
+from app.api_auth import get_access_token
 
 access_token = get_access_token()
 # request to search endpoint on spotify given user input
