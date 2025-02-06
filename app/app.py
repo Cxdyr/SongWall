@@ -155,12 +155,7 @@ def logout():
 def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
     recent_ratings = get_recent_ratings(20)  #getting the 10 recent ratings
-    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings)
 
-#Page for posting and viewing posts from users
-@app.route('/posts', methods=['GET', 'POST'])
-@login_required
-def posts():
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
 
@@ -170,8 +165,10 @@ def posts():
 
         if song_id and post_message:
             add_post(current_user.id, song_id, post_message) # add post to db 
-            return redirect(url_for('posts'))  # Refresh after posting
-    return render_template('posts.html', recent_posts=recent_posts, user_songs=user_songs)
+            return redirect(url_for('dashboard'))
+        
+    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs)
+
 
 
 
@@ -360,6 +357,9 @@ def update_theme():
 #View profile page, for anyone by username
 @app.route('/view/<string:username>', methods=['GET'])
 def view_profile(username):
+    if current_user.username == username:
+        return redirect(url_for('profile'))
+
     profile_info = get_profile_info(username)
     recent_ratings = get_recent_ratings_username(username)
 

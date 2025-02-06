@@ -17,7 +17,7 @@
         </div>
     </header>
 
-    <section class="display-posts">
+    <section class="display-posts-users">
         <div id="posts-container">
             {% if posts_info %}
             {% for post in posts_info %}
@@ -32,11 +32,12 @@
                 </div>
             </div>
             {% endfor %}
+            <button id="load-more" data-offset="10">Load More</button>
             {% else %}
             <div class="no-ratings">{{userinfo.username}} has not posted yet.</div>
             {% endif %}
         </div>
-        <button id="load-more" data-offset="10">Load More</button>
+
     </section>
 
     <script src="{{url_for('static', filename='js/loadmore.js')}}"></script>

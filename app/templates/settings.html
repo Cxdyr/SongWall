@@ -23,8 +23,8 @@
     <p><strong>Email:</strong> {{ current_user.email }}</p>
     <p><strong>First Name:</strong> {{ current_user.first_name }}</p>
     <p><strong>{{current_user.first_name}}'s Biography:</strong> {{current_user.bio}}</p>
-    <br>
-    </div>
+    <br><br><br>
+
 <!-- Update Bio Form -->
 <form method="POST">
     <input type="hidden" name="form_type" value="bio">
@@ -71,15 +71,18 @@
 
 </form>
 
+</div>
+
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <p>
                 {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
+                <div class="flash {{ category }}">{{ message }}</div>
                 {% endfor %}
             </p>
         {% endif %}
     {% endwith %}
+
 </body>
 </html>

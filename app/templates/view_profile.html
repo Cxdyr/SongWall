@@ -11,8 +11,7 @@
     <header>
         <div class="container">
             <a href="/dashboard"><h1>{{ profile_info.user.username }}'s Songwall</h1></a>
-            <nav>
-                {% if is_following %}
+            {% if is_following %}
             <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
                 <button type="submit">Unfollow</button>
             </form>
@@ -21,8 +20,8 @@
                 <button type="submit">Follow</button>
             </form>
             {% endif %}
-        </nav>
             <nav>
+            <a href="{{url_for('view_posts', username = profile_info.user.username)}}">{{profile_info.user.first_name}}'s Posts</a></p>
             <a href="/dashboard">Home</a>
         </nav>
         </div>
@@ -30,7 +29,6 @@
     <div class="profile-container">
         <p class="profile"> {{profile_info.user.bio }}</p>
         <p class="profile">Average: <strong>{{profile_info.avg_rating}}/10, </strong>  Rated: <strong>{{profile_info.ratings_ct}}</strong></p>
-        <p class="profile"><a href="{{url_for('view_posts', username = profile_info.user.username)}}">{{profile_info.user.first_name}}'s Posts</a></p>
      </div>
     <div class="profile-container">
         <div class="ratings-wrapper">

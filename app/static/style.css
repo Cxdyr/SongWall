@@ -24,6 +24,7 @@ header .container {
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
     padding: 0 2rem;
 }
 
@@ -60,6 +61,8 @@ main {
     flex: 1;
 }
 
+
+
 section h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -82,6 +85,41 @@ a.black {
     font-size: 1rem; 
 
 }
+
+
+/* Blog Container */
+.blog-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #292942;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Individual Blog Post */
+.blog-post {
+    background: #3a3a5e;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.blog-post h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #a3d8f4;
+}
+
+.blog-post .timestamp {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+
 
 /* Song Carousel */
 .song-carousel {
@@ -575,6 +613,15 @@ h3 {
     text-shadow: .2px .2px .2px black;
 }
 
+section h3 {
+    margin-bottom: 0.45rem;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    text-shadow: .2px .2px .2px black;
+}
+
 h4 {
     font-size: 1.3rem;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -720,7 +767,24 @@ h4 {
     margin: 20px auto;
     padding: 20px;
     background: #292942;
+
     
+    max-height: 255px;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.display-posts-users {
+    width: 100%;
+    max-width: 750px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #292942;
+
+    
+    max-height: 600px;
+    overflow-y: auto;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
@@ -734,6 +798,7 @@ h4 {
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px; /* Less space between posts */
     word-wrap: break-word; /* Ensure text doesn't overflow */
+    flex-wrap: wrap;
 }
 
 /* Left side: username & song */
@@ -839,7 +904,7 @@ h4 {
     border: 1px solid #000000;
     border-radius: 5px;
     width: 100%;
-    height: 150px;  /* Adjust textarea height */
+    height: 50px;  /* Adjust textarea height */
     box-sizing: border-box;
     resize: vertical;  /* Allow vertical resizing */
     color: #ffffff;
@@ -1098,20 +1163,20 @@ table tbody tr:hover {
     }
 
     h3 { 
-        font-size: .9rem;
+        font-size: .8rem;
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         color: white;
     }
 
     p {
-        font-size: .8rem;
+        font-size: .75rem;
     }
     
 
 
 
     .ratings-songview-container {
-        max-width: 100%;
+        max-width: 95%;
         padding: 1rem;
     }
 
@@ -1161,6 +1226,32 @@ table tbody tr:hover {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;  /* Ensure padding is included in width */
+
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.blog-container {
+    width: 95%;
+    padding: 15px;
+}
+
+.blog-post {
+    padding: 10px;
+}
+
+.display-posts-users {
+    width: 90%;
+    max-width: none;
+    margin: 10px auto;
+    padding: 15px;
+    background: #292942;
+
+    
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* Adjust the Post Elements */

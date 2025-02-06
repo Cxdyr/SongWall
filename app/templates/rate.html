@@ -62,7 +62,7 @@
     {% if messages %}
         <p>
             {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
+            <div class="flash {{ category }}">{{ message }}</div>
             {% endfor %}
         </p>
     {% endif %}
@@ -70,9 +70,7 @@
         
     </main>
 
-    <footer>
-        <p>&copy; 2025 Songwall by Cody A. Rabie. All rights reserved</p>
-    </footer>
+    <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
 
     <script>
 document.addEventListener('DOMContentLoaded', function () {

@@ -14,14 +14,13 @@
             <nav>
                 <a href="/search">Search</a>
                 <a href="/profile">Profile</a>
-                <a href="/posts">Posts</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
     </header>
     <main>
-        <h2>Recent Ratings</h2>
         <section class="display-songs">
+        <h3>Recent Ratings</h3>
             <div class="song-carousel">
                 {% if not recent_ratings %}
                 <p>There are no recent ratings</p>
@@ -41,10 +40,10 @@
                     {% endif %}
                 </div>                      
             </div>
-        </section>
+        </section> <br>
 
-        <h2>Recent Friends Ratings</h2>
         <section class="display-songs">
+            <h3>Recent Friends Ratings</h3>
             <div class="song-carousel">
                 {% if not followed_ratings %}
                 <p>Add some friends to see their ratings!</p>
@@ -64,12 +63,49 @@
                     {% endif %}
                 </div>                      
             </div>
+        </section> <br>
+
+
+
+        <h3>Recent Songwall Posts</h3>
+        <section class="display-posts">
+            <div id="posts-container">
+                {% if recent_posts %}
+                {% for post in recent_posts %}
+                <div class="post">
+                    <div class="post-left">
+                        <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
+                        <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
+                    </div>
+                    <div class="post-right">
+                        <p class="post-message">{{ post.post_message }}</p>
+                        <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                <button id="load-more" data-offset="10">Load More</button>
+                {% else %}
+                <p>There are no recent posts. </p>
+                {% endif %}
+            </div>
         </section>
-
-
+        {% if user_songs %}
+        <section class="post-form">
+            <form method="POST" action="{{ url_for('dashboard') }}">
+                <select name="song_id" required>
+                    {% for song in user_songs %}
+                    <option value="{{ song.id }}">{{ song.track_name }} by {{ song.artist_name }}</option>
+                    {% endfor %}
+                </select>
+                <textarea name="post_message" placeholder="What's on your mind?" required></textarea>
+                <button type="submit">Post</button>
+            </form>
+        </section>
+        {% endif %}
     </main>
     <footer>
-        <p>&copy; 2025 Songwall by Cody A. Rabie. All rights reserved</p>
+        <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
     </footer>
+    <script src="{{url_for('static', filename='js/loadmore.js')}}"></script>
 </body>
 </html>
