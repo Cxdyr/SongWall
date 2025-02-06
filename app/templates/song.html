@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>{{ song_info.track_name }} - {{song_info.artist_name }}  Songwall</h1>
+            <a href="/dashboard"><h1>{{ song_info.track_name }} - {{song_info.artist_name }}  Songwall</h1></a>
             <nav>
                 <a href="/dashboard">Home</a>
                 <a href="{{url_for('rate', spotify_id = song_info.spotify_id) }}">Rate</a>

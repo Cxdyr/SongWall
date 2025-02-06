@@ -10,15 +10,17 @@
 <body style="--theme-color: {{ profile_info.user.theme_color or '#333' }};">
     <header>
         <div class="container">
-            <h1>{{ profile_info.user.username }}'s Songwall</h1>
+            <a href="/dashboard"><h1>{{ profile_info.user.username }}'s Songwall</h1></a>
             <nav>
-            <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
-                <button type="submit">Follow</button>
-            </form>
-            
+                {% if is_following %}
             <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
                 <button type="submit">Unfollow</button>
             </form>
+            {% else %}
+            <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
+                <button type="submit">Follow</button>
+            </form>
+            {% endif %}
         </nav>
             <nav>
             <a href="/dashboard">Home</a>

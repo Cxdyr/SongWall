@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>{{ current_user.first_name }}'s Songwall Dashboard</h1>
+            <a href="/dashboard"><h1> {{ current_user.first_name }}'s Songwall Dashboard</h1></a>
             <nav>
                 <a href="/search">Search</a>
                 <a href="/profile">Profile</a>
@@ -20,14 +20,6 @@
         </div>
     </header>
     <main>
-        <h2>Find Friends</h2>
-        <section class="friend-search">
-            <form action="{{ url_for('search_friends') }}" method="POST">
-                <input type="text" name="username" placeholder="Enter a username" required>
-                <button type="submit">Search</button>
-            </form>
-        </section>
-
         <h2>Recent Ratings</h2>
         <section class="display-songs">
             <div class="song-carousel">

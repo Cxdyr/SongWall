@@ -10,7 +10,7 @@
 <body style="--theme-color: {{ userinfo.theme_color or '#333' }};">
     <header>
         <div class="container">
-            <h1> {{userinfo.username}}'s Posts </h1> 
+            <a href="/dashboard"><h1> {{userinfo.username}}'s Posts </h1> </a>
         <nav>
             <a href="{{url_for('view_profile', username=userinfo.username)}}">Back</a>
         </nav>

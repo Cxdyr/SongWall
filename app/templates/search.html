@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>Songwall Search</h1>
+            <a href="/dashboard"><h1>Songwall Search</h1></a>
             <nav>
             <a href="/dashboard">Back</a>
         </nav>
@@ -18,6 +18,7 @@
     </header>
 
     <main>
+        <h2>Search Songs</h2>
         <!-- Search Bar -->
         <section class="search-bar">
             <form action="{{ url_for('search') }}" method="POST">
@@ -25,9 +26,8 @@
                 <button type="submit">Search</button>
             </form>
         </section>
-
+        <br>
         <!-- Display Search Results -->
-        <h2>Search Results</h2>
         <section class="display-songs">
             <div class="song-carousel">
                 {% if not songs %}
@@ -42,11 +42,18 @@
                     <p><strong>Album:</strong> {{ song.album_name }}</p> <br>
                     <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
                 </div>
-
                     {% endfor %}
                     {% endif %}
                 </div>
             </div>
+        </section>
+
+        <h2>Find Friends</h2>
+        <section class="friend-search">
+            <form action="{{ url_for('search_friends') }}" method="POST">
+                <input type="text" name="username" placeholder="Enter a username" required>
+                <button type="submit">Search</button>
+            </form>
         </section>
     </main>
 

@@ -455,6 +455,14 @@ def get_search_song_recent_posts(spotfiy_id):
     return posts
 
 
+#used for display view profile page to only display either the follow or unfollow button
+def check_if_following(user_id, followed_id):
+    return db.session.query(
+        db.session.query(Follow).filter_by(follower_id=user_id, followed_id=followed_id).exists()
+    ).scalar()
+
+
+
 
 
 #-------------------ADMIN FUNCTIONS ----------------------

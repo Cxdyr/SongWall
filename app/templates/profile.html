@@ -10,7 +10,7 @@
 <body style="--theme-color: {{ current_user.theme_color or '#333' }};">
     <header>
         <div class="container">
-            <h1>{{ current_user.username }}'s Profile</h1>
+            <a href="/dashboard"><h1>{{ current_user.username }}'s Profile</h1></a>
             <nav>
                 <a href="/dashboard">Back</a>
                 <a href="/settings">Settings</a>

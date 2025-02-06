@@ -4,7 +4,7 @@ from app.api_auth import get_access_token
 from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
-    add_or_update_rating, add_post, add_songs_to_db, create_users, delete_example_users,
+    add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users,
     follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info,
     get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
@@ -80,6 +80,10 @@ def songwall_down():
 @app.route('/')
 def index():
     return render_template('index.html', pop_songs=pop_songs_cache, top_rated_songs=top_rated_songs_cache)
+
+@app.route('/blog')
+def blog():
+    return render_template('blog.html')
 
 #Register page
 @app.route('/register', methods=['GET', 'POST'])
@@ -358,9 +362,11 @@ def update_theme():
 def view_profile(username):
     profile_info = get_profile_info(username)
     recent_ratings = get_recent_ratings_username(username)
+
+    is_following = check_if_following(current_user.id, profile_info["user"].id)
     
     if profile_info:
-        return render_template('view_profile.html', profile_info=profile_info, recent_ratings=recent_ratings)
+        return render_template('view_profile.html', profile_info=profile_info, recent_ratings=recent_ratings, is_following=is_following)
     else:
         return redirect(url_for('dashboard'))
     
