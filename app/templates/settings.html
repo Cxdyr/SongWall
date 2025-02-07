@@ -42,6 +42,7 @@
 </form>
 
 <!-- Remove Rating Form (Already Works) -->
+ <section class="post-form">
 <form method="POST">
     <input type="hidden" name="form_type" value="remove_song">
     <label for="song_id">Select a song to remove:</label>
@@ -55,7 +56,9 @@
     </select>
     <button type="submit">Remove Rating</button>
 </form>
+</section>
 
+<section class="post-form">
 <form method="POST">
     <input type="hidden" name="form_type" value="remove_post">
     <label for="post_content">Select a post to remove</label>
@@ -68,8 +71,8 @@
             {% endfor %}
     </select>
     <button type="submit">Remove Post</button>
-
 </form>
+</section>
 
 </div>
 

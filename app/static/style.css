@@ -377,6 +377,7 @@ footer {
     font-size: 1rem;
     text-align: left;
     color: #e4e4e4;
+
 }
 
 .auth-form input {
@@ -550,7 +551,7 @@ label .comment {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.582);
 
     /* Ensure long text breaks */
-    word-wrap: break-word; 
+    overflow-wrap: anywhere;
     overflow-wrap: break-word;
     white-space: normal;
 }
@@ -579,7 +580,7 @@ label .comment {
     border-radius: 8px;
     width: 90%;
     text-align: left;
-    word-wrap: break-word;
+    overflow-wrap: anywhere;
     white-space: normal;
 }
 
@@ -592,16 +593,19 @@ label .comment {
 
 .rating-info {
     flex: 1;
+    overflow-wrap: anywhere;
+
+
 
     h3{
         color: black;
         margin: 0;
-        word-wrap: break-word;
+
     }
     p{
         color: black;
         margin: 0;
-        word-wrap: break-word;
+
     }
 }
 
@@ -717,8 +721,8 @@ h4 {
     display: flex;
     flex-direction: column;
 
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+
 }
 
 /* Username and Rating Score */
@@ -800,7 +804,8 @@ h4 {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px; /* Less space between posts */
-    word-wrap: break-word; /* Ensure text doesn't overflow */
+    overflow-wrap: anywhere;
+
     flex-wrap: wrap;
 }
 
@@ -808,7 +813,8 @@ h4 {
 .post-left {
     width: 30%;
     text-align: left;
-    word-wrap: break-word; /* Ensure no overflow */
+    overflow-wrap: anywhere;
+
 }
 
 .post-left strong a {
@@ -827,13 +833,15 @@ h4 {
 .post-right {
     width: 65%;
     text-align: left;
-    word-wrap: break-word; /* Ensure no overflow */
+    overflow-wrap: anywhere;
+
 }
 
 .post-message {
     font-size: 16px;
     color: #ffffff;
-    word-wrap: break-word; /* Ensure no overflow */
+    overflow-wrap: anywhere;
+
 }
 
 .timestamp {
@@ -951,7 +959,8 @@ table thead tr {
 table th,
 table td {
     padding: 15px;
-    word-wrap: break-word;
+    overflow-wrap: anywhere;
+
     vertical-align: top;
 }
 
@@ -1156,7 +1165,8 @@ table tbody tr:hover {
         border-radius: 10px;
         width: 94%;
         text-align: left;
-        word-wrap: break-word;
+        overflow-wrap: anywhere;
+
         white-space: normal;
 
     }
@@ -1265,7 +1275,8 @@ table tbody tr:hover {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px;
-    word-wrap: break-word;
+    overflow-wrap: anywhere;
+
     box-sizing: border-box;  /* Ensure padding doesn't add extra width */
 }
 
