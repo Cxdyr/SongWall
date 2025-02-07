@@ -65,6 +65,26 @@
             </div>
         </section> <br>
 
+        <section class="display-songs">
+            <h3>Suggested Songs</h3>
+            <div class="song-carousel">
+                {% if not potential_songs %}
+                <p>Rate some songs to see this!</p>
+                {% else %}
+                <div class="song-list" id="top-rated-list">
+                {% for song in potential_songs %}
+                    <div class="song2">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
+                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                        <p>{{ song.artist_name }}</p>
+                        <p>{{ song.album_name }}</p>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>                      
+            </div>
+        </section> <br>
+
 
 
         <h4>Recent Songwall Posts</h4>
@@ -89,6 +109,8 @@
                 {% endif %}
             </div>
         </section>
+
+
         {% if user_songs %}
         <section class="post-form">
             <form method="POST" action="{{ url_for('dashboard') }}">

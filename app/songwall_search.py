@@ -9,7 +9,7 @@ def search_songs(query, access_token):
         params = {
             "q": query,
             "type": "track",
-            "limit": 5
+            "limit": 7
         }
         headers = {
             "Authorization": f"Bearer {access_token}"

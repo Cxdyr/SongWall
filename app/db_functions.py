@@ -464,6 +464,54 @@ def check_if_following(user_id, followed_id):
 
 
 
+def get_potential_songs(user_id):
+    # Fetch the user's recent rated artists and their associated songs in one query
+    recent_rated_artists = (
+        db.session.query(Rating)
+        .options(joinedload(Rating.song))  # Eager load the song relationship
+        .filter(Rating.user_id == user_id)  # Filter by the specific user
+        .order_by(Rating.time_stamp.desc())  # Order by most recent ratings
+        .limit(6)
+        .all()
+    )
+
+    # If the user has no rated songs, return None
+    if not recent_rated_artists:
+        return None
+
+    artists = set()  # Use a set to store unique artist names
+    potential_songs = []
+
+    # Extract unique artists from the user's recent ratings
+    for rating in recent_rated_artists:
+        artist = rating.song.artist_name
+        artists.add(artist)
+
+    # Fetch up to 3 songs per artist that the user hasn't rated
+    for artist in artists:
+        songs_by_artist = (
+            db.session.query(Song)
+            .filter(Song.artist_name == artist)
+            .all()
+        )
+        songs_added = 0  # Counter to track songs added per artist
+
+        for song in songs_by_artist:
+            # Check if the user has already rated this song
+            existing_rating = (
+                db.session.query(Rating)
+                .filter(Rating.user_id == user_id, Rating.song_id == song.id)
+                .first()
+            )
+            if existing_rating is None:  # User hasn't rated this song
+                potential_songs.append(song)
+                songs_added += 1
+
+            if songs_added >= 3:  # Limit to 3 songs per artist
+                break
+
+    return potential_songs
+    
 
 #-------------------ADMIN FUNCTIONS ----------------------
 

@@ -6,13 +6,12 @@ from app.songwall_search import search_songs
 from app.db_functions import (
     add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users,
     follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info,
-    get_popular_songwall_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
+    get_popular_songwall_songs, get_potential_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
     get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth,
     get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs,
     get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
 )
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask_migrate import Migrate
@@ -38,7 +37,7 @@ def load_user(user_id):
     with db.session() as session:
         return session.get(User, int(user_id))
 
-scheduler = BackgroundScheduler()  # this is scheduler used to refresh the popular songs and top rated songs on 24 hour loop
+scheduler = BackgroundScheduler()
 
 pop_songs_cache = None
 top_rated_songs_cache = None
@@ -54,6 +53,7 @@ def update_cached_data():
 # this starts the scheduler to update each day
 scheduler.add_job(func=update_cached_data, trigger='interval', hours=24)
 scheduler.start()
+
 
 @app.before_request
 def initialize_cache():
@@ -155,6 +155,7 @@ def logout():
 def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
     recent_ratings = get_recent_ratings(20)  #getting the 10 recent ratings
+    potential_songs = get_potential_songs(current_user.id)
 
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
@@ -167,7 +168,7 @@ def dashboard():
             add_post(current_user.id, song_id, post_message) # add post to db 
             return redirect(url_for('dashboard'))
         
-    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs)
+    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs)
 
 
 
