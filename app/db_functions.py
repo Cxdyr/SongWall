@@ -59,12 +59,21 @@ def get_rating_by_spotify_id(user_id, spotify_id):
 
     return rating
 
-#Get song by id, used to get full song info by our db song id and avg rating
+
 def get_song_by_id(song_id):
-    """Uses my database to get song info and avg rating"""
-    song = Song.query.filter_by(id=song_id).first()
-    average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
-    average_rating = round(average_rating, 2)
+    song = db.session.query(Song).filter(Song.id == song_id).first()
+    
+    if not song:
+        return None, None  # Return None if the song doesn't exist
+
+    # Calculate the average rating for the song
+    average_rating = db.session.query(db.func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
+
+    # Handle the case where average_rating is None (no ratings exist)
+    if average_rating is None:
+        average_rating = 0.0  # Default to 0.0 if no ratings exist
+    else:
+        average_rating = round(average_rating, 2)  # Round to 2 decimal places
 
     return song, average_rating
 
@@ -195,7 +204,6 @@ def get_search_song_recent_ratings(spotify_id):
         return ratings
     
 
-
 def add_songs_to_db(songs):
     new_songs = []
     seen_ids = set()  # Track `spotify_id`s already added in this batch
@@ -204,6 +212,7 @@ def add_songs_to_db(songs):
         if song_data['spotify_id'] in seen_ids:  # Skip duplicates in this batch
             continue
         
+        # Check if the song already exists in the database
         existing_song = Song.query.filter_by(spotify_id=song_data['spotify_id']).first()
         
         if not existing_song:
@@ -223,11 +232,13 @@ def add_songs_to_db(songs):
         try:
             db.session.bulk_save_objects(new_songs)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
-            print("Duplicate song detected, skipping commit.")
+        except Exception as e:
+            db.session.rollback()
+            raise  # Re-raise the exception for further handling
 
-    return f"{len(new_songs)} songs added successfully!"
+    return new_songs  # Return the list of added songs for further processing
 
 
 
