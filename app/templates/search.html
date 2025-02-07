@@ -35,11 +35,11 @@
                 {% else %}
                 <div class="song-list" id="top-rated-list">
                     {% for song in songs %}
-                <div class="song2" style="border: 1px solid black; padding: 10px; margin: 10px;">
-                    <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}"><img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}" style="width: 100px; height: 100px;"></a>
+                <div class="song2">
+                    <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}"><img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}"></a>
                     <h3> <a href="{{url_for('search_view_song', spotify_id = song.spotify_id)}}">{{  song['name'] }}</a></h3>
-                    <p><strong>Artist:</strong> {{ song.artist }}</p>
-                    <p><strong>Album:</strong> {{ song.album_name }}</p> <br>
+                    <p> {{ song.artist }}</p>
+                    <p> {{ song.album_name }}</p> <br>
                     <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
                 </div>
                     {% endfor %}

@@ -669,6 +669,7 @@ h4 {
 .spotify-btn {
     display: inline-block;
     background-color: #1DB954;
+    box-shadow: 0.3 0.3 0.3 0.5 #000000;
     color: white;
     padding: 0.42rem 1rem;
     border-radius: 5px;

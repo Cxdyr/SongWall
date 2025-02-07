@@ -58,7 +58,7 @@
                         <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
                         <p>{{ song.artist_name }}</p>
                         <p>{{song.album_name }}</p>
-                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} ratings)</p>  
+                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} rates)</p>  
                     </div>
                     {% endfor %}
                     {% endif %}
