@@ -1021,6 +1021,9 @@ table tbody tr {
     border-bottom: 1px solid #2983be;
 }
 
+.hidden-table {
+    display: none;
+}
 
 
 table tbody tr:last-of-type {

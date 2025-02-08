@@ -8,14 +8,15 @@
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
 </head>
 <body>
-    <div class="container">
     <header>
+    <div class="container">
         <h1>Welcome to the Tables Panel</h1>
+    </div>
     </header>
-</div>
 
     <p>Users table</p>
-    <table class="users-table">
+    <button id="load-more" onclick="toggleTable('users-table')">View/Unview</button>
+    <table class="users-table hidden-table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -41,9 +42,11 @@
             {% endfor %}
         </tbody>
     </table>
-    
+
+
     <p>Songs table</p>
-    <table class="songs-table">
+    <button id="load-more" onclick="toggleTable('songs-table')">View/Unview</button>
+    <table class="songs-table hidden-table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -70,17 +73,19 @@
         </tbody>
     </table>
 
+
     <p>Ratings table</p>
-    <table class="ratings-table">
+    <button id="load-more" onclick="toggleTable('ratings-table')">View/Unview</button>
+    <table class="ratings-table hidden-table">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Rating</th>
                 <th>Comment</th>
-                <th>Time stamp </th>
-                <th>Song id </th>
+                <th>Time stamp</th>
+                <th>Song id</th>
                 <th>User id</th>
-                <th>Username </th>
+                <th>Username</th>
             </tr>
         </thead>
         <tbody>
@@ -98,15 +103,17 @@
         </tbody>
     </table>
 
+
     <p>Posts table</p>
-    <table class="posts-table">
+    <button id="load-more" onclick="toggleTable('posts-table')">View/Unview</button>
+    <table class="posts-table hidden-table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Message</th>
                 <th>Time stamp</th>
-                <th>User id </th>
-                <th>Song id </th>
+                <th>User id</th>
+                <th>Song id</th>
             </tr>
         </thead>
         <tbody>
@@ -117,10 +124,21 @@
                 <td>{{ post.time_stamp }}</td>
                 <td>{{ post.useR_id }}</td>
                 <td>{{ post.song_id }}</td>
-
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        // Function to toggle visibility of a table
+        function toggleTable(tableClass) {
+            var table = document.querySelector('.' + tableClass);
+            if (table.style.display === "none" || table.style.display === "") {
+                table.style.display = "table"; // Show the table
+            } else {
+                table.style.display = "none"; // Hide the table
+            }
+        }
+    </script>
 </body>
 </html>

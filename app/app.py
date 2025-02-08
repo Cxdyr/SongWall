@@ -4,7 +4,7 @@ from app.api_auth import get_access_token
 from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
-    add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users,
+    add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users, delete_user_by_id,
     follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info,
     get_popular_songwall_songs, get_potential_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
@@ -399,8 +399,16 @@ def simulate(password):
             success, message = delete_example_users()
             flash(message, "success" if success else "error")
             return render_template('admin.html', password=password)
+        elif form_type == "delete_user":
+            user_id_to_delete = request.form.get("user_id_to_delete")
+            try:
+                user_id_to_delete = int(user_id_to_delete)
+                success, message = delete_user_by_id(user_id_to_delete)
+                flash(message, "success" if success else "error")
+            except ValueError:
+                flash("Invalid user ID!", "error")
+            return render_template('admin.html', password=password)
 
-    #Loading tons of user data for anaylsis and simulation including db info and more
     return render_template('admin.html', password=password)
 
 if __name__ == "__main__":

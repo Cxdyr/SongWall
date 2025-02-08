@@ -602,7 +602,19 @@ def rate_sim(): # Looping through each testing user and getting an amount of son
             song = select_random_song()
             rate_song(user, song)
 
-
+# Function to delete user by ID
+def delete_user_by_id(user_id):
+    try:
+        user_to_delete = User.query.get(user_id)
+        if user_to_delete:
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            return True, f"User with ID {user_id} deleted successfully."
+        else:
+            return False, "User not found."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error deleting user {user_id}: {str(e)}"
 
 def delete_example_users():
     """
