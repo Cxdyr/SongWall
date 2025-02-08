@@ -357,6 +357,7 @@ def update_theme():
 
 #View profile page, for anyone by username
 @app.route('/view/<string:username>', methods=['GET'])
+@login_required
 def view_profile(username):
     if current_user.username == username:
         return redirect(url_for('profile'))
@@ -373,6 +374,7 @@ def view_profile(username):
     
 #View user posts page, for anyone by username will show posts from this user
 @app.route('/user_posts/<string:username>', methods=['GET'])
+@login_required
 def view_posts(username):
     posts_info, userinfo = get_recent_user_posts(username)
     return render_template('user_posts.html', posts_info=posts_info, userinfo=userinfo)
