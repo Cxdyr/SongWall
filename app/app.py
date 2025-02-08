@@ -127,14 +127,13 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].lower()
         password = request.form['password']
 
         # Fetch user from database
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):  # Check password
             login_user(user)  # Log in the user
-            flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to logged in view home page
         else:
             flash('Login failed. Check your email and/or password.', 'error')
@@ -242,8 +241,6 @@ def rate(spotify_id):
         result = add_or_update_rating(current_user.id, current_user.username, spotify_id, rating, comment)  # Call my add/update function to update or db 
         if "error" in result:
             flash(result["error"], "error")
-        else:
-            flash(result["success"], "success")
 
         return redirect(url_for('dashboard'))  
 

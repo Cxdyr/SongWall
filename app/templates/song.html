@@ -50,7 +50,7 @@
                         {% if rating.comment %}
                             <p class="rating-comment">"{{ rating.comment }}"</p>
                         {% endif %}
-                        <small class="rating-date">Rated on {{ rating.time_stamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                        <small class="rating-date">Rated on {{ rating.time_stamp.strftime('%B %d, %Y') }}</small>
                     </div>
                 {% endfor %}
             {% else %}

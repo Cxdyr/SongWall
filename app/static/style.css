@@ -556,6 +556,19 @@ label .comment {
     white-space: normal;
 }
 
+.profile-container form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 10px;
+    width: 100%;
+}
+
+.profile-container form .label-container {
+    width: 100%;
+}
+
 .ratings-wrapper {
     max-height: 670px;
     overflow-y: auto;
@@ -630,6 +643,40 @@ h4 {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     color: white;
     text-shadow: .8px .8px 1px black;
+}
+
+/*  Form settings css */
+.label-container {
+    display: flex;
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    width: 100%;
+    max-width: 400px; /* Adjust as needed */
+    margin: 10px auto; /* Centers within parent */
+    overflow: hidden;
+    white-space: nowrap;
+    gap: 8px; /* Adds spacing between label and input */
+}
+
+.label-container label {
+    flex-shrink: 0;
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right; /* Aligns label text */
+}
+
+.label-container input,
+.label-container select,
+.label-container button {
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
 }
 
 

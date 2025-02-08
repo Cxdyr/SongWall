@@ -34,30 +34,7 @@
                         <p>{{ song.album_name }}</p>
                         <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
                         <p>⭐ {{ song.rating }}/10</p>
-                        <p>{{ song.time_stamp }}</p>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                </div>                      
-            </div>
-        </section> <br>
-
-        <section class="display-songs">
-            <h3>Recent Friends Ratings</h3>
-            <div class="song-carousel">
-                {% if not followed_ratings %}
-                <p>Add some friends to see their ratings!</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                {% for song in followed_ratings %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
-                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p>{{ song.album_name }}</p>
-                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
-                        <p>⭐ {{ song.rating }}/10</p>
-                        <p>{{ song.time_stamp }}</p>
+                        <p>{{ song.time_stamp.strftime('%B %d, %Y') }}</p>
                     </div>
                     {% endfor %}
                     {% endif %}
@@ -85,7 +62,28 @@
             </div>
         </section> <br>
 
-
+        <section class="display-songs">
+            <h3>Recent Friends Ratings</h3>
+            <div class="song-carousel">
+                {% if not followed_ratings %}
+                <p>Add some friends to see their ratings!</p>
+                {% else %}
+                <div class="song-list" id="top-rated-list">
+                {% for song in followed_ratings %}
+                    <div class="song2">
+                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
+                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                        <p>{{ song.artist_name }}</p>
+                        <p>{{ song.album_name }}</p>
+                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
+                        <p>⭐ {{ song.rating }}/10</p>
+                        <p>{{ song.time_stamp.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>                      
+            </div>
+        </section> <br>
 
         <h4>Recent Songwall Posts</h4>
         <section class="display-posts">
@@ -99,7 +97,7 @@
                     </div>
                     <div class="post-right">
                         <p class="post-message">{{ post.post_message }}</p>
-                        <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
                     </div>
                 </div>
                 {% endfor %}
