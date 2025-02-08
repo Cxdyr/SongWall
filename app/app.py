@@ -1,4 +1,4 @@
-from flask import Flask, app, g, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, app, current_app, jsonify, render_template, request, redirect, url_for, flash, g
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from app.api_auth import get_access_token
 from app.models import Post, Rating, Song, User, db
@@ -12,8 +12,7 @@ from app.db_functions import (
     get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs,
     get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
 )
-from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
+from app.index_song_info import get_cached_songs, initialize_cache, update_cache_if_needed
 from flask_migrate import Migrate
 import os
 
@@ -37,49 +36,29 @@ def load_user(user_id):
     with db.session() as session:
         return session.get(User, int(user_id))
 
-scheduler = BackgroundScheduler()
-
-pop_songs_cache = None
-top_rated_songs_cache = None
-access_token = None  
-
-# Function to update the cache every 24 hours
-def update_cached_data():
-    global pop_songs_cache, top_rated_songs_cache
-    pop_songs_cache = get_popular_songwall_songs(9)
-    top_rated_songs_cache = get_top_rated_songs(9)
-    print(f"Cache updated at {datetime.now()}")
-
-# this starts the scheduler to update each day
-scheduler.add_job(func=update_cached_data, trigger='interval', hours=24)
-scheduler.start()
-
-
-@app.before_request
-def initialize_cache():
-    """Ensure popular songs and top-rated songs are populated before the first request."""
-    global pop_songs_cache, top_rated_songs_cache
-    if pop_songs_cache is None or top_rated_songs_cache is None:
-        update_cached_data()  # Only update if cache is empty
-
 @app.before_request
 def check_token():
-    """Ensures a valid access token is available for API requests"""
+    """Ensures a valid access token is available for API requests."""
     global access_token
     if 'access_token' not in g or access_token is None:
         access_token = get_access_token()
         g.access_token = access_token  # Store token in request context
     if not access_token:
         return redirect(url_for('songwall_down'))
-    
+
 @app.route('/songwall_down')
 def songwall_down():
     return render_template('songwall_down.html')
 
+
 #Home page
 @app.route('/')
 def index():
-    return render_template('index.html', pop_songs=pop_songs_cache, top_rated_songs=top_rated_songs_cache)
+    initialize_cache(current_app) 
+    update_cache_if_needed(current_app)
+
+    pop_songs, top_rated_songs = get_cached_songs()
+    return render_template('index.html', pop_songs=pop_songs, top_rated_songs=top_rated_songs)
 
 @app.route('/blog')
 def blog():
