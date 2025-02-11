@@ -24,6 +24,8 @@ class User(db.Model, UserMixin):
     recommendations = db.relationship('Recommendation', back_populates='user', cascade='all, delete-orphan')
     following = db.relationship('Follow', foreign_keys='Follow.follower_id', cascade='all, delete-orphan')
     followers = db.relationship('Follow', foreign_keys='Follow.followed_id', cascade='all, delete-orphan')
+    views = db.relationship('View', back_populates='user')
+
 
     def __repr__(self):
         return f"<User(username='{self.username}')>"
@@ -74,7 +76,9 @@ class Song(db.Model):
     album_image = Column(String(255), nullable=True)
     release_date = Column(String(255), nullable=True)
     spotify_id = Column(String(120), unique=True, nullable=True)  
+    views = Column(Integer, default=0, nullable=False)
 
+    views_relationship = db.relationship('View', backref='song_view', lazy=True)  # Updated backref name
     ratings = db.relationship('Rating', back_populates='song', cascade='all, delete-orphan')
     posts = db.relationship('Post', back_populates='song', cascade='all, delete-orphan')
     recommendations = db.relationship('Recommendation', back_populates='song', cascade='all, delete-orphan')
@@ -98,6 +102,20 @@ class Rating(db.Model):
     def __repr__(self):
         return f"<Rating(user_id='{self.user_id}', song_id='{self.song_id}', rating='{self.rating}')>"
     
+    
+class View(db.Model):
+    __tablename__ = 'views'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    song_id = Column(Integer, ForeignKey('songs.id'), nullable=False)
+    timestamp = Column(db.DateTime, default=func.now(), nullable=False)
+
+    user = db.relationship('User', back_populates='views')
+    song = db.relationship('Song', back_populates='views_relationship', lazy='joined')  # Keep the relationship as is
+
+    def __repr__(self):
+        return f"<View(user_id='{self.user_id}', song_id='{self.song_id}', timestamp='{self.timestamp}')>"
+
 
 class Post(db.Model):
     __tablename__ = 'posts'

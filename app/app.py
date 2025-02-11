@@ -10,7 +10,7 @@ from app.db_functions import (
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
     get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth,
     get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs,
-    get_user_ratings, get_recent_ratings, rate_sim, search_sim, unfollow_user
+    get_user_ratings, get_recent_ratings, rate_sim, record_song_view, search_sim, unfollow_user
 )
 from app.index_song_info import get_cached_songs, initialize_cache, update_cache_if_needed
 from flask_migrate import Migrate
@@ -231,6 +231,19 @@ def view_song(song_id):
     ratings = get_song_recent_ratings(song_id)
     posts = get_songs_recent_posts(song_id)
 
+    session = db.session()
+    try:
+        if song_info:
+            # Refresh the song_info object to make sure it is attached to the session
+            session.refresh(song_info)
+    except Exception as e:
+        print(f"Error refreshing song info: {e}")
+    finally:
+        session.close()
+
+    user_id = current_user.id if current_user.is_authenticated else None
+    record_song_view(user_id, song_id)
+
     if not song_info:
         return "Song not found", 404  # Handle case where song doesn't exist
 
@@ -242,6 +255,19 @@ def search_view_song(spotify_id):
     song_info, average_rating= get_song_by_spotify_id(spotify_id)
     ratings = get_search_song_recent_ratings(spotify_id)
     posts = get_search_song_recent_posts(spotify_id)
+    
+    session = db.session()
+    try:
+        if song_info:
+            # Refresh the song_info object to make sure it is attached to the session
+            session.refresh(song_info)
+    except Exception as e:
+        print(f"Error refreshing song info: {e}")
+    finally:
+        session.close()
+
+    user_id = current_user.id if current_user.is_authenticated else None
+    record_song_view(user_id, song_info.id)
 
     if not song_info:
         return "Song not found", 404  # Handle case where song doesn't exist

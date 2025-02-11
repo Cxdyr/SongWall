@@ -31,6 +31,7 @@
                 {% if song_info.release_date %}
                     <p><strong>Release Date:</strong> {{ song_info.release_date }}</p>
                 {% endif %}
+                <p><strong>Views: </strong>{{song_info.views}}</p>
                 <p><strong>Average Rating: </strong> {{average_rating}}</p>
                 <a href="{{ song_info.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
             </div>

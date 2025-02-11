@@ -3,7 +3,7 @@ import string
 from flask_login import current_user
 from sqlalchemy import func
 from app.songwall_search import search_songs
-from app.models import Follow, Post, User, db, Rating, Song  
+from app.models import Follow, Post, User, View, db, Rating, Song  
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from faker import Faker
@@ -70,6 +70,7 @@ def get_song_by_id(song_id):
 
     return song, average_rating
 
+
 def get_song_id_meth(song_id):
     """Uses my database to get song info"""
     song = Song.query.filter_by(id=song_id).first()
@@ -85,6 +86,8 @@ def get_song_by_spotify_id(spotify_id):
     :return: The song object or None if not found and avg rating
     """
     song = get_song_spotify_id_meth(spotify_id)
+    db.session.commit()
+
     song_id = song.id
     average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
     return song, average_rating
@@ -251,6 +254,7 @@ def get_popular_songwall_songs(amount):
             Song.album_name,
             Song.album_image, 
             Song.spotify_url,
+            Song.views,
             func.avg(Rating.rating).label("avg_rating"),
             func.count(Rating.rating).label("rating_count")  
         )
@@ -523,6 +527,42 @@ def get_potential_songs(user_id):
                 break
 
     return potential_songs
+
+
+def record_song_view(user_id, song_id):
+    # Create a new session
+    session = db.session()
+
+    try:
+        # If the user is logged in, track the view for the user
+        if user_id:
+            # Check if the view already exists for the logged-in user
+            existing_view = session.query(View).filter_by(user_id=user_id, song_id=song_id).first()
+            if not existing_view:
+                new_view = View(user_id=user_id, song_id=song_id)
+                session.add(new_view)
+        else:
+            # Track view for users who are not logged in (user_id is None)
+            new_view = View(user_id=None, song_id=song_id)
+            session.add(new_view)
+
+        # Update the view count in the Song table by incrementing the existing count
+        song = session.query(Song).filter_by(id=song_id).first()
+        if song:
+            song.views += 1  # Increment the views column by 1
+
+        # Commit the transaction
+        session.commit()
+
+    except Exception as e:
+        # If any exception occurs, rollback the transaction
+        session.rollback()
+        print(f"Error occurred while recording song view: {e}")
+
+    finally:
+        # Close the session
+        session.close()
+
 
     
 

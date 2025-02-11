@@ -42,3 +42,12 @@ document.getElementById('load-more').addEventListener('click', function () {
             console.error("Error loading more posts:", error);
         });
 });
+
+
+document.getElementById("toggle-post-form").addEventListener("click", function () {
+    let formContainer = document.getElementById("post-form-container");
+    let toggleButton = document.getElementById("toggle-post-form");
+
+    formContainer.style.display = "block"; // Show the form
+    toggleButton.style.display = "none";  // Hide the "Post +" button
+});
