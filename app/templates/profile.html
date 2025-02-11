@@ -12,7 +12,7 @@
         <div class="container">
             <a href="/dashboard"><h1>{{ current_user.username }}'s Profile</h1></a>
             <nav>
-                <a href="{{url_for('view_posts', username = current_user.username)}}">{{current_user.first_name}}'s Posts</a></p>
+                <a href="{{url_for('view_posts', username = current_user.username)}}">{{current_user.first_name}}'s posts</a></p>
                 <a href="/dashboard">Back</a>
                 <a href="/settings">Settings</a>
             </nav>

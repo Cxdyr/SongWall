@@ -133,6 +133,8 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
         new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id, username=username)
         db.session.add(new_rating)
 
+        new_post = Post(post_message=str(rating)+"/10, new rating!",user_id=user_id,song_id=song.id)
+        db.session.add(new_post)
     db.session.commit()
     return {"success": "Rating submitted successfully!"}
 
@@ -474,29 +476,31 @@ def check_if_following(user_id, followed_id):
 
 
 
+from sqlalchemy.orm import joinedload
 
 def get_potential_songs(user_id):
-    # Fetch the user's recent rated artists and their associated songs in one query
-    recent_rated_artists = (
+    # Fetch the user's recent rated songs
+    recent_rated_songs = (
         db.session.query(Rating)
         .options(joinedload(Rating.song))  # Eager load the song relationship
-        .filter(Rating.user_id == user_id)  # Filter by the specific user
-        .order_by(Rating.time_stamp.desc())  # Order by most recent ratings
+        .filter(Rating.user_id == user_id)
+        .order_by(Rating.time_stamp.desc())
         .limit(6)
         .all()
     )
 
     # If the user has no rated songs, return None
-    if not recent_rated_artists:
+    if not recent_rated_songs:
         return None
 
-    artists = set()  # Use a set to store unique artist names
+    artists = set()  # Store unique artist names
+    rated_song_names = set()  # Store names of already rated songs
     potential_songs = []
 
-    # Extract unique artists from the user's recent ratings
-    for rating in recent_rated_artists:
-        artist = rating.song.artist_name
-        artists.add(artist)
+    # Extract unique artists and track names from the user's recent ratings
+    for rating in recent_rated_songs:
+        artists.add(rating.song.artist_name)
+        rated_song_names.add(rating.song.track_name.lower())  # Normalize case for comparison
 
     # Fetch up to 3 songs per artist that the user hasn't rated
     for artist in artists:
@@ -508,7 +512,11 @@ def get_potential_songs(user_id):
         songs_added = 0  # Counter to track songs added per artist
 
         for song in songs_by_artist:
-            # Check if the user has already rated this song
+            # Check if the song has already been rated by track name
+            if song.track_name.lower() in rated_song_names:
+                continue  # Skip duplicates
+
+            # Check if the user has rated this specific release of the song
             existing_rating = (
                 db.session.query(Rating)
                 .filter(Rating.user_id == user_id, Rating.song_id == song.id)
@@ -522,6 +530,7 @@ def get_potential_songs(user_id):
                 break
 
     return potential_songs
+
     
 
 #-------------------ADMIN FUNCTIONS ----------------------
@@ -590,6 +599,9 @@ def rate_song(user, id): # randomly selects a rating, lowest rating being 4 to g
     else:
         new_rating = Rating(rating=rating, comment="", song_id=id, user_id=user.id, username=user.username)
         db.session.add(new_rating)
+
+        new_post = Post(post_message=str(rating)+"/10 new rating!",user_id=user.id,song_id=id)
+        db.session.add(new_post)
 
     db.session.commit()
     

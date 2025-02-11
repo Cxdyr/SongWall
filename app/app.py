@@ -132,7 +132,6 @@ def logout():
 @login_required
 def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
-    recent_ratings = get_recent_ratings(20)  #getting the 10 recent ratings
     potential_songs = get_potential_songs(current_user.id)
 
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
@@ -146,7 +145,7 @@ def dashboard():
             add_post(current_user.id, song_id, post_message) # add post to db 
             return redirect(url_for('dashboard'))
         
-    return render_template('dashboard.html', recent_ratings=recent_ratings, followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs)
+    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs)
 
 
 

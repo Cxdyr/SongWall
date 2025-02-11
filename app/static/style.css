@@ -864,11 +864,14 @@ h4 {
 
 }
 
-.post-left strong a {
-    text-decoration: none;
-    color: #333;
-    font-size: 16px;
+.post-left a:hover{
+    width: 30%;
+    text-align: left;
+    overflow-wrap: anywhere;
+    color: rgb(5, 230, 238);
+
 }
+
 
 .post-song {
     font-size: 14px;
