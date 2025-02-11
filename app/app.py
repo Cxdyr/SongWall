@@ -5,7 +5,7 @@ from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
     add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users, delete_user_by_id,
-    follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info,
+    follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_most_viewed_songs_last_30_days,
     get_popular_songwall_songs, get_potential_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
     get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth,
@@ -133,19 +133,19 @@ def logout():
 def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
     potential_songs = get_potential_songs(current_user.id)
+    most_viewed_songs = get_most_viewed_songs_last_30_days()
 
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
 
-    if request.method == 'POST':  #if post method it means a user is posting a message so we get the song id for reference FK and the info in the message and post it to db before redirecting back
+    if request.method == 'POST':  
         song_id = request.form.get('song_id')
         post_message = request.form.get('post_message')
-
         if song_id and post_message:
-            add_post(current_user.id, song_id, post_message) # add post to db 
+            add_post(current_user.id, song_id, post_message)
             return redirect(url_for('dashboard'))
         
-    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs)
+    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs, top_songs=most_viewed_songs)
 
 
 

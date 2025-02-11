@@ -58,6 +58,34 @@
             </form>
         </section>
     {% endif %}
+
+
+    <section class="display-songs">
+        <h3>Most Viewed</h3>
+        <div class="song-carousel">
+            {% if not top_songs %}
+                <p>No viewed songs!</p>
+            {% else %}
+                <div class="song-list" id="top-rated-list">
+                    {% for song in top_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <h3>
+                                <a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a>
+                            </h3>
+                            <p>{{ song.artist_name }}</p>
+                            <p>{{ song.album_name }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    
+    
+    
     
         <section class="display-songs">
             <h3>Suggested Songs</h3>

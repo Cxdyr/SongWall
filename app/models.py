@@ -111,11 +111,10 @@ class View(db.Model):
     timestamp = Column(db.DateTime, default=func.now(), nullable=False)
 
     user = db.relationship('User', back_populates='views')
-    song = db.relationship('Song', back_populates='views_relationship', lazy='joined')  # Keep the relationship as is
+    song = db.relationship('Song', back_populates='views_relationship', lazy='joined', overlaps="song_view")
 
     def __repr__(self):
         return f"<View(user_id='{self.user_id}', song_id='{self.song_id}', timestamp='{self.timestamp}')>"
-
 
 class Post(db.Model):
     __tablename__ = 'posts'

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 import random
 import string
 from flask_login import current_user
@@ -564,7 +565,16 @@ def record_song_view(user_id, song_id):
         session.close()
 
 
-    
+
+def get_most_viewed_songs_last_30_days():
+    """
+    Returns the top 12 Song objects ordered by their view count (Song.views)
+    in descending order. It assumes that Song.views reflects the view count
+    for the last 30 days.
+    """
+    return Song.query.order_by(Song.views.desc()).limit(10).all()
+
+
 
 #-------------------ADMIN FUNCTIONS ----------------------
 
