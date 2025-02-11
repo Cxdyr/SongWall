@@ -6,13 +6,13 @@ document.getElementById('load-more').addEventListener('click', function () {
         .then(response => response.json())
         .then(data => {
             let container = document.getElementById('posts-container');
+
             data.forEach(post => {
                 let postElement = document.createElement('div');
                 postElement.classList.add('post');
 
-                // Use the profile URL and song ID from the data
-                let profileUrl = post.profile_url;  // The URL for the profile
-                let songUrl = `/view/${post.song_id}`;  // The URL for the song using the song ID
+                let profileUrl = post.profile_url;
+                let songUrl = `/view/${post.song_id}`;
 
                 postElement.innerHTML = `
                     <div class="post-left">
@@ -32,7 +32,10 @@ document.getElementById('load-more').addEventListener('click', function () {
             button.setAttribute('data-offset', offset);
 
             if (data.length < 10) {
-                button.style.display = 'none';  // Hide the button if there are less than 10 posts
+                button.style.display = 'none'; 
+            } else {
+                // Move the button to always be at the end
+                container.appendChild(button);
             }
         })
         .catch(error => {

@@ -25,17 +25,10 @@ def get_user_ratings(user_id):
         .filter_by(user_id=user_id)
         .join(Song, Rating.song_id == Song.id)
         .order_by(Rating.rating.desc())
-        .limit(10)
+        .limit(20)
         .all()
     )
 
-    recent_ratings = (
-        Rating.query
-        .filter_by(user_id=user_id)
-        .join(Song, Rating.song_id == Song.id)
-        .order_by(Rating.time_stamp.desc())
-        .all()
-    )
 
     ratings_ct = Rating.query.filter_by(user_id=user_id).count()
 
@@ -48,7 +41,7 @@ def get_user_ratings(user_id):
         avg_rating = round(avg_rating, 2)  # 2 decimal
 
 
-    return top_ratings, recent_ratings, ratings_ct, avg_rating
+    return top_ratings, ratings_ct, avg_rating
 
 #Get rating by sporify id, used for deleting ratings from a users rated songs in the settings page
 def get_rating_by_spotify_id(user_id, spotify_id):
@@ -133,13 +126,15 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
         new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id, username=username)
         db.session.add(new_rating)
 
-        new_post = Post(post_message=str(rating)+"/10, new rating!",user_id=user_id,song_id=song.id)
+        new_post = Post(post_message="Just rated, "+rating+"/10.",user_id=user_id,song_id=song.id)
         db.session.add(new_post)
     db.session.commit()
     return {"success": "Rating submitted successfully!"}
 
 #Getting the top rated songs, takes amount usually 9 or 10, and gets the top rated songs and average rating for the index page 
 def get_top_rated_songs(amount):
+
+
     """Retrieve the top-rated songs along with their average rating."""
     top_songs = (
         db.session.query(
@@ -359,7 +354,7 @@ def get_recent_posts(limit=10, offset=0):
 
 
 #Get recent posts from specific user by username, this will popular the view_posts/username page where we can see specific users posts.
-def get_recent_user_posts(username, limit=10, offset=0):
+def get_recent_user_posts(username):
     """
     Get recent posts with user and song details for a specific user, ordered by timestamp.
     Supports pagination via limit and offset.
@@ -368,8 +363,6 @@ def get_recent_user_posts(username, limit=10, offset=0):
              .filter(User.username == username)  # Filter by the given username
              .options(joinedload(Post.user), joinedload(Post.song))  # Eager loading for user and song
              .order_by(Post.time_stamp.desc())  # Order by timestamp in descending order
-             .limit(limit)  # Apply the limit
-             .offset(offset)  # Apply the offset
              .all())  # Execute the query and return the results
     
     userinfo = db.session.query(User).filter_by(username=username).first()
@@ -600,7 +593,7 @@ def rate_song(user, id): # randomly selects a rating, lowest rating being 4 to g
         new_rating = Rating(rating=rating, comment="", song_id=id, user_id=user.id, username=user.username)
         db.session.add(new_rating)
 
-        new_post = Post(post_message=str(rating)+"/10 new rating!",user_id=user.id,song_id=id)
+        new_post = Post(post_message=str(rating)+"/10 new rating for song",user_id=user.id,song_id=id)
         db.session.add(new_post)
 
     db.session.commit()

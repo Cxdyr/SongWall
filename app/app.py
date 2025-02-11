@@ -253,8 +253,8 @@ def search_view_song(spotify_id):
 @login_required
 def profile():
     user_id = current_user.id
-    user_ratings, recent_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
-    return render_template('profile.html', ratings=user_ratings,recent_ratings=recent_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
+    user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
+    return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
 
 #Route for following users
 @app.route('/follow/<int:followed_id>', methods=['POST'])
@@ -338,12 +338,10 @@ def view_profile(username):
         return redirect(url_for('profile'))
 
     profile_info = get_profile_info(username)
-    recent_ratings = get_recent_ratings_username(username)
-
     is_following = check_if_following(current_user.id, profile_info["user"].id)
     
     if profile_info:
-        return render_template('view_profile.html', profile_info=profile_info, recent_ratings=recent_ratings, is_following=is_following)
+        return render_template('view_profile.html', profile_info=profile_info, is_following=is_following)
     else:
         return redirect(url_for('dashboard'))
     
