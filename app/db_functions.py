@@ -243,6 +243,30 @@ def add_songs_to_db(songs):
 
 
 
+#Get recent songwall songs (based on recent ratings)
+def get_recent_songs(amount):
+    """Retreive the most recent rated songs - aka popular songs good or bad from our songwall db """
+    pop_songs = (
+        db.session.query(
+            Song.id, 
+            Song.track_name, 
+            Song.artist_name, 
+            Song.album_name,
+            Song.album_image, 
+            Song.spotify_url,
+            Song.views,
+            func.avg(Rating.rating).label("avg_rating"),
+            func.count(Rating.rating).label("rating_count")  
+        )
+        .join(Rating, Rating.song_id == Song.id)
+        .group_by(Song.id)
+        .order_by((Rating.time_stamp).desc())  # Sort by recency in rating
+        .limit(amount)
+        .all()
+    )
+    
+    return pop_songs
+
 
 #Get popular songwall songs, takes the amount of popular songs we want, the highest count of ratings in our songwall db are the most popular bad or good and we return these for display
 def get_popular_songwall_songs(amount):
@@ -473,8 +497,6 @@ def check_if_following(user_id, followed_id):
     ).scalar()
 
 
-
-from sqlalchemy.orm import joinedload
 
 def get_potential_songs(user_id):
     # Fetch the user's recent rated songs

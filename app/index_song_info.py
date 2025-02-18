@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 import threading
 from app.models import Rating, db
-from app.db_functions import get_popular_songwall_songs, get_top_rated_songs
+from app.db_functions import get_recent_songs, get_top_rated_songs
 
 # Global cache variables
-pop_songs_cache = None
+recent_songs_cache = None
 top_rated_songs_cache = None
 last_cache_update = None
 cache_lock = threading.Lock()  # Lock to prevent concurrent cache updates (SAFETY!!)
@@ -13,9 +13,9 @@ def update_cached_data(app):
     """
     Updates the popular and top-rated songs caches by querying the database, used for efficient caching
     """
-    global pop_songs_cache, top_rated_songs_cache
+    global recent_songs_cache, top_rated_songs_cache
     with app.app_context():
-        pop_songs_cache = get_popular_songwall_songs(9)
+        recent_songs_cache = get_recent_songs(9)
         top_rated_songs_cache = get_top_rated_songs(9)
         print(f"Cache updated at {datetime.now(timezone.utc)}")
 
@@ -23,8 +23,8 @@ def initialize_cache(app):
     """
     Initialize the cache on the first page load or if cache is empty.
     """
-    global pop_songs_cache, top_rated_songs_cache
-    if not pop_songs_cache or not top_rated_songs_cache:
+    global recent_songs_cache, top_rated_songs_cache
+    if not recent_songs_cache or not top_rated_songs_cache:
         update_cached_data(app)
 
 def update_cache_if_needed(app):
@@ -52,4 +52,4 @@ def get_cached_songs():
     """
     Return the cached songs.
     """
-    return pop_songs_cache, top_rated_songs_cache
+    return recent_songs_cache, top_rated_songs_cache

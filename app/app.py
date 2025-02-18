@@ -57,8 +57,8 @@ def index():
     initialize_cache(current_app) 
     update_cache_if_needed(current_app)
 
-    pop_songs, top_rated_songs = get_cached_songs()
-    return render_template('index.html', pop_songs=pop_songs, top_rated_songs=top_rated_songs)
+    recent_songs, top_rated_songs = get_cached_songs()
+    return render_template('index.html', recent_songs=recent_songs, top_rated_songs=top_rated_songs)
 
 @app.route('/blog')
 def blog():

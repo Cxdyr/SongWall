@@ -10,7 +10,7 @@
 <body>
     <header id="header">
         <div class="container">
-            <h1>Songwall</h1>
+            <a href="/"><h1>Songwall</h1></a>
             <nav>
                 <a href="/login">Login</a>
                 <a href="/register">Register</a>
@@ -20,18 +20,18 @@
 
     <main>
         <section>
-            <h2>Welcome to Songwall</h2>
-            <p>Explore, rate, post about, and share your favorite songs on your song wall! Login or Register to get started. </p>
+            <h2>Welcome to Songwall!</h2>
+            <p>Explore, rate, post about, and share your favorite songs on your song wall. Login or Register to get started. </p>
         </section>
 
         <section class="display-songs">
-            <h2>Popular Songs</h2>
+            <h2>Recently Rated Songs</h2>
             <div class="song-carousel">
-                {% if not pop_songs %}
-                <p>There are no popular songs currently</p>
+                {% if not recent_songs %}
+                <p>There are no recently rated songs currently</p>
                 {% else %}
                 <div class="song-list" id="top-rated-list">
-                    {% for song in pop_songs %}
+                    {% for song in recent_songs %}
                     <div class="song2">
                         <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"></a>
                         <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>

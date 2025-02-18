@@ -740,12 +740,12 @@ h4 {
 
 /* Ratings Container */
 .ratings-songview-container {
-    max-width: 600px; /* Set a fixed width */
+    max-width: 500px; /* Set a fixed width */
     margin: 2rem auto;
     padding: 1rem;
     background-color: #2a2a40;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.582);
 }
 
 /* Scrollable Reviews List */
@@ -804,7 +804,8 @@ h4 {
 .rating-comment {
     font-style: italic;
     font-size: 1rem;
-    margin-top: 5px;
+    margin-top: 1.5px;
+    margin-bottom: 1px;
     color: #333;
 }
 
@@ -826,7 +827,7 @@ h4 {
     max-height: 255px;
     overflow-y: auto;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.582);
 }
 
 .display-posts-users {
@@ -1242,7 +1243,7 @@ table tbody tr:hover {
 
 
     .ratings-songview-container {
-        max-width: 95%;
+        max-width: 320px;
         padding: 1rem;
     }
 
@@ -1290,7 +1291,7 @@ table tbody tr:hover {
     padding: 15px;
     background: #292942;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.582);
     box-sizing: border-box;  /* Ensure padding is included in width */
 
     max-height: 240px;
