@@ -243,9 +243,8 @@ def add_songs_to_db(songs):
 
 
 
-#Get recent songwall songs (based on recent ratings)
 def get_recent_songs(amount):
-    """Retreive the most recent rated songs - aka popular songs good or bad from our songwall db """
+    """Retrieve the most recent rated songs - aka popular songs good or bad from our songwall db"""
     pop_songs = (
         db.session.query(
             Song.id, 
@@ -256,11 +255,12 @@ def get_recent_songs(amount):
             Song.spotify_url,
             Song.views,
             func.avg(Rating.rating).label("avg_rating"),
-            func.count(Rating.rating).label("rating_count")  
+            func.count(Rating.rating).label("rating_count"),
+            func.max(Rating.time_stamp).label("latest_rating_time")  
         )
         .join(Rating, Rating.song_id == Song.id)
         .group_by(Song.id)
-        .order_by((Rating.time_stamp).desc())  # Sort by recency in rating
+        .order_by(func.max(Rating.time_stamp).desc())  # Order by the most recent rating time
         .limit(amount)
         .all()
     )
