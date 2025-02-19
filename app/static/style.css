@@ -990,6 +990,58 @@ h4 {
 }
 
 
+
+
+
+.genre-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+    overflow-x: auto; /* Enables horizontal scrolling if needed */
+    white-space: nowrap; /* Prevents unwanted wrapping */
+    padding: 10px;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.genre-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome/Safari */
+}
+
+.genre-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.genre-btn {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    flex: 0 0 auto; /* Prevent shrinking */
+    white-space: nowrap; /* Prevents text breaking */
+}
+
+.genre-btn:hover {
+    background-color: #575757;
+    transform: scale(1.05);
+}
+
+.genre-btn.active {
+    background-color: #333333;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -1114,7 +1166,7 @@ table tbody tr:hover {
         justify-content: space-between;
         align-items: center;
         padding: 5px;
-        background: #555050;
+        background:  #3a3a5c;
         border-radius: 8px;
         overflow: hidden;
     }
@@ -1377,6 +1429,14 @@ table tbody tr:hover {
     box-sizing: border-box; /* Ensure padding is included in width */
 }
 
+.genre-container {
+    overflow-x: auto; /* Ensure mobile scrolling */
+    justify-content: flex-start;
+    padding: 10px 5px;
+}
+.genre-buttons {
+    flex-wrap: nowrap; /* Prevent wrapping, force horizontal scrolling */
+}
 
 
 }

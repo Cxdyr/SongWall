@@ -1,6 +1,7 @@
 from flask import Flask, app, current_app, jsonify, render_template, request, redirect, url_for, flash, g
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from app.api_auth import get_access_token
+from app.genere_search import get_popular_songs_by_genre
 from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
@@ -126,6 +127,13 @@ def logout():
     flash('You have been logged out successfully!', 'info')
     return redirect(url_for('login'))
 
+#Route for grabbing the popular songs by genre to prevent page reload
+@app.route('/genre_songs/<genre>')
+@login_required
+def genre_songs_ajax(genre):
+    # Get the genre songs (30 results sorted, top 10 selected, with DB check/insert)
+    songs = get_popular_songs_by_genre(genre)
+    return jsonify(songs=songs)
 
 #Logged in home page
 @app.route('/dashboard', methods=['GET', 'POST']) 
@@ -134,9 +142,13 @@ def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
     potential_songs = get_potential_songs(current_user.id)
     most_viewed_songs = get_most_viewed_songs_last_30_days()
-
     recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
+
+    # Get selected genre from query parameter; default to "pop"
+    selected_genre = request.args.get('genre', 'pop')
+    # Retrieve popular songs for the selected genre
+    genre_songs = get_popular_songs_by_genre(selected_genre)
 
     if request.method == 'POST':  
         song_id = request.form.get('song_id')
@@ -145,7 +157,7 @@ def dashboard():
             add_post(current_user.id, song_id, post_message)
             return redirect(url_for('dashboard'))
         
-    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs, top_songs=most_viewed_songs)
+    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs, top_songs=most_viewed_songs, selected_genre=selected_genre, genre_songs=genre_songs)
 
 
 
@@ -201,7 +213,7 @@ def search_friends():
         return redirect(url_for('view_profile', username=user.username))
     else:
         flash('User not found.', 'danger')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('search'))
 
 #Rate page
 @app.route('/rate/<string:spotify_id>', methods=['GET', 'POST'])
