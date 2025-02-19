@@ -1,7 +1,7 @@
 from flask import Flask, app, current_app, jsonify, render_template, request, redirect, url_for, flash, g
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from app.api_auth import get_access_token
-from app.genere_search import get_popular_songs_by_genre
+from app.genre_search import get_popular_songs_by_genre
 from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
@@ -148,7 +148,7 @@ def dashboard():
     # Get selected genre from query parameter; default to "pop"
     selected_genre = request.args.get('genre', 'pop')
     # Retrieve popular songs for the selected genre
-    genre_songs = get_popular_songs_by_genre(selected_genre)
+    genre_songs = get_popular_songs_by_genre(selected_genre, g.access_token)
 
     if request.method == 'POST':  
         song_id = request.form.get('song_id')

@@ -2,12 +2,13 @@ import requests
 from app.api_auth import get_access_token
 from app.models import Song, db
 
-def get_popular_songs_by_genre(genre):
+access_token = get_access_token()
+def get_popular_songs_by_genre(genre, access_token):
     """
     Retrieve 30 tracks from Spotify for the given genre, sort by popularity (descending), select the top 10, and add any new songs to the database.
     Returns a list of friendly song dictionaries.
     """
-    access_token = get_access_token()
+
     if not access_token:
         print("No access token available.")
         return []
