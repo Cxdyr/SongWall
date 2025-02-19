@@ -132,7 +132,7 @@ def logout():
 @login_required
 def genre_songs_ajax(genre):
     # Get the genre songs (30 results sorted, top 10 selected, with DB check/insert)
-    songs = get_popular_songs_by_genre(genre)
+    songs = get_popular_songs_by_genre(genre, g.access_token)
     return jsonify(songs=songs)
 
 #Logged in home page
