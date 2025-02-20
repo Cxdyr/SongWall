@@ -310,6 +310,54 @@ form button:hover{
 
 
 
+/* Optional: Center the entire button in its container */
+.pinned-song p {
+    text-align: center; /* Centers the button horizontally in the <p> */
+    margin: 10px 0;
+}
+
+.pin-selection {
+    margin: 10px 0; /* Reduced from default or previous spacing */
+    text-align: center; /* Centers the form elements */
+}
+.pin-form {
+    display: flex;
+    justify-content: center; /* Centers the select */
+    margin: 5px 0;
+}
+
+.pin-form select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #d8d8d8;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    width: 250px;
+    text-align: center;
+    text-align-last: center;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="%23333" d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.pin-form select:focus {
+    outline: none;
+    border-color: var(--theme-color);
+    box-shadow: 0 0 3px var(--theme-color);
+}
+
+/* Optional: Tighten up the "No song pinned yet" text */
+.pin-selection p {
+    margin: 5px 0; /* Reduces vertical whitespace */
+    font-size: 14px;
+    color: #666; /* Softer color for less emphasis */
+}
+
 /* Scroll Button */
 .scroll-btn {
     position: absolute;

@@ -305,7 +305,7 @@ def get_recent_ratings_username(username):
 
 #Get profile info by username, returns the average rating, the user info, the rating amount, and the ratings the user has rated, this is used in the view profile page
 def get_profile_info(username):
-    """Retreive user profile information for view route"""
+    """Retrieve user profile information for view route"""
     # Query the user by username
     user = db.session.query(User).filter_by(username=username).first()
     
@@ -320,8 +320,10 @@ def get_profile_info(username):
         if avg_rating is None:
             avg_rating = 0  
         else:
-            avg_rating = round(avg_rating,2)
+            avg_rating = round(avg_rating, 2)
 
+        # Get the pinned rating for this user
+        pinned_rating = db.session.query(Rating).filter_by(user_id=user.id, is_pinned=True).first()
 
         user_ratings = []
         
@@ -335,14 +337,14 @@ def get_profile_info(username):
                     'comment': rating.comment,
                     'album_name': song.album_name
                 })
-
-
         
+        # Return all profile info, including pinned rating
         return {
             'user': user,
             'ratings': user_ratings,
-            'ratings_ct':ratings_ct,
-            'avg_rating':avg_rating
+            'ratings_ct': ratings_ct,
+            'avg_rating': avg_rating,
+            'pinned_rating': pinned_rating
         }
     else:
         return None

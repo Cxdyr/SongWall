@@ -95,6 +95,8 @@ class Rating(db.Model):
     song_id = Column(Integer, ForeignKey('songs.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     username = Column(String, nullable=False)
+    is_pinned = Column(Boolean, default=False)  
+
 
     user = db.relationship('User', foreign_keys=[user_id], back_populates='ratings')
     song = db.relationship('Song', back_populates='ratings')

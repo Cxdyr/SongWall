@@ -6,6 +6,27 @@
     <link rel="stylesheet" href="/static/style.css"> 
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
     <title>{{ profile_info.user.username }}'s Songwall</title>
+    <!-- Dynamic Metadata for Sharing -->
+    {% if profile_info.pinned_rating and request.args.get('share') == 'true' %}
+        <!-- Open Graph Metadata -->
+        <meta property="og:title" content="{{ profile_info.pinned_rating.song.track_name }} - Pinned by {{ profile_info.user.username }}">
+        <meta property="og:description" content="Check out this song pinned by {{ profile_info.user.username }}!">
+        <meta property="og:image" content="{{ profile_info.pinned_rating.song.album_image }}">
+        <meta property="og:url" content="{{ url_for('view_profile', username=profile_info.user.username, _external=True) }}">
+        <meta property="og:type" content="website">
+        <!-- Twitter Card Metadata -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ profile_info.pinned_rating.song.track_name }} - Pinned by {{ profile_info.user.username }}">
+        <meta name="twitter:description" content="Check out this song pinned by {{ profile_info.user.username }}!">
+        <meta name="twitter:image" content="{{ profile_info.pinned_rating.song.album_image }}">
+    {% else %}
+        <!-- Default Metadata -->
+        <meta property="og:title" content="{{ profile_info.user.username }}'s Songwall">
+        <meta property="og:description" content="View {{ profile_info.user.username }}'s song ratings and pinned song on SongWall!">
+        <meta property="og:url" content="{{ url_for('view_profile', username=profile_info.user.username, _external=True) }}">
+        <meta property="og:type" content="website">
+        <meta name="twitter:card" content="summary">
+    {% endif %}
 </head>
 <body style="--theme-color: {{ profile_info.user.theme_color or '#333' }};">
     <header>
@@ -21,42 +42,55 @@
             </form>
             {% endif %}
             <nav>
-            <a href="{{url_for('view_posts', username = profile_info.user.username)}}">{{profile_info.user.first_name}}'s posts</a></p>
-            <a href="/dashboard">Home</a>
-        </nav>
+                <a href="{{ url_for('view_posts', username=profile_info.user.username) }}">{{ profile_info.user.first_name }}'s posts</a>
+                <a href="/dashboard">Home</a>
+            </nav>
         </div>
     </header>
     <div class="profile-container">
-        <p class="profile"> {{profile_info.user.bio }}</p>
-        <p class="profile">Average: <strong>{{profile_info.avg_rating}}/10, </strong>  Rated: <strong>{{profile_info.ratings_ct}}</strong></p>
-     </div>
+        <p class="profile">{{ profile_info.user.bio }}</p>
+        <p class="profile">Average: <strong>{{ profile_info.avg_rating }}/10</strong>, Rated: <strong>{{ profile_info.ratings_ct }}</strong></p>
+    </div>
+
     <div class="profile-container">
         <div class="ratings-wrapper">
-            <h4>{{profile_info.user.first_name}}'s Top Songs</h4>
+                    <!-- Pinned Song Display -->
+        {% if profile_info.pinned_rating %}
+        <div class="pinned-song">
+            <h4>Vibin' to...</h4>
+            <div class="rating-item">
+                <a href="{{ profile_info.pinned_rating.song.spotify_url }}" target="_blank">
+                    <img src="{{ profile_info.pinned_rating.song.album_image }}" alt="Album Art">
+                </a>
+                <h3><a class="black">{{ profile_info.pinned_rating.song.track_name }} - {{ profile_info.pinned_rating.song.artist_name }}</a></h3>
+            </div>
+        </div>
+    {% endif %}
+
+            <h4>{{ profile_info.user.first_name }}'s Top Songs</h4>
             <div class="ratings-container">
                 {% if not profile_info.ratings %}
-                <p>{{ profile_info.user.username }} has not rated any songs.</p>
+                    <p>{{ profile_info.user.username }} has not rated any songs.</p>
                 {% else %}
-                {% for rating in profile_info.ratings %}
-                    <div class="rating-item">
-                        <a href="{{ rating.song.spotify_url }}" target="_blank">
-                            <img src="{{ rating.song.album_image }}" alt="Album Art">
-                        </a> 
-                        <div class="rating-info">
-                            <h3> <a class="black" href="{{url_for('view_song', song_id = rating.song.id)}}">{{ rating.song.track_name }} - {{rating.song.artist_name }}</a></h3>
-                            <p>{{rating.song.album_name}}</p>
-                            <p>{{rating.song.release_date[:4]}}</p>
-                            <p>Rating: <strong>{{ rating.rating }}/10</strong></p>
-                            {% if rating.comment %}
-                                <p>"{{ rating.comment }}"</p>
-                            {% endif %}
+                    {% for rating in profile_info.ratings %}
+                        <div class="rating-item">
+                            <a href="{{ rating.song.spotify_url }}" target="_blank">
+                                <img src="{{ rating.song.album_image }}" alt="Album Art">
+                            </a> 
+                            <div class="rating-info">
+                                <h3><a class="black" href="{{ url_for('view_song', song_id=rating.song.id) }}">{{ rating.song.track_name }} - {{ rating.song.artist_name }}</a></h3>
+                                <p>{{ rating.song.album_name }}</p>
+                                <p>{{ rating.song.release_date[:4] }}</p>
+                                <p>Rating: <strong>{{ rating.rating }}/10</strong></p>
+                                {% if rating.comment %}
+                                    <p>"{{ rating.comment }}"</p>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
                 {% endif %}
             </div>
         </div>
     </div>
-    
 </body>
 </html>

@@ -286,13 +286,84 @@ def search_view_song(spotify_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings, average_rating=average_rating, posts=posts)
 
-#Logged in user profile page, includes settings redirect
 @app.route('/profile', methods=['GET'])
-@login_required
 def profile():
-    user_id = current_user.id
-    user_ratings, ratings_ct, avg_ratings = get_user_ratings(user_id)  # Calling my function to get rated songs from user db 
-    return render_template('profile.html', ratings=user_ratings, ratings_ct=ratings_ct, avg_ratings=avg_ratings)
+    # Check if this is a share link (public access) or authenticated access
+    if request.args.get('share') == 'true':
+        # Public share view
+        if not current_user.is_authenticated:
+            # For unauthenticated users, use a default or queried user (e.g., from a username in the URL if we extend this)
+            user = User.query.filter_by(username='test').first()  # Replace 'test' with logic to get the right user
+            if not user:
+                return "User not found.", 404
+        else:
+            user = current_user
+    else:
+        # Private authenticated view
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))  # Or your login route
+        user = current_user
+
+    user_ratings, ratings_ct, avg_ratings = get_user_ratings(user.id)
+    pinned_rating = Rating.query.filter_by(user_id=user.id, is_pinned=True).first()
+    return render_template(
+        'profile.html',
+        ratings=user_ratings,
+        ratings_ct=ratings_ct,
+        avg_ratings=avg_ratings,
+        pinned_rating=pinned_rating,
+        current_user=user  # Pass user explicitly since it might not be current_user
+    )
+
+
+@app.route('/pin_rating/<int:rating_id>', methods=['POST'])
+@login_required
+def pin_rating(rating_id):
+    # Handle form submission with rating_id from POST data
+    selected_rating_id = request.form.get('rating_id')
+    
+    if selected_rating_id == 'unpin':
+        # Unpin the current pinned song
+        pinned_rating = Rating.query.filter_by(user_id=current_user.id, is_pinned=True).first()
+        if pinned_rating:
+            pinned_rating.is_pinned = False
+            db.session.commit()
+            flash('Song unpinned successfully!', 'success')
+        return redirect(url_for('profile'))
+    
+    # Convert selected_rating_id to integer for pinning
+    try:
+        rating_id = int(selected_rating_id)
+    except ValueError:
+        flash('Invalid selection.', 'error')
+        return redirect(url_for('profile'))
+    
+    rating = Rating.query.get_or_404(rating_id)
+    if rating.user_id != current_user.id:
+        flash('You can only pin your own ratings.', 'error')
+        return redirect(url_for('profile'))
+    
+    # Unpin any existing pinned song
+    Rating.query.filter_by(user_id=current_user.id, is_pinned=True).update({'is_pinned': False})
+    # Pin the selected song
+    rating.is_pinned = True
+    db.session.commit()
+    flash('Song pinned successfully!', 'success')
+    add_post(current_user.id, rating.song_id, "Pinned new song!" )
+    return redirect(url_for('profile'))
+
+
+
+@app.route('/unpin_song', methods=['POST'])
+@login_required
+def unpin_song():
+    pinned_rating = Rating.query.filter_by(user_id=current_user.id, is_pinned=True).first()
+    if pinned_rating:
+        pinned_rating.is_pinned = False
+        db.session.commit()
+        flash('Song unpinned successfully!', 'success')
+    return redirect(url_for('profile'))
+
 
 #Route for following users
 @app.route('/follow/<int:followed_id>', methods=['POST'])
@@ -368,7 +439,6 @@ def update_theme():
         flash("Theme updated successfully!", "success")
     return redirect(url_for("profile_settings"))
 
-#View profile page, for anyone by username
 @app.route('/view/<string:username>', methods=['GET'])
 @login_required
 def view_profile(username):
@@ -376,12 +446,12 @@ def view_profile(username):
         return redirect(url_for('profile'))
 
     profile_info = get_profile_info(username)
-    is_following = check_if_following(current_user.id, profile_info["user"].id)
-    
-    if profile_info:
-        return render_template('view_profile.html', profile_info=profile_info, is_following=is_following)
-    else:
+    if not profile_info:
         return redirect(url_for('dashboard'))
+    
+    is_following = check_if_following(current_user.id, profile_info["user"].id)
+    return render_template('view_profile.html', profile_info=profile_info, is_following=is_following)
+
     
 #View user posts page, for anyone by username will show posts from this user
 @app.route('/user_posts/<string:username>', methods=['GET'])
