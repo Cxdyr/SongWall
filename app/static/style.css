@@ -10,6 +10,19 @@ body {
     text-align: center;
 }
 
+/* For Chrome, Safari, and Edge */
+body::-webkit-scrollbar {
+    width: 11px;  
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e2f;  
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #333;  /* Color of the thumb */
+    border-radius: 3px;     /* Rounded corners */
+}
 
 header {
     background: var(--theme-color);
@@ -54,6 +67,22 @@ nav a {
 nav a:hover {
     color: #a3d8f4;
 }
+
+.share-button {
+    background: none;
+    border: none;
+    color: #e4e4e4;
+    text-decoration: none;
+    font-size: 1rem;
+    margin: 0 1rem;
+    cursor: pointer;
+    font-family: inherit; /* Ensures same font as the parent */
+}
+
+.share-button:hover {
+    color: #a3d8f4;
+}
+
 
 main {
     padding: 2rem;
@@ -130,13 +159,17 @@ a.black {
     scroll-behavior: smooth; /* Smooth scrolling */
 }
 
-.song-carousel-default {
-    position: relative;
-    margin: 0 auto;
-    overflow-x: auto; /* Allow horizontal scrolling */
-    background-color: #292942;
-    padding: 1rem 0;
-    scroll-behavior: smooth; /* Smooth scrolling */
+.song-carousel::-webkit-scrollbar {
+    height: 7px; 
+}
+
+.song-carousel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.song-carousel::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 2px;
 }
 
 
@@ -153,17 +186,7 @@ a.black {
 }
 
 
-.song-list-default {
-    display: flex;
-    gap: 1rem;
-    padding: 0 1rem;
-    width: fit-content; /* Ensure width adjusts dynamically */
-    scroll-behavior: smooth;
-}
 
-.song-list-default::-webkit-scrollbar {
-    display: none; /* Hide scrollbars */
-}
 /* Song Item */
 .song {
     flex: 0 0 150px;
@@ -382,14 +405,7 @@ form button:hover{
     opacity: 0.9;
 }
 
-/* Footer */
-footer {
-    margin-top: 2rem;
-    padding: 0.5rem 0; /* Reduced footer height */
-    background-color: #292942;
-    color: #a3a3c2;
-    font-size: 0.8rem; /* Smaller font size for footer */
-}
+
 
 
 /* Form Section */
@@ -616,16 +632,23 @@ label .comment {
     overflow-y: auto;
     padding: 5px;
     border-radius: 10px;
-    flex-direction: column;
     background: var(--theme-color);
 }
 
-.ratings-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+/* Chrome, Edge, and Safari */
+.ratings-wrapper::-webkit-scrollbar {
+    width: 4px; 
 }
 
+.ratings-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ratings-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgb(85, 85, 85);
+    border-radius: 2px;
+}
 .rating-item {
     display: flex;
     align-items: center;
@@ -736,6 +759,7 @@ h4 {
     text-align: left;
 }
 
+
 .song-header {
     display: flex;
     align-items: center;
@@ -789,6 +813,20 @@ h4 {
     background-color: #2a2a40;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.582);
+}
+
+/* Chrome, Edge, and Safari */
+.ratings-songview-container::-webkit-scrollbar {
+    width: 4px; 
+}
+
+.ratings-songview-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ratings-songview-container::-webkit-scrollbar-thumb {
+    background-color: rgb(85, 85, 85);
+    border-radius: 2px;
 }
 
 /* Scrollable Reviews List */
@@ -887,6 +925,34 @@ h4 {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+
+/* Chrome, Edge, and Safari */
+.display-posts::-webkit-scrollbar {
+    width: 4px; 
+}
+
+.display-posts::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.display-posts::-webkit-scrollbar-thumb {
+    background-color: rgb(85, 85, 85);
+    border-radius: 2px;
+}
+
+/* Chrome, Edge, and Safari */
+.display-posts-users::-webkit-scrollbar {
+    width: 4px; 
+}
+
+.display-posts-users::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.display-posts-users::-webkit-scrollbar-thumb {
+    background-color: rgb(85, 85, 85);
+    border-radius: 2px;
+}
 /* Each post container */
 .post {
     display: flex;
@@ -1301,6 +1367,7 @@ table tbody tr:hover {
     .ratings-wrapper{
         max-height: 452px;
         overflow-y: auto;
+        padding: 5px;
         border-radius: 10px;
         background: var(--theme-color);
     }

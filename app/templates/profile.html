@@ -13,7 +13,6 @@
             <a href="/dashboard"><h1>{{ current_user.username }}'s Profile</h1></a>
             <nav>
                 <a href="{{ url_for('view_posts', username=current_user.username) }}">Posts</a>
-                <a href="/dashboard">Back</a>
                 <a href="/settings">Settings</a>
                 <p>
                     <button id="copy-share-link" class="share-button">Share</button>
@@ -57,7 +56,6 @@
         </div>
     {% endif %}
             <h4>{{ current_user.first_name }}'s Rated Songs</h4>
-            <div class="ratings-container">
                 {% if not ratings %}
                     <p>{{ current_user.username }} has not rated any songs.</p>
                 {% else %}
@@ -82,7 +80,6 @@
                     {% endfor %}
                 {% endif %}
             </div>
-        </div>
     </div>
 
     <script>

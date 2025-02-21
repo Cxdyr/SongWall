@@ -12,8 +12,8 @@
         <div class="container">
             <a href="/dashboard"><h1> {{ current_user.first_name }}'s Songwall Dashboard</h1></a>
             <nav>
-                <a href="/search">Search</a>
                 <a href="/profile">Profile</a>
+                <a href="/search">Search</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
@@ -175,9 +175,7 @@
         </section> <br>
 
     </main>
-    <footer>
         <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
-    </footer>
     <script src="{{url_for('static', filename='js/loadmore.js')}}"></script>
     <script src="{{url_for('static', filename='js/load.js')}}"></script>
 </body>

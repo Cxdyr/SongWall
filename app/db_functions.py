@@ -312,8 +312,10 @@ def get_profile_info(username):
         .filter_by(username=username)
         .first()
     )
-    
-    if not user:
+
+    if user:
+        user.ratings.sort(key=lambda r: r.rating, reverse=True)
+    else:
         return None
 
     # Find the pinned rating from the user's ratings.
