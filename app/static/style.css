@@ -351,12 +351,6 @@ form button:hover{
     box-shadow: 0 0 3px var(--theme-color);
 }
 
-/* Optional: Tighten up the "No song pinned yet" text */
-.pin-selection p {
-    margin: 5px 0; /* Reduces vertical whitespace */
-    font-size: 14px;
-    color: #666; /* Softer color for less emphasis */
-}
 
 /* Scroll Button */
 .scroll-btn {
