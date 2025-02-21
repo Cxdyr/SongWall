@@ -56,7 +56,6 @@
         <div class="ratings-wrapper">
                     <!-- Pinned Song Display -->
         {% if profile_info.pinned_rating %}
-        <div class="pinned-song">
             <h4>Vibin' to...</h4>
             <div class="rating-item">
                 <a href="{{ profile_info.pinned_rating.song.spotify_url }}" target="_blank">
@@ -64,7 +63,6 @@
                 </a>
                 <h3><a class="black">{{ profile_info.pinned_rating.song.track_name }} - {{ profile_info.pinned_rating.song.artist_name }}</a></h3>
             </div>
-        </div>
     {% endif %}
 
             <h4>{{ profile_info.user.first_name }}'s Top Songs</h4>
