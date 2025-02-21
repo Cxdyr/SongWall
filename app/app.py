@@ -440,17 +440,22 @@ def update_theme():
     return redirect(url_for("profile_settings"))
 
 @app.route('/view/<string:username>', methods=['GET'])
-@login_required
 def view_profile(username):
-    if current_user.username == username:
-        return redirect(url_for('profile'))
-
     profile_info = get_profile_info(username)
     if not profile_info:
         return redirect(url_for('dashboard'))
-    
-    is_following = check_if_following(current_user.id, profile_info["user"].id)
+
+    # If the user is logged in, check for additional logic.
+    if current_user.is_authenticated:
+        if current_user.username == username:
+            return redirect(url_for('profile'))
+        is_following = check_if_following(current_user.id, profile_info["user"].id)
+    else:
+        # If not logged in, set is_following to a default value (or handle it as needed).
+        is_following = False
+
     return render_template('view_profile.html', profile_info=profile_info, is_following=is_following)
+
 
     
 #View user posts page, for anyone by username will show posts from this user

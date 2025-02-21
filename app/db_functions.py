@@ -306,50 +306,31 @@ def get_recent_ratings_username(username):
 #Get profile info by username, returns the average rating, the user info, the rating amount, and the ratings the user has rated, this is used in the view profile page
 def get_profile_info(username):
     """Retrieve user profile information for view route"""
-    # Query the user by username
-    user = db.session.query(User).filter_by(username=username).first()
+    # Eagerly load all ratings and their associated song.
+    user = (
+        db.session.query(User)
+        .options(joinedload(User.ratings).joinedload(Rating.song))
+        .filter_by(username=username)
+        .first()
+    )
     
-    # Check if the user exists
-    if user:
-        # Get the ratings for this user (songs they've rated)
-        ratings = db.session.query(Rating).filter_by(user_id=user.id).order_by(Rating.rating.desc()).all()
-        ratings_ct = Rating.query.filter_by(user_id=user.id).count()
-        avg_rating = (
-            db.session.query(func.avg(Rating.rating)).filter_by(user_id=user.id).scalar()
-        )
-        if avg_rating is None:
-            avg_rating = 0  
-        else:
-            avg_rating = round(avg_rating, 2)
-
-        # Get the pinned rating for this user
-        pinned_rating = db.session.query(Rating).filter_by(user_id=user.id, is_pinned=True).first()
-
-        user_ratings = []
-        
-        # Gather song details for each rating
-        for rating in ratings:
-            song = db.session.query(Song).filter_by(id=rating.song_id).first()
-            if song:
-                user_ratings.append({
-                    'song': song,
-                    'rating': rating.rating,
-                    'comment': rating.comment,
-                    'album_name': song.album_name
-                })
-        
-        # Return all profile info, including pinned rating
-        return {
-            'user': user,
-            'ratings': user_ratings,
-            'ratings_ct': ratings_ct,
-            'avg_rating': avg_rating,
-            'pinned_rating': pinned_rating
-        }
-    else:
+    if not user:
         return None
-    
 
+    # Find the pinned rating from the user's ratings.
+    pinned_rating = next((r for r in user.ratings if r.is_pinned), None)
+    
+    # Compute additional information.
+    rating_amount = len(user.ratings)
+    average_rating = (sum(r.rating for r in user.ratings) / rating_amount) if rating_amount > 0 else 0
+
+    return {
+        'user': user,
+        'pinned_rating': pinned_rating,
+        'rating_amount': rating_amount,
+        'average_rating': average_rating,
+        'ratings': user.ratings,
+    }
 #Gets all of the rated songs by a user in time descening order by user id, this is used in the settings page for deleting songs they dont want rated anymore
 def get_rated_songs_by_user(user_id):
     """
