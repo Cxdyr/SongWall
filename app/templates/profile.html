@@ -15,7 +15,7 @@
                 <a href="{{ url_for('view_posts', username=current_user.username) }}">Posts</a>
                 <a href="/settings">Settings</a>
                 <p>
-                    <button id="copy-share-link" class="share-button">Share</button>
+                    <button id="copy-share-link" class="share-button" data-share-link="{{ url_for('view_profile', username=current_user.username, share='true', _external=True) | e }}"> Share
                 </p>
             </nav>
         </div>
