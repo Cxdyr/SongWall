@@ -13,6 +13,42 @@ from app.api_auth import get_access_token
 fake = Faker() #for admin panel simulation
 #------------------GENERAL FUNCTIONS ---------------------
 
+#Create user function for registration
+def create_user(email, username, password, first_name):
+    # Check if email already exists
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return False, "Email address already in use"
+    
+    # Check if username already exists
+    existing_username = User.query.filter(db.func.lower(User.username) == username.lower()).first()
+    if existing_username:
+        return False, "Username already in use, please try another one"
+    
+    # Create new user a
+    new_user = User(email=email)
+    new_user.set_password(password)  # This'l hash the password
+    new_user.set_firstname(first_name)
+    new_user.set_username(username)
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    return True, new_user
+
+
+
+
+#Login user, checking for auth
+def authenticate_user(email, password):
+    user = User.query.filter_by(email=email.lower()).first()
+    if user and user.check_password(password):
+        return True, user
+    return False, "Login failed. Check your email and/or password."
+
+
+
+
 #User ratings by user id, used for profile view and view/username 
 def get_user_ratings(user_id):
     """
@@ -29,8 +65,6 @@ def get_user_ratings(user_id):
         .limit(20)
         .all()
     )
-
-
     ratings_ct = Rating.query.filter_by(user_id=user_id).count()
 
     avg_rating = (
@@ -41,8 +75,11 @@ def get_user_ratings(user_id):
     else:
         avg_rating = round(avg_rating, 2)  # 2 decimal
 
-
     return top_ratings, ratings_ct, avg_rating
+
+
+
+
 
 #Get rating by sporify id, used for deleting ratings from a users rated songs in the settings page
 def get_rating_by_spotify_id(user_id, spotify_id):
@@ -50,10 +87,11 @@ def get_rating_by_spotify_id(user_id, spotify_id):
     rating = Rating.query.join(Song).filter(
         Song.spotify_id == spotify_id, Rating.user_id == user_id
     ).first()
-
     return rating
 
 
+
+#Get the song by our id in our database and also returns the average rating for this song
 def get_song_by_id(song_id):
     song = db.session.query(Song).filter(Song.id == song_id).first()
     
@@ -72,11 +110,16 @@ def get_song_by_id(song_id):
     return song, average_rating
 
 
+
+#Get song by our database, returns full song info
 def get_song_id_meth(song_id):
     """Uses my database to get song info"""
     song = Song.query.filter_by(id=song_id).first()
 
     return song
+
+
+
 
 #Get song by spotify id, used to get full song info by spotify_id in our db and avg rating
 def get_song_by_spotify_id(spotify_id):
@@ -93,6 +136,9 @@ def get_song_by_spotify_id(spotify_id):
     average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
     return song, average_rating
 
+
+
+
 #Get song by spotify id, used to get full song info by spotify_id in our db
 def get_song_spotify_id_meth(spotify_id):
     """
@@ -104,6 +150,9 @@ def get_song_spotify_id_meth(spotify_id):
     song = Song.query.filter_by(spotify_id=spotify_id).first()
   
     return song
+
+
+
 
 #Add / update rating, used to add ratings to the db by user id, spotify_id, and then adding their inputed comment / rating int
 def add_or_update_rating(user_id, username, spotify_id, rating, comment):
@@ -135,10 +184,11 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     db.session.commit()
     return {"success": "Rating submitted successfully!"}
 
+
+
+
 #Getting the top rated songs, takes amount usually 9 or 10, and gets the top rated songs and average rating for the index page 
 def get_top_rated_songs(amount):
-
-
     """Retrieve the top-rated songs along with their average rating."""
     top_songs = (
         db.session.query(
@@ -159,6 +209,10 @@ def get_top_rated_songs(amount):
     )
     
     return top_songs
+
+
+
+
 
 #Get recent ratings from any users, used in the dashboard view to populate simple recent ratings and promote community as anyone can see anyones recent ratings
 def get_recent_ratings(amount):
@@ -182,6 +236,10 @@ def get_recent_ratings(amount):
     
     return recent_ratings
 
+
+
+
+
 #Get recent song ratings by song id specifically, used in the song view page 
 def get_song_recent_ratings(song_id):
     """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
@@ -193,18 +251,24 @@ def get_song_recent_ratings(song_id):
 
         return ratings
     
+
+
+
+
 #Get search song recent ratings, used in song view page through the search feature as some songs on here may or may not be in our database so it uses the spotify id versus our db id
 def get_search_song_recent_ratings(spotify_id):
     """Function to get song info for song page including rating, ratings from users, posts from users eventually (for now not implementing quite yet)"""
 
     song = db.session.query(Song).filter_by(spotify_id = spotify_id).first()
-
     if song:
         ratings = db.session.query(Rating).filter_by(song_id=song.id).order_by(Rating.time_stamp.desc()).all()
 
         return ratings
     
 
+
+
+#Takes list of songs, checks if any of the songs have been seen before and skips them if so - in our database equals seen (for ratings), if its new we add it to our database and return the new list of new songs
 def add_songs_to_db(songs):
     new_songs = []
     seen_ids = set()  # Track `spotify_id`s already added in this batch
@@ -215,7 +279,7 @@ def add_songs_to_db(songs):
         
         # Check if the song already exists in the database
         existing_song = Song.query.filter_by(spotify_id=song_data['spotify_id']).first()
-        
+
         if not existing_song:
             new_song = Song(
                 track_name=song_data['name'],
@@ -243,9 +307,11 @@ def add_songs_to_db(songs):
 
 
 
+
+#Gets the most recent rated songs from all users 
 def get_recent_songs(amount):
     """Retrieve the most recent rated songs - aka popular songs good or bad from our songwall db"""
-    pop_songs = (
+    recent_songs = (
         db.session.query(
             Song.id, 
             Song.track_name, 
@@ -265,7 +331,9 @@ def get_recent_songs(amount):
         .all()
     )
     
-    return pop_songs
+    return recent_songs
+
+
 
 
 #Get popular songwall songs, takes the amount of popular songs we want, the highest count of ratings in our songwall db are the most popular bad or good and we return these for display
@@ -292,16 +360,22 @@ def get_popular_songwall_songs(amount):
     
     return pop_songs
 
+
+
+
+#Gets recent ratings from a specific user in recently rated order
 def get_recent_ratings_username(username):
 
     user = db.session.query(User).filter_by(username=username).first()
-
     if user:
         recent_ratings = (db.session.query(Rating).options(joinedload(Rating.song)).filter_by(user_id=user.id).order_by(Rating.time_stamp.desc()).all())
 
         return recent_ratings
     else:
         return None
+
+
+
 
 #Get profile info by username, returns the average rating, the user info, the rating amount, and the ratings the user has rated, this is used in the view profile page
 def get_profile_info(username):
@@ -334,6 +408,9 @@ def get_profile_info(username):
     }
 
 
+
+
+
 #Gets all of the rated songs by a user in time descening order by user id, this is used in the settings page for deleting songs they dont want rated anymore
 def get_rated_songs_by_user(user_id):
     """
@@ -358,6 +435,8 @@ def add_post(user_id, song_id, post_message):
     return new_post
 
 
+
+
 #Get recent posts in general, theis gets all recent posts from all users for the post display page
 def get_recent_posts(limit=10, offset=0):
     """
@@ -366,6 +445,8 @@ def get_recent_posts(limit=10, offset=0):
     """
     posts = (db.session.query(Post).options(joinedload(Post.user), joinedload(Post.song)).order_by(Post.time_stamp.desc()).limit(limit).offset(offset).all())
     return posts
+
+
 
 
 #Get recent posts from specific user by username, this will popular the view_posts/username page where we can see specific users posts.
@@ -385,6 +466,8 @@ def get_recent_user_posts(username):
     return posts, userinfo
 
 
+
+
 #Function for creating follow relationship for users, this is used in the view_profile/username page so users can follow and updates db accordingly.
 def follow_user(followed_id):
     """Adds a follow relationship if not already followed."""
@@ -401,6 +484,9 @@ def follow_user(followed_id):
     db.session.commit()
     return {"success": True, "message": "You are now following this user!"}
 
+
+
+
 #Function for removing the follow relationship
 def unfollow_user(followed_id):
     """Removes a follow relationship if it exists."""
@@ -412,6 +498,8 @@ def unfollow_user(followed_id):
     db.session.delete(follow)
     db.session.commit()
     return {"success": True, "message": "You have unfollowed this user."}
+
+
 
 
 #Get recent follow ratings, this will find follow relationships and populate our follwed ratings caresoul in the dashboard 
@@ -449,7 +537,7 @@ def get_recent_follow_ratings(user_id, amount=10):
 
 
 
-
+#Gets recent posts from a specific song - this is used for the song view page 
 def get_songs_recent_posts(song_id):
     posts = (
         db.session.query(Post)
@@ -462,6 +550,8 @@ def get_songs_recent_posts(song_id):
     return posts
 
 
+
+#Gets recent posts for a specific song using its spotify id - this is used for the search song view page
 def get_search_song_recent_posts(spotfiy_id):
     song = get_song_spotify_id_meth(spotfiy_id)
     song_id = song.id
@@ -476,6 +566,8 @@ def get_search_song_recent_posts(spotfiy_id):
     return posts
 
 
+
+
 #used for display view profile page to only display either the follow or unfollow button
 def check_if_following(user_id, followed_id):
     return db.session.query(
@@ -484,6 +576,7 @@ def check_if_following(user_id, followed_id):
 
 
 
+# Gets recent rated songs from the user (the recent 6), creates a set of artists from these so we dont have duplicates, and gets 3 songs from our database that the user hasn't already rated to suggest per artist 
 def get_potential_songs(user_id):
     # Fetch the user's recent rated songs
     recent_rated_songs = (
@@ -538,6 +631,8 @@ def get_potential_songs(user_id):
     return potential_songs
 
 
+
+#Records a song view, if a user is not logged in records it without a user id
 def record_song_view(user_id, song_id):
     # Create a new session
     session = db.session()
@@ -574,6 +669,7 @@ def record_song_view(user_id, song_id):
 
 
 
+#Retrieves the most viewed songs in the lasta 30 days on songwall
 def get_most_viewed_songs_last_30_days():
     """
     Returns the top 12 Song objects ordered by their view count (Song.views)
@@ -582,6 +678,39 @@ def get_most_viewed_songs_last_30_days():
     """
     return Song.query.order_by(Song.views.desc()).limit(10).all()
 
+
+#Pins or unpins a song given a user, and the rating id to be pinned
+def pin_or_unpin_rating(user, selected_rating_id):
+    if selected_rating_id == 'unpin':
+        # Unpin the current pinned song, if any
+        pinned_rating = Rating.query.filter_by(user_id=user.id, is_pinned=True).first()
+        if pinned_rating:
+            pinned_rating.is_pinned = False
+            db.session.commit()
+            return True, 'Song unpinned successfully!'
+        else:
+            return False, 'No pinned song found.'
+
+    try:
+        rating_id = int(selected_rating_id)
+    except ValueError:
+        return False, 'Invalid selection.'
+
+    rating = Rating.query.get(rating_id)
+    if not rating:
+        return False, 'Rating not found.'
+    if rating.user_id != user.id:
+        return False, 'You can only pin your own ratings.'
+
+    # Unpin any existing pinned song for this user
+    Rating.query.filter_by(user_id=user.id, is_pinned=True).update({'is_pinned': False})
+    # Pin the selected song
+    rating.is_pinned = True
+    db.session.commit()
+    
+    # Optionally, add a post after pinning the song
+    add_post(user.id, rating.song_id, "Vibing to this")
+    return True, 'Song pinned successfully!'
 
 
 #-------------------ADMIN FUNCTIONS ----------------------

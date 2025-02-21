@@ -5,13 +5,13 @@ from app.genre_search import get_popular_songs_by_genre
 from app.models import Post, Rating, Song, User, db
 from app.songwall_search import search_songs
 from app.db_functions import (
-    add_or_update_rating, add_post, add_songs_to_db, check_if_following, create_users, delete_example_users, delete_user_by_id,
+    add_or_update_rating, add_post, add_songs_to_db, authenticate_user, check_if_following, create_user, create_users, delete_example_users, delete_user_by_id,
     follow_user, get_all_posts_info, get_all_ratings_info, get_all_song_info, get_all_user_info, get_most_viewed_songs_last_30_days,
     get_popular_songwall_songs, get_potential_songs, get_profile_info, get_rated_songs_by_user, get_recent_follow_ratings,
     get_recent_posts, get_recent_ratings_username, get_recent_user_posts, get_search_song_recent_posts,
     get_search_song_recent_ratings, get_song_by_id, get_song_by_spotify_id, get_song_id_meth,
     get_song_recent_ratings, get_song_spotify_id_meth, get_songs_recent_posts, get_top_rated_songs,
-    get_user_ratings, get_recent_ratings, rate_sim, record_song_view, search_sim, unfollow_user
+    get_user_ratings, get_recent_ratings, pin_or_unpin_rating, rate_sim, record_song_view, search_sim, unfollow_user
 )
 from app.index_song_info import get_cached_songs, initialize_cache, update_cache_if_needed
 from flask_migrate import Migrate
@@ -61,6 +61,7 @@ def index():
     recent_songs, top_rated_songs = get_cached_songs()
     return render_template('index.html', recent_songs=recent_songs, top_rated_songs=top_rated_songs)
 
+#Blog page
 @app.route('/blog')
 def blog():
     return render_template('blog.html')
@@ -77,27 +78,12 @@ def register():
         if len(password)<5:
             flash('Password must be more than 5 characters', 'error')
             return redirect(url_for('register'))
-        # Check if email already exists
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash('Email address already in use', 'error')
+        
+        success, result = create_user(email, username, password, first_name)  # Register/Create user function - adds to db 
+        if not success:
+            flash(result, 'error')
             return redirect(url_for('register'))
         
-        existing_username = User.query.filter(db.func.lower(User.username) == username.lower()).first()
-        if existing_username:
-            flash('Username already in use, please try another one', 'error')
-            return redirect(url_for('register'))
-
-        # Create new user and set hashed password
-        new_user = User(email=email)
-        new_user.set_password(password)  # Hash  password
-        new_user.set_firstname(first_name)
-        new_user.set_username(username)
-
-        # Add user to the session and commit
-        db.session.add(new_user)
-        db.session.commit()
-
         flash('Account created successfully! Please login.', 'success')
         return redirect(url_for('login'))
 
@@ -110,13 +96,12 @@ def login():
         email = request.form['email'].lower()
         password = request.form['password']
 
-        # Fetch user from database
-        user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):  # Check password
-            login_user(user)  # Log in the user
-            return redirect(url_for('dashboard'))  # Redirect to logged in view home page
+        success, result = authenticate_user(email, password)  #Login/Auth user function 
+        if success:
+            login_user(result)
+            return redirect(url_for('dashboard'))
         else:
-            flash('Login failed. Check your email and/or password.', 'error')
+            flash(result, 'error')
     
     return render_template('login.html')
 
@@ -162,7 +147,7 @@ def dashboard():
 
 
 
-# Load more posts route
+# Load more posts route, this is used for the songwall activity 
 @app.route('/load_more_posts', methods=['GET'])
 @login_required
 def load_more_posts():
@@ -183,7 +168,6 @@ def load_more_posts():
     ]
     
     return jsonify(posts_data)
-
 
 
 #Search page
@@ -286,6 +270,7 @@ def search_view_song(spotify_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings, average_rating=average_rating, posts=posts)
 
+#User profile page, allows user to edit and view their profile 
 @app.route('/profile', methods=['GET'])
 def profile():
     # Check if this is a share link (public access) or authenticated access
@@ -320,36 +305,10 @@ def profile():
 @login_required
 def pin_rating(rating_id):
     # Handle form submission with rating_id from POST data
-    selected_rating_id = request.form.get('rating_id')
+    rating_id = request.form.get('rating_id')
+    success, message = pin_or_unpin_rating(current_user, rating_id)
     
-    if selected_rating_id == 'unpin':
-        # Unpin the current pinned song
-        pinned_rating = Rating.query.filter_by(user_id=current_user.id, is_pinned=True).first()
-        if pinned_rating:
-            pinned_rating.is_pinned = False
-            db.session.commit()
-            flash('Song unpinned successfully!', 'success')
-        return redirect(url_for('profile'))
-    
-    # Convert selected_rating_id to integer for pinning
-    try:
-        rating_id = int(selected_rating_id)
-    except ValueError:
-        flash('Invalid selection.', 'error')
-        return redirect(url_for('profile'))
-    
-    rating = Rating.query.get_or_404(rating_id)
-    if rating.user_id != current_user.id:
-        flash('You can only pin your own ratings.', 'error')
-        return redirect(url_for('profile'))
-    
-    # Unpin any existing pinned song
-    Rating.query.filter_by(user_id=current_user.id, is_pinned=True).update({'is_pinned': False})
-    # Pin the selected song
-    rating.is_pinned = True
-    db.session.commit()
-    flash('Song pinned successfully!', 'success')
-    add_post(current_user.id, rating.song_id, "Pinned new song!" )
+    flash(message, 'success' if success else 'error')
     return redirect(url_for('profile'))
 
 
@@ -439,6 +398,8 @@ def update_theme():
         flash("Theme updated successfully!", "success")
     return redirect(url_for("profile_settings"))
 
+
+#View user profile by user name
 @app.route('/view/<string:username>', methods=['GET'])
 def view_profile(username):
     profile_info = get_profile_info(username)
