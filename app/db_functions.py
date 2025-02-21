@@ -542,7 +542,7 @@ def get_songs_recent_posts(song_id):
     posts = (
         db.session.query(Post)
         .filter_by(song_id=song_id)
-        .order_by(Post.time_stamp)
+        .order_by(Post.time_stamp.desc())
         .options(joinedload(Post.user), joinedload(Post.song))  # Eager loading
         .limit(6)
         .all()

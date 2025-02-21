@@ -20,7 +20,7 @@
     </header>
     <main>
 
-        <h4>Recent Songwall Activity</h4>
+        <h4>Recent Activity</h4>
         <section class="display-posts">
             <div id="posts-container">
                 {% if recent_posts %}
@@ -152,10 +152,10 @@
         </section> <br>
 
         <section class="display-songs">
-            <h3>Recent Friends Ratings</h3>
+            <h3>Friends Ratings</h3>
             <div class="song-carousel">
                 {% if not followed_ratings %}
-                <p>Add some friends to see their ratings!</p>
+                <p>Follow some friends!</p>
                 {% else %}
                 <div class="song-list" id="top-rated-list">
                 {% for song in followed_ratings %}

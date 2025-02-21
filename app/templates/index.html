@@ -25,10 +25,10 @@
         </section>
 
         <section class="display-songs">
-            <h2>Recently Rated Songs</h2>
+            <h2>Recently Rated</h2>
             <div class="song-carousel">
                 {% if not recent_songs %}
-                <p>There are no recently rated songs currently</p>
+                <p>No recently rated songs.</p>
                 {% else %}
                 <div class="song-list" id="top-rated-list">
                     {% for song in recent_songs %}
@@ -37,7 +37,6 @@
                         <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
                         <p>{{ song.artist_name }}</p>
                         <p> {{song.album_name }}</p>
-                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} rates)</p>  
                     </div>
                     {% endfor %}
                     {% endif %}
@@ -46,10 +45,10 @@
         </section>
 
         <section class="display-songs">
-            <h2>Top Rated Songs</h2>
+            <h2>Top Rated </h2>
             <div class="song-carousel">
                 {% if not top_rated_songs %}
-                <p>There are no top rated songs currently</p>
+                <p>No top rated songs.</p>
                 {% else %}
                 <div class="song-list" id="top-rated-list">
                     {% for song in top_rated_songs %}
