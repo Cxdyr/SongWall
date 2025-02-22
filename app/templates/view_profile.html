@@ -31,23 +31,23 @@
 <body style="--theme-color: {{ profile_info.user.theme_color or '#333' }};">
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>{{ profile_info.user.username }}'s Songwall</h1></a>
-            {% if is_following %}
-            <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
-                <button type="submit">Unfollow</button>
-            </form>
-            {% else %}
-            <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
-                <button type="submit">Follow</button>
-            </form>
-            {% endif %}
+            <a href="/dashboard"><h1>{{ profile_info.user.username }}</h1></a>
             <nav>
-                <a href="{{ url_for('view_posts', username=profile_info.user.username) }}">{{ profile_info.user.first_name }}'s posts</a>
+                <a href="{{ url_for('view_posts', username=profile_info.user.username) }}">Posts</a>
                 <a href="/dashboard">Home</a>
+                {% if is_following %}
+                <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
+                    <button type="submit">Unfollow</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
+                    <button type="submit">Follow</button>
+                </form>
+                {% endif %}
             </nav>
         </div>
     </header>
-    <div class="profile-container">
+    <div class="profile-container-bio">
         <p class="profile">{{ profile_info.user.bio }}</p>
         <p class="profile">Average: <strong>{{ profile_info.avg_rating }}/10</strong>, Rated: <strong>{{ profile_info.ratings_ct }}</strong></p>
     </div>
@@ -61,11 +61,11 @@
                 <a href="{{ profile_info.pinned_rating.song.spotify_url }}" target="_blank">
                     <img src="{{ profile_info.pinned_rating.song.album_image }}" alt="Album Art">
                 </a>
-                <h3><a class="black">{{ profile_info.pinned_rating.song.track_name }} - {{ profile_info.pinned_rating.song.artist_name }}</a></h3>
+                <h3><a class="black" href="{{url_for('view_song', song_id=profile_info.pinned_rating.song.id)}}">{{ profile_info.pinned_rating.song.track_name }} - {{ profile_info.pinned_rating.song.artist_name }}</a></h3>
             </div>
     {% endif %}
 
-            <h4>{{ profile_info.user.first_name }}'s Top Songs</h4>
+            <h4>Top Songs</h4>
             <div class="ratings-container">
                 {% if not profile_info.ratings %}
                     <p>{{ profile_info.user.username }} has not rated any songs.</p>

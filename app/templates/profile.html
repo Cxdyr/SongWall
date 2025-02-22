@@ -14,13 +14,11 @@
             <nav>
                 <a href="{{ url_for('view_posts', username=current_user.username) }}">Posts</a>
                 <a href="/settings">Settings</a>
-                <p>
-                    <button id="copy-share-link" class="share-button" data-share-link="{{ url_for('view_profile', username=current_user.username, share='true', _external=True) | e }}"> Share
-                </p>
+                <button id="copy-share-link" class="share-button" data-share-link="{{ url_for('view_profile', username=current_user.username, share='true', _external=True) | e }}"> Share
             </nav>
         </div>
     </header>
-    <div class="profile-container">
+    <div class="profile-container-bio">
         <p class="profile">{{ current_user.bio }}</p>
         <p class="profile">Average: <strong>{{ avg_ratings }}/10</strong>, Rated: <strong>{{ ratings_ct }}</strong></p>
     </div>
@@ -55,7 +53,7 @@
             {% endif %}
         </div>
     {% endif %}
-            <h4>{{ current_user.first_name }}'s Rated Songs</h4>
+            <h4>{{ current_user.first_name }}'s Top Songs</h4>
                 {% if not ratings %}
                     <p>{{ current_user.username }} has not rated any songs.</p>
                 {% else %}

@@ -79,6 +79,9 @@ def register():
             flash('Password must be more than 5 characters', 'error')
             return redirect(url_for('register'))
         
+        if len(username)>9:
+            flash('Username cannot exceed 9 characters', 'error')
+        
         success, result = create_user(email, username, password, first_name)  # Register/Create user function - adds to db 
         if not success:
             flash(result, 'error')
@@ -293,20 +296,10 @@ def search_suggestions():
 @app.route('/profile', methods=['GET'])
 def profile():
     # Check if this is a share link (public access) or authenticated access
-    if request.args.get('share') == 'true':
-        # Public share view
-        if not current_user.is_authenticated:
-            # For unauthenticated users, use a default or queried user (e.g., from a username in the URL if we extend this)
-            user = User.query.filter_by(username='test').first()  # Replace 'test' with logic to get the right user
-            if not user:
-                return "User not found.", 404
-        else:
-            user = current_user
-    else:
-        # Private authenticated view
-        if not current_user.is_authenticated:
-            return redirect(url_for('login'))  # Or your login route
-        user = current_user
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))  # Or your login route
+    user = current_user
 
     user_ratings, ratings_ct, avg_ratings = get_user_ratings(user.id)
     pinned_rating = Rating.query.filter_by(user_id=user.id, is_pinned=True).first()
@@ -374,7 +367,9 @@ def profile_settings():
 
         if form_type == "bio":
             new_bio = request.form.get("biography")
-            if new_bio:
+            if len(new_bio)>255:
+                flash("Bio length exceeds maximum length, try again", 'error')
+            else:
                 user.bio = new_bio
                 db.session.commit()
                 flash("Biography updated successfully!", "success")
