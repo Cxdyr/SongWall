@@ -270,6 +270,25 @@ def search_view_song(spotify_id):
 
     return render_template('song.html', song_info=song_info, ratings=ratings, average_rating=average_rating, posts=posts)
 
+
+@app.route('/search/suggestions', methods=['GET'])
+def search_suggestions():
+    query = request.args.get('query', '')
+    if query:
+        # Query the database for song suggestions (e.g., matching track names)
+        songs = Song.query.filter(Song.track_name.ilike(query + '%')).limit(10).all()
+        suggestions = [{
+            'name': song.track_name,
+            'artist': song.artist_name,
+            'album_name': song.album_name,
+            'album_image_url': song.album_image,
+            'spotify_url': song.spotify_url,
+            'spotify_id': song.spotify_id
+        } for song in songs]
+        return jsonify(suggestions)
+    return jsonify([])  # Return empty list if no query
+
+
 #User profile page, allows user to edit and view their profile 
 @app.route('/profile', methods=['GET'])
 def profile():
