@@ -1,0 +1,6 @@
+# Block all paths under /admin/
+User-agent: *
+Disallow: /admin/
+
+# Allow everything else
+Allow: /

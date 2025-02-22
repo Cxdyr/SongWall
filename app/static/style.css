@@ -15,6 +15,8 @@ body::-webkit-scrollbar {
     width: 11px;  
 }
 
+
+
 body::-webkit-scrollbar-track {
     background: #1e1e2f;  
 }
@@ -22,6 +24,7 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
     background-color: #333;  /* Color of the thumb */
     border-radius: 3px;     /* Rounded corners */
+    cursor: pointer;
 }
 
 header {
@@ -170,6 +173,7 @@ a.black {
 .song-carousel::-webkit-scrollbar-thumb {
     background-color: #333;
     border-radius: 2px;
+    cursor: pointer;
 }
 
 
@@ -669,6 +673,7 @@ label .comment {
 .ratings-wrapper::-webkit-scrollbar-thumb {
     background-color: rgb(85, 85, 85);
     border-radius: 2px;
+    cursor: pointer;
 }
 .rating-item {
     display: flex;
@@ -851,6 +856,7 @@ h4 {
 .ratings-songview-container::-webkit-scrollbar-thumb {
     background-color: rgb(85, 85, 85);
     border-radius: 2px;
+    cursor: pointer;
 }
 
 /* Scrollable Reviews List */
@@ -962,6 +968,7 @@ h4 {
 .display-posts::-webkit-scrollbar-thumb {
     background-color: rgb(85, 85, 85);
     border-radius: 2px;
+    cursor: pointer;
 }
 
 /* Chrome, Edge, and Safari */
@@ -976,6 +983,7 @@ h4 {
 .display-posts-users::-webkit-scrollbar-thumb {
     background-color: rgb(85, 85, 85);
     border-radius: 2px;
+    cursor: pointer;
 }
 /* Each post container */
 .post {

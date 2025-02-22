@@ -134,6 +134,12 @@ def get_song_by_spotify_id(spotify_id):
 
     song_id = song.id
     average_rating = db.session.query(func.avg(Rating.rating)).filter(Rating.song_id == song_id).scalar()
+
+    # Handle the case where average_rating is None (no ratings exist)
+    if average_rating is None:
+        average_rating = 0.0  # Default to 0.0 if no ratings exist
+    else:
+        average_rating = round(average_rating, 2)  # Round to 2 decimal places
     return song, average_rating
 
 

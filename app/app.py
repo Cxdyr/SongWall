@@ -279,7 +279,7 @@ def search_suggestions():
     query = request.args.get('query', '')
     if query:
         # Query the database for song suggestions (e.g., matching track names)
-        songs = Song.query.filter(Song.track_name.ilike(query + '%')).limit(10).all()
+        songs = Song.query.filter(Song.track_name.ilike(query + '%')).order_by(Song.views.desc()).limit(10).all()
         suggestions = [{
             'name': song.track_name,
             'artist': song.artist_name,
