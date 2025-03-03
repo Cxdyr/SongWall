@@ -15,8 +15,8 @@ def update_cached_data(app):
     """
     global recent_songs_cache, top_rated_songs_cache
     with app.app_context():
-        recent_songs_cache = get_recent_songs(9)
-        top_rated_songs_cache = get_top_rated_songs(9)
+        recent_songs_cache = get_recent_songs(10)
+        top_rated_songs_cache = get_top_rated_songs(10)
         print(f"Cache updated at {datetime.now(timezone.utc)}")
 
 def initialize_cache(app):

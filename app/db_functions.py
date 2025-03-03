@@ -62,7 +62,7 @@ def get_user_ratings(user_id):
         .filter_by(user_id=user_id)
         .join(Song, Rating.song_id == Song.id)
         .order_by(Rating.rating.desc())
-        .limit(20)
+        .limit(30)
         .all()
     )
     ratings_ct = Rating.query.filter_by(user_id=user_id).count()
@@ -395,6 +395,8 @@ def get_profile_info(username):
 
     if user:
         user.ratings.sort(key=lambda r: r.rating, reverse=True)
+
+        user.ratings = user.ratings[:30]
     else:
         return None
 
@@ -409,8 +411,8 @@ def get_profile_info(username):
         'user': user,
         'pinned_rating': pinned_rating,
         'ratings': user.ratings,
-        'avg_rating': average_rating,  # Updated key to match template.
-        'ratings_ct': rating_amount,   # Updated key to match template.
+        'avg_rating': average_rating,  
+        'ratings_ct': rating_amount,   
     }
 
 
