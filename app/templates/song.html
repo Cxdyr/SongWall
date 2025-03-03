@@ -175,7 +175,7 @@
                     <div class="post-card">
                         <div class="post-header">
                             <a href="{{ url_for('view_profile', username=post.user.username) }}" class="post-author">
-                                <div class="author-avatar" style="--profile-accent: var(--primary);">
+                                <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
                                     <span>{{ post.user.username[0].upper() }}</span>
                                 </div>
                                 <span>{{ post.user.username }}</span>
@@ -199,7 +199,7 @@
                             <div class="post-card">
                                 <div class="post-header">
                                     <a href="{{ url_for('view_profile', username=post.user.username) }}" class="post-author">
-                                        <div class="author-avatar" style="--profile-accent: var(--primary);">
+                                        <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
                                             <span>{{ post.user.username[0].upper() }}</span>
                                         </div>
                                         <span>{{ post.user.username }}</span>
@@ -222,7 +222,6 @@
         </div>
     </div>
 </section>
-
             </div>
         </div>
     </main>
@@ -248,47 +247,57 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ratings load more functionality
-            const loadMoreRatingsBtn = document.getElementById('load-more-ratings');
-            const hiddenRatings = document.getElementById('hidden-ratings');
-            
-            if (loadMoreRatingsBtn && hiddenRatings) {
-                loadMoreRatingsBtn.addEventListener('click', function() {
-                    // Get all hidden ratings
-                    const ratingsToShow = hiddenRatings.children;
-                    const ratingsContainer = document.getElementById('ratings-list');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ratings load more functionality
+        const loadMoreRatingsBtn = document.getElementById('load-more-ratings');
+        const hiddenRatings = document.getElementById('hidden-ratings');
+        
+        if (loadMoreRatingsBtn && hiddenRatings) {
+            loadMoreRatingsBtn.addEventListener('click', function() {
+                // Get all hidden ratings
+                const ratingsToShow = hiddenRatings.children;
+                const ratingsContainer = document.getElementById('ratings-list');
+                
+                // Move all hidden ratings to the main container
+                while (ratingsToShow.length > 0) {
+                    ratingsContainer.insertBefore(ratingsToShow[0], loadMoreRatingsBtn.parentNode);
+                }
+                
+                // Remove the load more button
+                loadMoreRatingsBtn.parentNode.remove();
+            });
+        }
+        
+        // Posts load more functionality
+        const loadMorePostsBtn = document.getElementById('load-more-posts');
+        const hiddenPosts = document.getElementById('hidden-posts');
+        
+        if (loadMorePostsBtn && hiddenPosts) {
+            loadMorePostsBtn.addEventListener('click', function() {
+                // Get all hidden posts
+                const postsToShow = hiddenPosts.children;
+                const postsContainer = document.getElementById('posts-list');
+                
+                // Move all hidden posts to the main container
+                while (postsToShow.length > 0) {
+                    // Check if theme color is available in the post's data attributes
+                    const postCard = postsToShow[0];
+                    const avatarDiv = postCard.querySelector('.author-avatar');
+                    const themeColor = postCard.dataset.themeColor;
                     
-                    // Move all hidden ratings to the main container
-                    while (ratingsToShow.length > 0) {
-                        ratingsContainer.insertBefore(ratingsToShow[0], loadMoreRatingsBtn.parentNode);
+                    // Set theme color if available
+                    if (themeColor) {
+                        avatarDiv.style.setProperty('--profile-accent', themeColor);
                     }
                     
-                    // Remove the load more button
-                    loadMoreRatingsBtn.parentNode.remove();
-                });
-            }
-            
-            // Posts load more functionality
-            const loadMorePostsBtn = document.getElementById('load-more-posts');
-            const hiddenPosts = document.getElementById('hidden-posts');
-            
-            if (loadMorePostsBtn && hiddenPosts) {
-                loadMorePostsBtn.addEventListener('click', function() {
-                    // Get all hidden posts
-                    const postsToShow = hiddenPosts.children;
-                    const postsContainer = document.getElementById('posts-list');
-                    
-                    // Move all hidden posts to the main container
-                    while (postsToShow.length > 0) {
-                        postsContainer.insertBefore(postsToShow[0], loadMorePostsBtn.parentNode);
-                    }
-                    
-                    // Remove the load more button
-                    loadMorePostsBtn.parentNode.remove();
-                });
-            }
-        });
+                    postsContainer.insertBefore(postCard, loadMorePostsBtn.parentNode);
+                }
+                
+                // Remove the load more button
+                loadMorePostsBtn.parentNode.remove();
+            });
+        }
+    });
     </script>
 </body>
 </html>

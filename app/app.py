@@ -180,7 +180,9 @@ def load_more_posts():
             "artist_name": post.song.artist_name,
             "song_id": post.song.id,  # Song ID for the song page
             "post_message": post.post_message,
-            "timestamp": post.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": post.time_stamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "theme_color": post.user.theme_color or 'var(--primary)'  # Add theme color
+
         }
         for post in posts
     ]
