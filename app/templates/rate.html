@@ -5,99 +5,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>Rate Song</title>
+    <title>Rate "{{ song.track_name }}" | Songwall</title>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>Rate your song</song></h1></a>
+            <a href="/dashboard"><h1>Songwall</h1></a>
             <nav>
-            <a href="/search">Back</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/search">Back to Search</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="song-details">
-            <div class="song-default">
-                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" class="album-art">
-                <h3>{{ song.track_name }}</h3>
-                <p><strong>Artist:</strong> {{ song.artist_name }}</p>
-                <p><strong>Album:</strong> {{ song.album_name if song.album_name else 'No album info' }}</p>
-                <br>
-                <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank" class="spotify-link">Spotify</a>
-            </div>
-        </section>
-        <br>
+        <div class="container">
+            <section class="rate-song-container">
+                <div class="rate-song-card">
+                    <div class="song-details">
+                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}" class="album-art">
+                        <div class="song-info">
+                            <h2>{{ song.track_name }}</h2>
+                            <p class="artist-name">{{ song.artist_name }}</p>
+                            <p class="album-name">{{ song.album_name if song.album_name else 'Single' }}</p>
+                            <a href="{{ song.spotify_url }}" class="spotify-btn" target="_blank">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                Listen on Spotify
+                            </a>
+                        </div>
+                    </div>
 
-        <section class="rating-form">
-            <h2>Rate {{song.track_name}}</h2>
-            <form action="{{ url_for('rate', spotify_id=song.spotify_id) }}" method="POST">
-                <label for="rating"></label>
-                <div class="star-rating" id="star-rating">
-                    <!-- 10 stars, all initially empty -->
-                    <span class="star" data-value="1">☆</span>
-                    <span class="star" data-value="2">☆</span>
-                    <span class="star" data-value="3">☆</span>
-                    <span class="star" data-value="4">☆</span>
-                    <span class="star" data-value="5">☆</span>
-                    <span class="star" data-value="6">☆</span>
-                    <span class="star" data-value="7">☆</span>
-                    <span class="star" data-value="8">☆</span>
-                    <span class="star" data-value="9">☆</span>
-                    <span class="star" data-value="10">☆</span>
+                    <div class="rating-form-container">
+                        <h3>Rate This Song</h3>
+                        
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                <div class="flash {{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                        
+                        <form action="{{ url_for('rate', spotify_id=song.spotify_id) }}" method="POST" class="rating-form">
+                            <div class="star-rating-container">
+                                <label for="rating">Your Rating:</label>
+                                <div class="star-rating" id="star-rating">
+                                    <span class="star" data-value="1">☆</span>
+                                    <span class="star" data-value="2">☆</span>
+                                    <span class="star" data-value="3">☆</span>
+                                    <span class="star" data-value="4">☆</span>
+                                    <span class="star" data-value="5">☆</span>
+                                    <span class="star" data-value="6">☆</span>
+                                    <span class="star" data-value="7">☆</span>
+                                    <span class="star" data-value="8">☆</span>
+                                    <span class="star" data-value="9">☆</span>
+                                    <span class="star" data-value="10">☆</span>
+                                </div>
+                                <div class="rating-value">0/10</div>
+                                <input type="hidden" name="rating" id="rating-input" value="0">
+                            </div>
+                            
+                            <div class="comment-container">
+                                <label for="comment">Your Thoughts (optional):</label>
+                                <textarea name="comment" id="comment" rows="4" placeholder="Share what you think about this song..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary submit-rating-btn">Submit Rating</button>
+                        </form>
+                    </div>
                 </div>
-                <input type="hidden" name="rating" id="rating-input" value="0">
-                <br><br>
-                <label for="comment">Comment (optional):</label>
-                <textarea name="comment" id="comment" rows="4" cols="50"></textarea>
-                <br><br>
-                <button type="submit">Submit Rating</button>
-            </form>
-        </section>
-
-
-            
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <p>
-            {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-        </p>
-    {% endif %}
-{% endwith %}
-        
+            </section>
+        </div>
     </main>
 
-    <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const stars = document.querySelectorAll('.star');
-    const ratingInput = document.getElementById('rating-input');
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating-input');
+        const ratingValue = document.querySelector('.rating-value');
 
-    stars.forEach(star => {
-        star.addEventListener('click', function () {
-            const ratingValue = parseInt(star.getAttribute('data-value'));
-
-            // updating the star ratings based on the clicked star
-            stars.forEach(star => {
-                if (parseInt(star.getAttribute('data-value')) <= ratingValue) {
-                    star.classList.add('filled');
-                    star.classList.remove('unfilled');
-                } else {
-                    star.classList.remove('filled');
-                    star.classList.add('unfilled');
-                }
+        stars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', function() {
+                const hoverValue = parseInt(star.getAttribute('data-value'));
+                
+                stars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-value')) <= hoverValue) {
+                        s.textContent = '★';
+                    } else {
+                        s.textContent = '☆';
+                    }
+                });
+            });
+            
+            // Reset stars on mouseout if no rating is selected
+            document.querySelector('.star-rating').addEventListener('mouseout', function() {
+                const currentRating = parseInt(ratingInput.value);
+                
+                stars.forEach(s => {
+                    const starValue = parseInt(s.getAttribute('data-value'));
+                    if (starValue <= currentRating) {
+                        s.textContent = '★';
+                    } else {
+                        s.textContent = '☆';
+                    }
+                });
             });
 
-            // Update the hidden input field with the selected rating
-            ratingInput.value = ratingValue;
+            // Click event
+            star.addEventListener('click', function () {
+                const ratingVal = parseInt(star.getAttribute('data-value'));
+
+                // Update the star display
+                stars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-value')) <= ratingVal) {
+                        s.textContent = '★';
+                        s.classList.add('filled');
+                    } else {
+                        s.textContent = '☆';
+                        s.classList.remove('filled');
+                    }
+                });
+
+                // Update the hidden input and visible rating value
+                ratingInput.value = ratingVal;
+                ratingValue.textContent = ratingVal + '/10';
+            });
         });
     });
-});
-
     </script>
 </body>
 </html>

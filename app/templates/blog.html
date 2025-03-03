@@ -5,33 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Songwall Updates</title>
     <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
 </head>
 <body>
-
     <header>
         <div class="container">
-        <a href="/"><h1>Songwall Info / Blog</h1></a>
-    </div>
+            <a href="/"><h1>Songwall</h1></a>
+            <nav>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/">Home</a>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <section class="blog-container">
-            <h2>Development Updates</h2>
+        <div class="container">
+            <div class="blog-container">
+                <div class="section-header">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Development Updates
+                    </h2>
+                </div>
 
-            <div class="blog-post">
-                <h3>V. 1.0 - Initial Release</h3>
-                <p class="timestamp">Posted on: Febuary 6, 2025</p>
-                <p>The first version of the app is now live! This version is a very rough around the edges and in development prototype. I designed it to have searching, rating, posting, and viewing functionality. Users can search for songs using the spotify api integration, rate these songs which will add it to the recent ratings feed as well as followers feeds, and then post about these songs optionally. The next version of this app will include some big updates that will integrate ML for recommendations as well as further spotify api use. This app provides its base functionality and is neat (for now...), it will soon have the very cool features. - Cody R</p>
-            </div>
+                <div class="blog-post">
+                    <h3>V. 1.1 - Semi-Update Release</h3>
+                    <p class="timestamp">Posted on: February 21, 2025</p>
+                    <p>I have been making some very minor changes prior to this blog post, but I will touch on everything new I have added and explain some of how I did so! First of all, I have added popular songs by genre in the user dashboard using the spotify search endpoint (their old endpoint is no longer supported so I had to get creative). I gather the top 20 results and then order them by each songs popularity ratings from spotify and return them to the dashboard for the user to see. I also added pinned songs, this is cleanly displayed on the user profile. I did this a bit earlier, but suggested songs based songs in our database from the same artist is now in the user dashboard. Nothing crazy added in this version, but its overall coming together a bit more: the next version I have an idea for a recommendation system that I haven't seen before and will be a huge use-case for my project... - Cody R</p>
+                </div>
 
-            <div class="blog-post">
-                <h3>V. 1.1 - Semi-Update Release</h3>
-                <p class="timestamp">Posted on: Febuary 21, 2025</p>
-                <p>I have been making some very minor changes prior to this blog post, but I will touch on everything new I have added and explain some of how I did so! First of all, I have added popular songs by genre in the user dashboard using the spotify search endpoint (their old endpoint is no longer supported so I had to get creative). I gather the top 20 results and then order them by each songs popularity ratings from spotify and return them to the dashboard for the user to see. I also added pinned songs, this is cleanly displayed on the user profile. I did this a bit earlier, but suggested songs based songs in our database from the same artist is now in the user dashboard. Nothing crazy added in this version, but its overall coming together a bit more: the next version I have an idea for a recommendation system that I haven't seen before and will be a huge use-case for my project... - Cody R</p>
+                <div class="blog-post">
+                    <h3>V. 1.0 - Initial Release</h3>
+                    <p class="timestamp">Posted on: February 6, 2025</p>
+                    <p>The first version of the app is now live! This version is a very rough around the edges and in development prototype. I designed it to have searching, rating, posting, and viewing functionality. Users can search for songs using the spotify api integration, rate these songs which will add it to the recent ratings feed as well as followers feeds, and then post about these songs optionally. The next version of this app will include some big updates that will integrate ML for recommendations as well as further spotify api use. This app provides its base functionality and is neat (for now...), it will soon have the very cool features. - Cody R</p>
+                </div>
+                
+                <!-- Future blog posts will go here -->
             </div>
-            <!-- Will be adding future blog posts here with time stamp entries !! only adding on significant pushes -->
-        </section>
+        </div>
     </main>
 
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

@@ -5,67 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>Songwall Search</title>
+    <title>Search | Songwall</title>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>Songwall Search</h1></a>
+            <a href="/dashboard"><h1>Songwall</h1></a>
             <nav>
-                <a href="/dashboard">Back</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <h2>Search Songs</h2>
-        <!-- Search Bar -->
-        <section class="search-bar">
-            <form id="search-form" action="{{ url_for('search') }}" method="POST">
-                <input type="text" id="search-bar" name="search_query" placeholder="Search for a song..." required>
-                <button type="submit">Search</button>
-            </form>
-        </section>
-        <br>
-        <!-- Display Search Results / Suggestions -->
-        <section class="display-songs">
-            <div id="suggestions" class="song-carousel">
-                {% if not songs %}
-                <p>No songs found. Try a search!</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                    {% for song in songs %}
-                    <div class="song2">
-                        <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}"><img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}"></a>
-                        <h3><a href="{{ url_for('search_view_song', spotify_id=song.spotify_id) }}">{{ song['name'] }}</a></h3>
-                        <p>{{ song.artist }}</p>
-                        <p>{{ song.album_name }}</p> <br>
-                        <a href="{{ song.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
-                    </div>
-                    {% endfor %}
+        <div class="container">
+            <!-- Song Search Section -->
+            <section class="search-section">
+                <h2>Search Songs</h2>
+                <p class="section-subtitle">Find songs to rate and share</p>
+                
+                <div class="search-bar">
+                    <form id="search-form" action="{{ url_for('search') }}" method="POST">
+                        <div class="search-input-container">
+                            <input type="text" id="search-bar" name="search_query" placeholder="Search by title, artist, or album..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                Search
+                            </button>
+                        </div>
+                    </form>
                 </div>
+            
+                <!-- Display Search Results / Suggestions -->
+                <div id="suggestions" class="song-carousel">
+                    {% if not songs %}
+                    <p class="empty-state">No songs found. Try searching for your favorite music!</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in songs %}
+                        <div class="song2">
+                            <a href="{{ url_for('rate', spotify_id=song['spotify_id']) }}">
+                                <img src="{{ song.album_image_url }}" alt="Album Art for {{ song.name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{ url_for('search_view_song', spotify_id=song.spotify_id) }}">{{ song['name'] }}</a></h3>
+                                <p>{{ song.artist }}</p>
+                                <p>{{ song.album_name }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- User Search Section -->
+            <section class="search-section">
+                <h2>Find Friends</h2>
+                <p class="section-subtitle">Connect with other music lovers</p>
+                
+                <div class="search-bar">
+                    <form action="{{ url_for('search_friends') }}" method="POST">
+                        <div class="search-input-container">
+                            <input type="text" name="username" placeholder="Search by username" required>
+                            <button type="submit" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                Find
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            </div>
-        </section>
-
-        <h2>Find Friends</h2>
-        <section class="friend-search">
-            <form action="{{ url_for('search_friends') }}" method="POST">
-                <input type="text" name="username" placeholder="Enter a username" required>
-                <button type="submit">Search</button>
-            </form>
-        </section>
-
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
+                {% endwith %}
+            </section>
+        </div>
     </main>
 
     <!-- Include the external JavaScript file -->

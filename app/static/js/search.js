@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3><a href="/search/view/${song.spotify_id}">${song.name}</a></h3>
                 <p>${song.artist}</p>
                 <p>${song.album_name}</p> <br>
-                <a href="${song.spotify_url}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
             </div>
         `;
     }

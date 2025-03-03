@@ -5,97 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css"> 
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>{{ current_user.username }}'s Profile Settings</title>
+    <title>Settings | {{ current_user.username }}</title>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>{{ current_user.username }}'s Settings</h1></a>
+            <a href="/dashboard"><h1>Songwall</h1></a>
             <nav>
-                <a href="/profile">Back</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back to Profile
+                </a>
             </nav>
         </div>
     </header>
-    <br>
-    <div class="profile-container">
-    <h2>{{current_user.first_name}}'s Information</h2>
-    <p><strong>Username:</strong> {{ current_user.username }}</p>
-    <p><strong>Email:</strong> {{ current_user.email }}</p>
-    <p><strong>First Name:</strong> {{ current_user.first_name }}</p>
-    <p><strong>{{current_user.first_name}}'s Biography:</strong> {{current_user.bio}}</p>
-    <br><br><br>
-
-<!-- Update Bio Form -->
-<form method="POST">
-    <div class="label-container">
-    <input type="hidden" name="form_type" value="bio">
-    <label for="biography">Set Biography:</label>
-    <input type="text" id="biography" name="biography">
-    <button type="submit">Save Bio</button>
-    </div>
-</form>
-
-<!-- Update Theme Color Form -->
-<form method="POST">
-    <div class="label-container">
-    <input type="hidden" name="form_type" value="theme">
-    <label for="theme_color">Select Theme Color:</label>
-    <input type="color" id="theme_color" name="theme_color" value="{{ current_user.theme_color or '#333' }}">
-    <button type="submit">Save Theme</button>
-    </div>
-</form>
-
-<!-- Remove Rating Form (Already Works) -->
- <section>
-<form method="POST">
-    <div class="label-container">
-    <input type="hidden" name="form_type" value="remove_song">
-    <label for="song_id">Remove song: </label>
-    <select name="song_id" id="song_id" required>
-        <option value="" disabled selected>song</option>
-        {% for rating in ratings %}
-            <option value="{{ rating.song.id }}">
-                {{ rating.song.track_name }} - {{ rating.song.artist_name }}
-            </option>
-        {% endfor %}
-    </select>
-    <button type="submit">Remove Rating</button>
-    </div>
-
-</form>
-</section>
-
-<section>
-<form method="POST">
-    <div class="label-container">
-    <input type="hidden" name="form_type" value="remove_post">
-    <label for="post_content">Remove post: </label>
-    <select name="post_id" id="post_content" required>
-        <option value="" disabled selected>post</option>
-        {% for post in posts %}
-            <option value="{{ post.id }}">
-                {{ post.post_message }} 
-            </option>
-            {% endfor %}
-    </select>
-    <button type="submit">Remove Post</button>
-    </div>
-
-</form>
-</section>
-
-</div>
-
     
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <p>
-                {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </p>
-        {% endif %}
-    {% endwith %}
-
+    <main>
+        <div class="container">
+            <section class="settings-section">
+                <div class="section-header">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Profile Settings
+                    </h2>
+                </div>
+                
+                <!-- User Information Card -->
+                <div class="user-info-card">
+                    <div class="user-info-header">
+                        <div class="user-avatar" style="--profile-accent: {{ current_user.theme_color or 'var(--primary)' }};">
+                            <span>{{ current_user.username[0].upper() }}</span>
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ current_user.first_name }}</h3>
+                            <p class="username">@{{ current_user.username }}</p>
+                            <p class="email">{{ current_user.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bio-preview">
+                        <h4>About Me</h4>
+                        <p>{{ current_user.bio if current_user.bio else "No bio yet. Add one below!" }}</p>
+                    </div>
+                </div>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash {{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Update Bio Form -->
+                <div class="settings-card">
+                    <h3>Update Bio</h3>
+                    <form method="POST" class="settings-form">
+                        <input type="hidden" name="form_type" value="bio">
+                        <div class="form-group">
+                            <label for="biography">Your Biography</label>
+                            <textarea id="biography" name="biography" rows="4" placeholder="Tell the world about your music taste...">{{ current_user.bio }}</textarea>
+                            <small class="form-hint">Share your music interests and taste with other users.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Bio</button>
+                    </form>
+                </div>
+                
+                <!-- Update Theme Color Form -->
+                <div class="settings-card">
+                    <h3>Personalize Theme</h3>
+                    <form method="POST" class="settings-form">
+                        <input type="hidden" name="form_type" value="theme">
+                        <div class="form-group color-picker-group">
+                            <label for="theme_color">Profile Theme Color</label>
+                            <input type="color" id="theme_color" name="theme_color" value="{{ current_user.theme_color or '#333' }}">
+                            <small class="form-hint">This color will be used as the accent for your profile.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Theme</button>
+                    </form>
+                </div>
+                
+                <!-- Content Management Section -->
+                <div class="section-header">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        Manage Your Content
+                    </h2>
+                </div>
+                
+                <!-- Remove Rating Form -->
+                <div class="settings-card">
+                    <h3>Remove Rating</h3>
+                    <form method="POST" class="settings-form">
+                        <input type="hidden" name="form_type" value="remove_song">
+                        <div class="form-group select-group">
+                            <label for="song_id">Select Song to Remove</label>
+                            <select name="song_id" id="song_id" required>
+                                <option value="" disabled selected>Choose a song...</option>
+                                {% for rating in ratings %}
+                                    <option value="{{ rating.song.id }}">
+                                        {{ rating.song.track_name }} - {{ rating.song.artist_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-hint">This will permanently delete your rating for this song.</small>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Remove Rating</button>
+                    </form>
+                </div>
+                
+                <!-- Remove Post Form -->
+                <div class="settings-card">
+                    <h3>Remove Post</h3>
+                    <form method="POST" class="settings-form">
+                        <input type="hidden" name="form_type" value="remove_post">
+                        <div class="form-group select-group">
+                            <label for="post_content">Select Post to Remove</label>
+                            <select name="post_id" id="post_content" required>
+                                <option value="" disabled selected>Choose a post...</option>
+                                {% for post in posts %}
+                                    <option value="{{ post.id }}">
+                                        {{ post.post_message[:50] }}{% if post.post_message|length > 50 %}...{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-hint">This will permanently delete your post.</small>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Remove Post</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update color preview when color picker changes
+            const colorPicker = document.getElementById('theme_color');
+            const colorPreview = document.querySelector('.color-preview');
+            
+            if (colorPicker && colorPreview) {
+                colorPicker.addEventListener('input', function() {
+                    colorPreview.style.backgroundColor = this.value;
+                });
+            }
+        });
+    </script>
 </body>
 </html>

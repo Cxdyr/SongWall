@@ -5,49 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>Songwall Register</title>
+    <title>Create Account | Songwall</title>
+    
+    <!-- Social Sharing Metadata -->
+    <meta property="og:title" content="Join Songwall">
+    <meta property="og:description" content="Create your Songwall account and start rating, sharing, and discovering music with friends.">
+    <meta property="og:image" content="/static/images/songwall-social.jpg">
+    <meta property="og:url" content="https://www.songwall.org/register">
 </head>
 <body>
     <header>
         <div class="container">
             <a href="/"><h1>Songwall</h1></a>
             <nav>
-                <a href="/">Back</a>
+                <a href="/">Home</a>
                 <a href="/login">Login</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="form-section">
-            <h2>Register</h2>
-             <!-- Flash Messages -->
-             {% with messages = get_flashed_messages(with_categories=true) %}
-             {% if messages %}
-                 <div class="flash-messages">
-                     {% for category, message in messages %}
-                         <div class="flash {{ category }}">{{ message }}</div>
-                     {% endfor %}
-                 </div>
-             {% endif %}
-            {% endwith %}
-            <form method="POST" class="auth-form">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+        <div class="container">
+            <section class="auth-container">
+                <div class="auth-card">
+                    <h2>Create Your Account</h2>
+                    <p class="auth-subtitle">Join the community and start rating music</p>
+                    
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="flash {{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" class="auth-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
 
-                <label for="first_name">First name</label>
-                <input id="first_name" name="first_name" required>                
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input id="first_name" name="first_name" required>
+                        </div>
 
-                <label for="username">Username</label>
-                <input id="username" name="username" required>          
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input id="username" name="username" required>
+                            <small class="form-hint">This will be visible to other users</small>
+                        </div>
 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                            <small class="form-hint">Use at least 8 characters with letters and numbers</small>
+                        </div>
 
-                <button type="submit">Register</button>
-            </form>
-        </section>
+                        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="{{ url_for('login') }}" class="link-accent">Sign in here</a></p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

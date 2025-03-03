@@ -115,6 +115,21 @@ def logout():
     flash('You have been logged out successfully!', 'info')
     return redirect(url_for('login'))
 
+#About us page
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+#Privacy page
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+#Terms page
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
 #Route for grabbing the popular songs by genre to prevent page reload
 @app.route('/genre_songs/<genre>')
 @login_required
@@ -130,7 +145,7 @@ def dashboard():
     followed_ratings = get_recent_follow_ratings(current_user.id)
     potential_songs = get_potential_songs(current_user.id)
     most_viewed_songs = get_most_viewed_songs_last_30_days()
-    recent_posts = get_recent_posts(10, 0)  # getting the 10 recent posts with offset 0
+    recent_posts = get_recent_posts(5, 0)  # getting the 10 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
 
     # Get selected genre from query parameter; default to "pop"

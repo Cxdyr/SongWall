@@ -5,38 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>{{userinfo.username}}'s Posts</title>
+    <title>{{ userinfo.username }}'s Posts | Songwall</title>
+    
+    <!-- Social Sharing Metadata -->
+    <meta property="og:title" content="{{ userinfo.username }}'s Music Posts | Songwall">
+    <meta property="og:description" content="Check out what {{ userinfo.username }} has been saying about music on Songwall.">
+    <meta property="og:url" content="{{ url_for('view_posts', username=userinfo.username, _external=True) }}">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@songwall">
+    <meta name="twitter:title" content="{{ userinfo.username }}'s Music Posts | Songwall">
+    <meta name="twitter:description" content="Check out what {{ userinfo.username }} has been saying about music on Songwall.">
 </head>
-<body style="--theme-color: {{ userinfo.theme_color or '#333' }};">
+<body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1> {{userinfo.username}}'s Posts </h1> </a>
-        <nav>
-            <a href="{{url_for('view_profile', username=userinfo.username)}}">Back</a>
-        </nav>
+            <a href="/dashboard"><h1>Songwall</h1></a>
+            <nav>
+                <a href="/dashboard">Dashboard</a>
+                <a href="{{ url_for('view_profile', username=userinfo.username) }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back to Profile
+                </a>
+            </nav>
         </div>
     </header>
-    <section class="display-posts-users">
-        <div id="posts-container">
-            {% if posts_info %}
-            {% for post in posts_info %}
-            <div class="post">
-                <div class="post-left">
-                    <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
-                    <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
+    
+    <main>
+        <div class="container">
+            <section class="posts-section">
+                <div class="section-header user-posts-header">
+                    <div class="user-info">
+                        <div class="user-avatar" style="--profile-accent: {{ userinfo.theme_color or 'var(--primary)' }};">
+                            <span>{{ userinfo.username[0].upper() }}</span>
+                        </div>
+                        <h2>{{ userinfo.username }}'s Posts</h2>
+                    </div>
                 </div>
-                <div class="post-right">
-                    <p class="post-message">{{ post.post_message }}</p>
-                    <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
+                
+                <div id="posts-container">
+                    {% if posts_info %}
+                        {% for post in posts_info %}
+                            <div class="post-card">
+                                <div class="post-header">
+                                    <a href="{{ url_for('view_profile', username=post.user.username) }}" class="post-author">
+                                        <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
+                                            <span>{{ post.user.username[0].upper() }}</span>
+                                        </div>
+                                        <span>{{ post.user.username }}</span>
+                                    </a>
+                                    <span class="post-date">{{ post.time_stamp.strftime('%b %d, %Y') }}</span>
+                                </div>
+                                
+                                <div class="post-song-info">
+                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}" class="song-link">
+                                        <img src="{{ post.song.album_image }}" alt="Album Art for {{ post.song.track_name }}" class="post-album-img">
+                                        <div class="song-details">
+                                            <span class="song-name">{{ post.song.track_name }}</span>
+                                            <span class="song-artist">{{ post.song.artist_name }}</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <div class="post-content">
+                                    <p>{{ post.post_message }}</p>
+                                </div>
+                                
+                                <div class="post-actions">
+                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}" class="post-action">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        Rate This Song
+                                    </a>
+                                    <a href="{{ post.song.spotify_url }}" target="_blank" class="post-action">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                        Listen on Spotify
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <h3>No Posts Yet</h3>
+                            <p>{{ userinfo.username }} hasn't posted anything yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
                 </div>
             </div>
-            {% endfor %}
-            {% else %}
-            <div class="no-ratings">{{userinfo.username}} has not posted yet.</div>
-            {% endif %}
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
         </div>
-
-    </section>
-
+    </footer>
 </body>
 </html>

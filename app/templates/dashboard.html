@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>Songwall Dashboard</title>
+    <title>{{ current_user.first_name }}'s Songwall</title>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1> {{ current_user.first_name }}'s Songwall Dashboard</h1></a>
+            <a href="/dashboard"><h1>{{ current_user.first_name }}'s Songwall</h1></a>
             <nav>
                 <a href="/profile">Profile</a>
                 <a href="/search">Search</a>
@@ -18,165 +18,312 @@
             </nav>
         </div>
     </header>
+
     <main>
-
-        <h4>Recent Activity</h4>
-        <section class="display-posts">
-            <div id="posts-container">
-                {% if recent_posts %}
-                {% for post in recent_posts %}
-                <div class="post">
-                    <div class="post-left">
-                        <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
-                        <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
-                    </div>
-                    <div class="post-right">
-                        <p class="post-message">{{ post.post_message }}</p>
-                        <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
-                    </div>
+        <div class="container">
+            <!-- Recent Activity Section -->
+            <section class="display-posts">
+                <h2>Recent Activity</h2>
+                <div id="posts-container">
+                    {% if recent_posts %}
+                        {% for post in recent_posts %}
+                        <div class="post">
+                            <div class="post-left">
+                                <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
+                                    <span>{{ post.user.username[0].upper() }}</span>
+                                </div> <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
+                                <p class="post-song">
+                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}">
+                                        🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="post-right">
+                                <p class="post-message">{{ post.post_message }}</p>
+                                <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <button id="load-more" data-offset="10">Load More</button>
+                    {% else %}
+                        <p>There are no recent posts.</p>
+                    {% endif %}
                 </div>
-                {% endfor %}
-                <button id="load-more" data-offset="10">Load More</button>
-                {% else %}
-                <p>There are no recent posts. </p>
-                {% endif %}
-            </div>
-        </section>
+            </section>
 
-        {% if user_songs %}
-        <button id="toggle-post-form">Post +</button>
+<!-- Create Post Section -->
+{% if user_songs %}
+<section class="post-form-section">
+    <button id="toggle-post-form" class="btn btn-primary">Post +</button>
     
-        <section class="post-form" id="post-form-container" style="display: none;">
-            <form method="POST" action="{{ url_for('dashboard') }}">
-                <select name="song_id" required>
+    <div class="post-form" id="post-form-container" style="display: none;">
+        <form method="POST" action="{{ url_for('dashboard') }}">
+            <div class="form-group select-group">
+                <label for="song_select">Choose a song</label>
+                <select name="song_id" id="song_select" required>
+                    <option value="" disabled selected>Select a song...</option>
                     {% for song in user_songs %}
                     <option value="{{ song.id }}">{{ song.track_name }} by {{ song.artist_name }}</option>
                     {% endfor %}
                 </select>
-                <textarea name="post_message" placeholder="What's on your mind?" required></textarea>
-                <button type="submit">Post</button>
-            </form>
-        </section>
-    {% endif %}
-    <br>
-
-
-    <h4>Popular Songs</h4>
-    <div class="genre-container">
-        <div class="genre-buttons">
-            <a href="{{ url_for('dashboard', genre='pop') }}" class="genre-btn {% if selected_genre == 'pop' %}active{% endif %}">Pop</a>
-            <a href="{{ url_for('dashboard', genre='hip-hop') }}" class="genre-btn {% if selected_genre == 'hip-hop' %}active{% endif %}">Hip-Hop</a>
-            <a href="{{ url_for('dashboard', genre='rock') }}" class="genre-btn {% if selected_genre == 'rock' %}active{% endif %}">Rock</a>
-            <a href="{{ url_for('dashboard', genre='jazz') }}" class="genre-btn {% if selected_genre == 'jazz' %}active{% endif %}">Jazz</a>
-            <a href="{{ url_for('dashboard', genre='electronic') }}" class="genre-btn {% if selected_genre == 'electronic' %}active{% endif %}">Electronic</a>
-            <a href="{{ url_for('dashboard', genre='classical') }}" class="genre-btn {% if selected_genre == 'classical' %}active{% endif %}">Classical</a>
-            <a href="{{ url_for('dashboard', genre='country') }}" class="genre-btn {% if selected_genre == 'country' %}active{% endif %}">Country</a>
-            <a href="{{ url_for('dashboard', genre='r&b') }}" class="genre-btn {% if selected_genre == 'r&b' %}active{% endif %}">R&amp;B</a>
-            <a href="{{ url_for('dashboard', genre='metal') }}" class="genre-btn {% if selected_genre == 'metal' %}active{% endif %}">Metal</a>
-            <a href="{{ url_for('dashboard', genre='reggae') }}" class="genre-btn {% if selected_genre == 'reggae' %}active{% endif %}">Reggae</a>
-            <a href="{{ url_for('dashboard', genre='latin') }}" class="genre-btn {% if selected_genre == 'latin' %}active{% endif %}">Latin</a>
-            <a href="{{ url_for('dashboard', genre='indie') }}" class="genre-btn {% if selected_genre == 'indie' %}active{% endif %}">Indie</a>
-        </div>
-      </div>
-      
-  <!-- Popular Songs Section with a data attribute for view song URL -->
-  <section class="display-songs">
-    <div class="song-carousel" id="genre-song-list" data-view-url="{{ url_for('view_song', song_id=0)[:-1] }}">
-
-      {% if genre_songs %}
-        <div class="song-list">
-          {% for song in genre_songs %}
-            <div class="song2">
-              <a href="{{ url_for('view_song', song_id=song.id) }}">
-                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
-              </a>
-              <h3>
-                <a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a>
-              </h3>
-              <p>{{ song.artist_name }}</p>
-              <p>{{ song.album_name }}</p>
             </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>No songs found for {{ selected_genre }}.</p>
-      {% endif %}
-    </div>
-  </section>
-  
-
-  <section class="display-songs">
-    <h3>Most Viewed</h3>
-    <div class="song-carousel">
-        {% if not top_songs %}
-            <p>No viewed songs!</p>
-        {% else %}
-            <div class="song-list" id="top-rated-list">
-                {% for song in top_songs %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank">
-                            <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
-                        </a>
-                        <h3>
-                            <a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a>
-                        </h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p>{{ song.album_name }}</p>
-                    </div>
-                {% endfor %}
+            
+            <div class="form-group">
+                <label for="post_message">Your thoughts</label>
+                <textarea name="post_message" id="post_message" placeholder="What's on your mind?" required></textarea>
             </div>
-        {% endif %}
+            
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
     </div>
 </section>
-  
-    
-    
-        <section class="display-songs">
-            <h3>Suggested Songs</h3>
-            <div class="song-carousel">
-                {% if not potential_songs %}
-                <p>Rate some songs to see this!</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                {% for song in potential_songs %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
-                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p>{{ song.album_name }}</p>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                </div>                      
-            </div>
-        </section> <br>
+{% endif %}
 
-        <section class="display-songs">
-            <h3>Friends Ratings</h3>
-            <div class="song-carousel">
-                {% if not followed_ratings %}
-                <p>Follow some friends!</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                {% for song in followed_ratings %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"> </a>
-                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p>{{ song.album_name }}</p>
-                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
-                        <p>⭐ {{ song.rating }}/10</p>
-                        <p>{{ song.time_stamp.strftime('%B %d, %Y') }}</p>
+            <!-- Genre Selection Section -->
+            <section>
+                <h2>Popular Songs</h2>
+                <div class="genre-container">
+                    <div class="genre-buttons">
+                        <a href="#" class="genre-btn {% if selected_genre == 'pop' %}active{% endif %}" data-genre="pop">Pop</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'hip-hop' %}active{% endif %}" data-genre="hip-hop">Hip-Hop</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'rock' %}active{% endif %}" data-genre="rock">Rock</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'jazz' %}active{% endif %}" data-genre="jazz">Jazz</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'electronic' %}active{% endif %}" data-genre="electronic">Electronic</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'classical' %}active{% endif %}" data-genre="classical">Classical</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'country' %}active{% endif %}" data-genre="country">Country</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'r&b' %}active{% endif %}" data-genre="r&b">R&amp;B</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'metal' %}active{% endif %}" data-genre="metal">Metal</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'reggae' %}active{% endif %}" data-genre="reggae">Reggae</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'latin' %}active{% endif %}" data-genre="latin">Latin</a>
+                        <a href="#" class="genre-btn {% if selected_genre == 'indie' %}active{% endif %}" data-genre="indie">Indie</a>
                     </div>
-                    {% endfor %}
-                    {% endif %}
-                </div>                      
-            </div>
-        </section> <br>
+                </div>
+            </section>
 
+            <!-- Popular Songs by Genre Section -->
+            <section class="display-songs">
+                <div class="song-carousel" id="genre-song-list" data-view-url="{{ url_for('view_song', song_id=0)[:-1] }}">
+                    {% if genre_songs %}
+                    <div class="song-list">
+                        {% for song in genre_songs %}
+                        <div class="song2">
+                            <a href="{{ url_for('view_song', song_id=song.id) }}">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p>No songs found for {{ selected_genre }}.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Most Viewed Section -->
+            <section class="display-songs">
+                <h2>Most Viewed</h2>
+                <div class="song-carousel">
+                    {% if not top_songs %}
+                    <p>No viewed songs!</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in top_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Suggested Songs Section -->
+            <section class="display-songs">
+                <h2>Suggested Songs</h2>
+                <div class="song-carousel">
+                    {% if not potential_songs %}
+                    <p>Rate some songs to see this!</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in potential_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Friends Ratings Section -->
+            <section class="display-songs">
+                <h2>Friends Ratings</h2>
+                <div class="song-carousel">
+                    {% if not followed_ratings %}
+                    <p>Follow some friends!</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in followed_ratings %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                                <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
+                                <p>⭐ {{ song.rating }}/10</p>
+                                <p>{{ song.time_stamp.strftime('%B %d, %Y') }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
     </main>
-        <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="{{url_for('static', filename='js/loadmore.js')}}"></script>
-    <script src="{{url_for('static', filename='js/load.js')}}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Toggle post form
+            const toggleButton = document.getElementById('toggle-post-form');
+            const formContainer = document.getElementById('post-form-container');
+            
+            if (toggleButton && formContainer) {
+                toggleButton.addEventListener('click', function() {
+                    formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+
+            // AJAX Genre Filtering
+            const genreButtons = document.querySelectorAll('.genre-btn');
+            const songCarousel = document.getElementById('genre-song-list');
+            const viewSongBase = songCarousel.getAttribute('data-view-url');
+
+            genreButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent the default page reload
+                    
+                    // Show a loading indicator
+                    songCarousel.innerHTML = '<div class="loading-indicator">Loading songs...</div>';
+                    
+                    // Update active button styling
+                    genreButtons.forEach(btn => btn.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    
+                    // Extract the genre from the data attribute
+                    let genre = e.currentTarget.getAttribute('data-genre');
+                    
+                    // Build the URL for AJAX fetching; encode the genre
+                    const url = `/genre_songs/${encodeURIComponent(genre)}`;
+                    
+                    // Fetch the new songs via AJAX
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.songs && data.songs.length > 0) {
+                                let html = '<div class="song-list">';
+                                data.songs.forEach((song, index) => {
+                                    html += `
+                                        <div class="song2" style="--animation-order: ${index % 10}">
+                                            <a href="${viewSongBase}${song.id}">
+                                                <img src="${song.album_image}" alt="Album Art for ${song.track_name}">
+                                            </a>
+                                            <div class="song2-info">
+                                                <h3><a href="${viewSongBase}${song.id}">${song.track_name}</a></h3>
+                                                <p>${song.artist_name}</p>
+                                                <p>${song.album_name}</p>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                html += '</div>';
+                                songCarousel.innerHTML = html;
+                                
+                                // Add animation to newly loaded song cards
+                                const songs = songCarousel.querySelectorAll('.song2');
+                                songs.forEach(song => {
+                                    song.style.animation = 'none';
+                                    song.offsetHeight; // Trigger reflow
+                                    song.style.animation = null;
+                                });
+                            } else {
+                                songCarousel.innerHTML = `<p>No songs found for ${genre}.</p>`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching songs:', error);
+                            songCarousel.innerHTML = `<p>Error loading songs. Please try again later.</p>`;
+                        });
+                });
+            });
+            
+            // Add animation to song cards on initial page load
+            const songs = document.querySelectorAll('.song2');
+            songs.forEach((song, index) => {
+                song.style.setProperty('--animation-order', index % 10);
+            });
+        });
+    </script>
+    <!-- JavaScript Fix for Post Toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle post form visibility
+        const toggleButton = document.getElementById('toggle-post-form');
+        const formContainer = document.getElementById('post-form-container');
+        
+        if (toggleButton && formContainer) {
+            toggleButton.addEventListener('click', function() {
+                if (formContainer.style.display === 'none' || formContainer.style.display === '') {
+                    formContainer.style.display = 'block';
+                } else {
+                    formContainer.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

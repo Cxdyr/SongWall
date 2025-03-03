@@ -3,87 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ song_info.track_name }} - {{ song_info.artist_name }}</title>
+    <title>{{ song_info.track_name }} by {{ song_info.artist_name }} | Songwall</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-
+    
+    <!-- Open Graph / Social Media Metadata -->
+    <meta property="og:title" content="{{ song_info.track_name }} by {{ song_info.artist_name }} | Songwall">
+    <meta property="og:description" content="Check out ratings and reviews for {{ song_info.track_name }} on Songwall!">
+    <meta property="og:image" content="{{ song_info.album_image }}">
+    <meta property="og:type" content="music.song">
+    <meta property="music:musician" content="{{ song_info.artist_name }}">
+    <meta property="music:album" content="{{ song_info.album_name }}">
+    <meta property="music:release_date" content="{{ song_info.release_date }}">
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>{{ song_info.track_name }} - {{song_info.artist_name }}  Songwall</h1></a>
+            <a href="/dashboard"><h1>Songwall</h1></a>
             <nav>
-                <a href="/dashboard">Home</a>
-                <a href="{{url_for('rate', spotify_id = song_info.spotify_id) }}">Rate</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="{{url_for('rate', spotify_id = song_info.spotify_id) }}">Rate This Song</a>
+                <a href="/search">Search</a>
             </nav>
         </div>
     </header>
 
-    <div class="container song-view-container">
-        <div class="song-header">
-            <img src="{{ song_info.album_image }}" class="album-cover" alt="Album Cover">
-            <div class="song-details">
-                <h2 class="song-title">{{ song_info.track_name }}</h2>
-                <p>{{ song_info.artist_name }}</p>
-                {% if song_info.album_name %}
-                    <p><strong>Album:</strong> {{ song_info.album_name }}</p>
-                {% endif %}
-                {% if song_info.release_date %}
-                    <p><strong>Release Date:</strong> {{ song_info.release_date }}</p>
-                {% endif %}
-                <p><strong>Views: </strong>{{song_info.views}}</p>
-                <p><strong>Average Rating: </strong> {{average_rating}}</p>
-                <a href="{{ song_info.spotify_url }}" class="btn btn-success spotify-btn" target="_blank">Spotify</a>
-            </div>
-        </div>
+    <main>
+        <div class="container">
+            <!-- Song Details Section -->
+            <section class="song-details-section">
+                <div class="song-header">
+                    <div class="song-cover">
+                        <img src="{{ song_info.album_image }}" class="album-cover" alt="Album Cover for {{ song_info.track_name }}">
+                        <a href="{{ song_info.spotify_url }}" class="spotify-btn" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                            Listen on Spotify
+                        </a>
+                    </div>
+                    
+                    <div class="song-info">
+                        <h2 class="song-title">{{ song_info.track_name }}</h2>
+                        <h3 class="song-artist">{{ song_info.artist_name }}</h3>
+                        
+                        <div class="song-meta">
+                            {% if song_info.album_name %}
+                                <div class="meta-item">
+                                    <span class="meta-label">Album</span>
+                                    <span class="meta-value">{{ song_info.album_name }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if song_info.release_date %}
+                                <div class="meta-item">
+                                    <span class="meta-label">Released</span>
+                                    <span class="meta-value">{{ song_info.release_date }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Views</span>
+                                <span class="meta-value">{{ song_info.views }}</span>
+                            </div>
+                            
+                            <div class="meta-item rating-average">
+                                <span class="meta-label">Average Rating</span>
+                                <span class="meta-value">
+                                        <span class="rating-number">{{ average_rating }}/10</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <a href="{{url_for('rate', spotify_id = song_info.spotify_id) }}" class="btn btn-primary rate-btn">Rate This Song</a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Ratings and Posts Sections -->
+            <div class="song-content-grid">
+<!-- Recent Ratings Section -->
+<section class="ratings-section">
+    <div class="section-header">
+        <h2>Recent Ratings</h2>
     </div>
-
-    <section class="ratings-songview-container">
-        <h3>Recent Ratings</h3>
-        <div class="ratings-list">
+    <div class="ratings-container">
+        <div class="ratings-list" id="ratings-list">
             {% if ratings %}
-                {% for rating in ratings %}
+                {% for rating in ratings[:5] %}
                     <div class="rating-card">
                         <div class="rating-header">
                             <a href="{{ url_for('view_profile', username=rating.username) }}" class="rating-user">@{{ rating.username }}</a>
-                            <span class="rating-score">{{ rating.rating }}/10</span>
+                            <div class="rating-score">
+                                <span class="rating-inline">
+                                    <span class="rating-number">{{ rating.rating }}/10</span>
+                                    <span class="rating-stars">
+                                        {% for i in range(1, 11) %}
+                                            {% if i <= rating.rating %}
+                                                ★
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </span>
+                            </div>
                         </div>
                         {% if rating.comment %}
                             <p class="rating-comment">"{{ rating.comment }}"</p>
                         {% endif %}
-                        <small class="rating-date">Rated on {{ rating.time_stamp.strftime('%B %d, %Y') }}</small>
+                        <div class="rating-footer">
+                            <span class="rating-date">{{ rating.time_stamp.strftime('%B %d, %Y') }}</span>
+                        </div>
                     </div>
                 {% endfor %}
+                
+                {% if ratings|length > 5 %}
+                    <div class="load-more-container">
+                        <button id="load-more-ratings" class="btn btn-secondary">Load More Ratings</button>
+                    </div>
+                    
+                    <!-- Hidden ratings to be revealed -->
+                    <div id="hidden-ratings" style="display: none;">
+                        {% for rating in ratings[5:] %}
+                            <div class="rating-card">
+                                <div class="rating-header">
+                                    <a href="{{ url_for('view_profile', username=rating.username) }}" class="rating-user">@{{ rating.username }}</a>
+                                    <div class="rating-score">
+                                        <span class="rating-inline">
+                                            <span class="rating-number">{{ rating.rating }}/10</span>
+                                            <span class="rating-stars">
+                                                {% for i in range(1, 11) %}
+                                                    {% if i <= rating.rating %}
+                                                        ★
+                                                    {% else %}
+                                                        ☆
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if rating.comment %}
+                                    <p class="rating-comment">"{{ rating.comment }}"</p>
+                                {% endif %}
+                                <div class="rating-footer">
+                                    <span class="rating-date">{{ rating.time_stamp.strftime('%B %d, %Y') }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% else %}
-                <div class="no-ratings">Be the first to rate this song!</div>
+                <div class="empty-state">
+                    <p>Be the first to rate this song!</p>
+                    <a href="{{url_for('rate', spotify_id = song_info.spotify_id) }}" class="btn btn-primary">Rate Now</a>
+                </div>
             {% endif %}
         </div>
-    </section>
+    </div>
+</section>
 
-
-    <section class="display-posts">
-        <div id="posts-container">
-            <h3>Recent Posts</h3>
+<!-- Recent Posts Section -->
+<section class="posts-section">
+    <div class="section-header">
+        <h2>Recent Posts</h2>
+    </div>
+    <div class="posts-container">
+        <div id="posts-list">
             {% if posts %}
-            {% for post in posts %}
-            <div class="post">
-                <div class="post-left">
-                    <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
-                    <p class="post-song"><a href="{{ url_for('view_song',song_id = post.song.id )}}">🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}</a></p>
+                {% for post in posts[:5] %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <a href="{{ url_for('view_profile', username=post.user.username) }}" class="post-author">
+                                <div class="author-avatar" style="--profile-accent: var(--primary);">
+                                    <span>{{ post.user.username[0].upper() }}</span>
+                                </div>
+                                <span>{{ post.user.username }}</span>
+                            </a>
+                            <span class="post-date">{{ post.time_stamp.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <div class="post-content">
+                            <p>{{ post.post_message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% if posts|length > 5 %}
+                    <div class="load-more-container">
+                        <button id="load-more-posts" class="btn btn-secondary">Load More Posts</button>
+                    </div>
+                    
+                    <!-- Hidden posts to be revealed -->
+                    <div id="hidden-posts" style="display: none;">
+                        {% for post in posts[5:] %}
+                            <div class="post-card">
+                                <div class="post-header">
+                                    <a href="{{ url_for('view_profile', username=post.user.username) }}" class="post-author">
+                                        <div class="author-avatar" style="--profile-accent: var(--primary);">
+                                            <span>{{ post.user.username[0].upper() }}</span>
+                                        </div>
+                                        <span>{{ post.user.username }}</span>
+                                    </a>
+                                    <span class="post-date">{{ post.time_stamp.strftime('%b %d, %Y') }}</span>
+                                </div>
+                                <div class="post-content">
+                                    <p>{{ post.post_message }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No posts about this song yet.</p>
+                    <p>Return to the dashboard to create a post!</p>
                 </div>
-                <div class="post-right">
-                    <p class="post-message">{{ post.post_message }}</p>
-                    <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
                 </div>
             </div>
-            {% endfor %}
-            {% else %}
-            <div class="no-ratings">Be the first to post about this song!</dv>
-            {% endif %}
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
         </div>
-        </section>
+    </footer>
 
-
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ratings load more functionality
+            const loadMoreRatingsBtn = document.getElementById('load-more-ratings');
+            const hiddenRatings = document.getElementById('hidden-ratings');
+            
+            if (loadMoreRatingsBtn && hiddenRatings) {
+                loadMoreRatingsBtn.addEventListener('click', function() {
+                    // Get all hidden ratings
+                    const ratingsToShow = hiddenRatings.children;
+                    const ratingsContainer = document.getElementById('ratings-list');
+                    
+                    // Move all hidden ratings to the main container
+                    while (ratingsToShow.length > 0) {
+                        ratingsContainer.insertBefore(ratingsToShow[0], loadMoreRatingsBtn.parentNode);
+                    }
+                    
+                    // Remove the load more button
+                    loadMoreRatingsBtn.parentNode.remove();
+                });
+            }
+            
+            // Posts load more functionality
+            const loadMorePostsBtn = document.getElementById('load-more-posts');
+            const hiddenPosts = document.getElementById('hidden-posts');
+            
+            if (loadMorePostsBtn && hiddenPosts) {
+                loadMorePostsBtn.addEventListener('click', function() {
+                    // Get all hidden posts
+                    const postsToShow = hiddenPosts.children;
+                    const postsContainer = document.getElementById('posts-list');
+                    
+                    // Move all hidden posts to the main container
+                    while (postsToShow.length > 0) {
+                        postsContainer.insertBefore(postsToShow[0], loadMorePostsBtn.parentNode);
+                    }
+                    
+                    // Remove the load more button
+                    loadMorePostsBtn.parentNode.remove();
+                });
+            }
+        });
+    </script>
 </body>
 </html>

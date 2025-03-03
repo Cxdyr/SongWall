@@ -5,90 +5,206 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css"> 
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
-    <title>{{ profile_info.user.username }}'s Songwall</title>
-    <!-- Dynamic Metadata for Sharing -->
-    {% if profile_info.pinned_rating and request.args.get('share') == 'true' %}
+    <title>{{ profile_info.user.username }}'s Music Profile | Songwall</title>
+    
+    <!-- Fixed Metadata for Social Sharing -->
+    {% if profile_info.pinned_rating %}
         <!-- Open Graph Metadata -->
         <meta property="og:title" content="{{ profile_info.pinned_rating.song.track_name }} - Pinned by {{ profile_info.user.username }}">
-        <meta property="og:description" content="Check out this song pinned by {{ profile_info.user.username }}!">
+        <meta property="og:description" content="{{ profile_info.user.username }} rated this {{ profile_info.pinned_rating.rating }}/10. {% if profile_info.pinned_rating.comment %}{{ profile_info.pinned_rating.comment }}{% endif %}">
         <meta property="og:image" content="{{ profile_info.pinned_rating.song.album_image }}">
         <meta property="og:url" content="{{ url_for('view_profile', username=profile_info.user.username, _external=True) }}">
         <meta property="og:type" content="website">
+        
         <!-- Twitter Card Metadata -->
         <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@songwall">
         <meta name="twitter:title" content="{{ profile_info.pinned_rating.song.track_name }} - Pinned by {{ profile_info.user.username }}">
-        <meta name="twitter:description" content="Check out this song pinned by {{ profile_info.user.username }}!">
+        <meta name="twitter:description" content="{{ profile_info.user.username }} rated this {{ profile_info.pinned_rating.rating }}/10. {% if profile_info.pinned_rating.comment %}{{ profile_info.pinned_rating.comment }}{% endif %}">
         <meta name="twitter:image" content="{{ profile_info.pinned_rating.song.album_image }}">
     {% else %}
-        <!-- Default Metadata -->
-        <meta property="og:title" content="{{ profile_info.user.username }}'s Songwall">
-        <meta property="og:description" content="View {{ profile_info.user.username }}'s song ratings and pinned song on SongWall!">
+        <!-- Default Metadata when no pinned song -->
+        <meta property="og:title" content="{{ profile_info.user.username }}'s Music Profile | Songwall">
+        <meta property="og:description" content="View {{ profile_info.user.username }}'s music taste with {{ profile_info.ratings_ct }} songs rated at an average of {{ profile_info.avg_rating }}/10.">
         <meta property="og:url" content="{{ url_for('view_profile', username=profile_info.user.username, _external=True) }}">
         <meta property="og:type" content="website">
+        
         <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@songwall">
+        <meta name="twitter:title" content="{{ profile_info.user.username }}'s Music Profile | Songwall">
+        <meta name="twitter:description" content="View {{ profile_info.user.username }}'s music taste with {{ profile_info.ratings_ct }} songs rated at an average of {{ profile_info.avg_rating }}/10.">
     {% endif %}
 </head>
-<body style="--theme-color: {{ profile_info.user.theme_color or '#333' }};">
+<body>
     <header>
         <div class="container">
-            <a href="/dashboard"><h1>{{ profile_info.user.username }}</h1></a>
+            <a href="/dashboard"><h1>Songwall</h1></a>
             <nav>
+                <a href="/dashboard">Dashboard</a>
                 <a href="{{ url_for('view_posts', username=profile_info.user.username) }}">Posts</a>
-                <a href="/dashboard">Home</a>
                 {% if is_following %}
-                <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST">
-                    <button type="submit">Unfollow</button>
+                <form action="{{ url_for('unfollow_route', followed_id=profile_info.user.id) }}" method="POST" class="follow-form">
+                    <button type="submit" class="unfollow-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>
+                        Unfollow
+                    </button>
                 </form>
                 {% else %}
-                <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST">
-                    <button type="submit">Follow</button>
+                <form action="{{ url_for('follow_route', followed_id=profile_info.user.id) }}" method="POST" class="follow-form">
+                    <button type="submit" class="follow-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                        Follow
+                    </button>
                 </form>
                 {% endif %}
             </nav>
         </div>
     </header>
-    <div class="profile-container-bio">
-        <p class="profile">{{ profile_info.user.bio }}</p>
-        <p class="profile">Average: <strong>{{ profile_info.avg_rating }}/10</strong>, Rated: <strong>{{ profile_info.ratings_ct }}</strong></p>
-    </div>
-
-    <div class="profile-container">
-        <div class="ratings-wrapper">
-                    <!-- Pinned Song Display -->
-        {% if profile_info.pinned_rating %}
-            <h4>Vibin' to...</h4>
-            <div class="rating-item">
-                <a href="{{ profile_info.pinned_rating.song.spotify_url }}" target="_blank">
-                    <img src="{{ profile_info.pinned_rating.song.album_image }}" alt="Album Art">
-                </a>
-                <h3><a class="black" href="{{url_for('view_song', song_id=profile_info.pinned_rating.song.id)}}">{{ profile_info.pinned_rating.song.track_name }} - {{ profile_info.pinned_rating.song.artist_name }}</a></h3>
+    
+    <main>
+        <div class="container">
+            <div class="profile-header" style="--profile-accent: {{ profile_info.user.theme_color or 'var(--primary)' }};">
+                <div class="profile-avatar">
+                    <span>{{ profile_info.user.username[0].upper() }}</span>
+                </div>
+                <div class="profile-title">
+                    <h2>{{ profile_info.user.username }}'s Profile</h2>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ profile_info.avg_rating }}</span>
+                            <span class="stat-label">Avg Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ profile_info.ratings_ct }}</span>
+                            <span class="stat-label">Songs Rated</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-    {% endif %}
-
-            <h4>Top Songs</h4>
-            <div class="ratings-container">
-                {% if not profile_info.ratings %}
-                    <p>{{ profile_info.user.username }} has not rated any songs.</p>
-                {% else %}
-                    {% for rating in profile_info.ratings %}
-                        <div class="rating-item">
-                            <a href="{{ rating.song.spotify_url }}" target="_blank">
-                                <img src="{{ rating.song.album_image }}" alt="Album Art">
-                            </a> 
-                            <div class="rating-info">
-                                <h3><a class="black" href="{{ url_for('view_song', song_id=rating.song.id) }}">{{ rating.song.track_name }} - {{ rating.song.artist_name }}</a></h3>
-                                <p>{{ rating.song.album_name }}</p>
-                                <p>{{ rating.song.release_date[:4] }}</p>
-                                <p>Rating: <strong>{{ rating.rating }}/10</strong></p>
-                                {% if rating.comment %}
-                                    <p>"{{ rating.comment }}"</p>
-                                {% endif %}
+            
+            <div class="profile-bio">
+                <div class="bio-content">
+                    <h3>About</h3>
+                    <p>{{ profile_info.user.bio if profile_info.user.bio else "This user hasn't added a bio yet." }}</p>
+                </div>
+            </div>
+            
+            <!-- Pinned Song Section -->
+            {% if profile_info.pinned_rating %}
+            <section class="profile-section pinned-section">
+                <div class="section-header">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        Current Vibe
+                    </h3>
+                </div>
+                
+                <div class="section-content">
+                    <div class="pinned-song">
+                        <div class="pinned-img">
+                            <img src="{{ profile_info.pinned_rating.song.album_image }}" alt="Album Art for {{ profile_info.pinned_rating.song.track_name }}">
+                            <div class="spotify-overlay">
+                                <a href="{{ profile_info.pinned_rating.song.spotify_url }}" target="_blank" class="spotify-play">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                </a>
                             </div>
                         </div>
-                    {% endfor %}
-                {% endif %}
+                        <div class="pinned-info">
+                            <h4><a href="{{ url_for('view_song', song_id=profile_info.pinned_rating.song.id) }}">{{ profile_info.pinned_rating.song.track_name }}</a></h4>
+                            <p class="pinned-artist">{{ profile_info.pinned_rating.song.artist_name }}</p>
+                            <div class="pinned-rating">
+                                <div class="rating-stars">
+                                    {% for i in range(1, 11) %}
+                                        {% if i <= profile_info.pinned_rating.rating %}
+                                            <span class="star filled">★</span>
+                                        {% else %}
+                                            <span class="star">☆</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-value">{{ profile_info.pinned_rating.rating }}/10</span>
+                            </div>
+                            {% if profile_info.pinned_rating.comment %}
+                                <p class="pinned-comment">"{{ profile_info.pinned_rating.comment }}"</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Top Songs Section -->
+            <section class="profile-section">
+                <div class="section-header">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        Top Songs
+                    </h3>
+                </div>
+                
+                <div class="ratings-list">
+                    {% if not profile_info.ratings %}
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <p>{{ profile_info.user.username }} hasn't rated any songs yet.</p>
+                        </div>
+                    {% else %}
+                        {% for rating in profile_info.ratings %}
+                            <div class="rating-card">
+                                <div class="rating-card-img">
+                                    <img src="{{ rating.song.album_image }}" alt="Album Art for {{ rating.song.track_name }}">
+                                    <div class="spotify-overlay">
+                                        <a href="{{ rating.song.spotify_url }}" target="_blank" class="spotify-play">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="rating-card-content">
+                                    <h4><a href="{{ url_for('view_song', song_id=rating.song.id) }}">{{ rating.song.track_name }}</a></h4>
+                                    <p class="rating-artist">{{ rating.song.artist_name }}</p>
+                                    <p class="rating-album">{{ rating.song.album_name }} ({{ rating.song.release_date[:4] }})</p>
+                                    <div class="rating-score">
+                                        <span class="rating-value">{{ rating.rating }}/10</span>
+                                        <div class="rating-stars">
+                                            {% for i in range(1, 11) %}
+                                                {% if i <= rating.rating %}
+                                                    <span class="star filled">★</span>
+                                                {% else %}
+                                                    <span class="star">☆</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% if rating.comment %}
+                                        <p class="rating-comment">"{{ rating.comment }}"</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
             </div>
         </div>
-    </div>
+    </footer>
 </body>
 </html>

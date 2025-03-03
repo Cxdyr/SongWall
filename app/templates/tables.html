@@ -3,140 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songwall Tables Panel</title>
+    <title>Database Tables | Songwall Admin</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
 </head>
 <body>
     <header>
-    <div class="container">
-        <a href="/"><h1>Welcome to the Tables Panel</h1></a>
-    </div>
+        <div class="container">
+            <a href="/"><h1>Songwall Admin</h1></a>
+            <nav>
+                <a href="/blog">Blog</a>
+                <a href="/dashboard">Dashboard</a>
+            </nav>
+        </div>
     </header>
 
-    <p>Users table</p>
-    <button id="load-more" onclick="toggleTable('users-table')">View/Unview</button>
-    <table class="users-table hidden-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Theme Color</th>
-                <th>Private Messages</th>
-                <th>Bio</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.first_name }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.theme_color }}</td>
-                <td>{{ user.private_messages }}</td>
-                <td>{{ user.bio }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-    <p>Songs table</p>
-    <button id="load-more" onclick="toggleTable('songs-table')">View/Unview</button>
-    <table class="songs-table hidden-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Track Name</th>
-                <th>Artist name</th>
-                <th>Spotify URL</th>
-                <th>Album name</th>
-                <th>Release date</th>
-                <th>Spotify id</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for song in songs %}
-            <tr>
-                <td>{{ song.id }}</td>
-                <td>{{ song.track_name }}</td>
-                <td>{{ song.artist_name }}</td>
-                <td>{{ song.spotify_url }}</td>
-                <td>{{ song.album_name }}</td>
-                <td>{{ song.release_date }}</td>
-                <td>{{ song.spotify_id }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-    <p>Ratings table</p>
-    <button id="load-more" onclick="toggleTable('ratings-table')">View/Unview</button>
-    <table class="ratings-table hidden-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Rating</th>
-                <th>Comment</th>
-                <th>Time stamp</th>
-                <th>Song id</th>
-                <th>User id</th>
-                <th>Username</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for rating in ratings %}
-            <tr>
-                <td>{{ rating.id }}</td>
-                <td>{{ rating.rating }}</td>
-                <td>{{ rating.comment }}</td>
-                <td>{{ rating.time_stamp }}</td>
-                <td>{{ rating.song_id }}</td>
-                <td>{{ rating.user_id }}</td>
-                <td>{{ rating.username }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-    <p>Posts table</p>
-    <button id="load-more" onclick="toggleTable('posts-table')">View/Unview</button>
-    <table class="posts-table hidden-table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Message</th>
-                <th>Time stamp</th>
-                <th>User id</th>
-                <th>Song id</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for post in posts %}
-            <tr>
-                <td>{{ post.id }}</td>
-                <td>{{ post.post_message }}</td>
-                <td>{{ post.time_stamp }}</td>
-                <td>{{ post.useR_id }}</td>
-                <td>{{ post.song_id }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <main>
+        <div class="container">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        Database Tables
+                    </h2>
+                </div>
+                
+                <!-- Users Table -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3>Users Table</h3>
+                        <button id="toggle-users-table" class="toggle-table-btn" onclick="toggleTable('users-table')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            View/Hide Table
+                        </button>
+                    </div>
+                    
+                    <table class="users-table hidden-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Theme Color</th>
+                                <th>Private Messages</th>
+                                <th>Bio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.theme_color }}</td>
+                                <td>{{ user.private_messages }}</td>
+                                <td>{{ user.bio }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Songs Table -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3>Songs Table</h3>
+                        <button id="toggle-songs-table" class="toggle-table-btn" onclick="toggleTable('songs-table')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            View/Hide Table
+                        </button>
+                    </div>
+                    
+                    <table class="songs-table hidden-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Track Name</th>
+                                <th>Artist Name</th>
+                                <th>Spotify URL</th>
+                                <th>Album Name</th>
+                                <th>Release Date</th>
+                                <th>Spotify ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for song in songs %}
+                            <tr>
+                                <td>{{ song.id }}</td>
+                                <td>{{ song.track_name }}</td>
+                                <td>{{ song.artist_name }}</td>
+                                <td>{{ song.spotify_url }}</td>
+                                <td>{{ song.album_name }}</td>
+                                <td>{{ song.release_date }}</td>
+                                <td>{{ song.spotify_id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Ratings Table -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3>Ratings Table</h3>
+                        <button id="toggle-ratings-table" class="toggle-table-btn" onclick="toggleTable('ratings-table')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            View/Hide Table
+                        </button>
+                    </div>
+                    
+                    <table class="ratings-table hidden-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Time Stamp</th>
+                                <th>Song ID</th>
+                                <th>User ID</th>
+                                <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rating in ratings %}
+                            <tr>
+                                <td>{{ rating.id }}</td>
+                                <td>{{ rating.rating }}</td>
+                                <td>{{ rating.comment }}</td>
+                                <td>{{ rating.time_stamp }}</td>
+                                <td>{{ rating.song_id }}</td>
+                                <td>{{ rating.user_id }}</td>
+                                <td>{{ rating.username }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Posts Table -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3>Posts Table</h3>
+                        <button id="toggle-posts-table" class="toggle-table-btn" onclick="toggleTable('posts-table')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            View/Hide Table
+                        </button>
+                    </div>
+                    
+                    <table class="posts-table hidden-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Message</th>
+                                <th>Time Stamp</th>
+                                <th>User ID</th>
+                                <th>Song ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in posts %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>{{ post.post_message }}</td>
+                                <td>{{ post.time_stamp }}</td>
+                                <td>{{ post.user_id }}</td>
+                                <td>{{ post.song_id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Admin Control Panel</p>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // Function to toggle visibility of a table
         function toggleTable(tableClass) {
             var table = document.querySelector('.' + tableClass);
-            if (table.style.display === "none" || table.style.display === "") {
-                table.style.display = "table"; // Show the table
+            if (table.classList.contains('hidden-table')) {
+                table.classList.remove('hidden-table');
             } else {
-                table.style.display = "none"; // Hide the table
+                table.classList.add('hidden-table');
+            }
+            
+            // Toggle the arrow icon
+            var button = document.getElementById('toggle-' + tableClass);
+            var svg = button.querySelector('svg');
+            if (table.classList.contains('hidden-table')) {
+                svg.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+            } else {
+                svg.innerHTML = '<polyline points="18 15 12 9 6 15"></polyline>';
             }
         }
     </script>

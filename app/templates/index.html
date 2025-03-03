@@ -7,12 +7,25 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.songwall.org/">
     <meta name="description" content="Explore, rate, and share your favorite songs on Songwall. Join our community to discover new music and connect with fellow enthusiasts.">
-    <title>Songwall</title>
+    
+    <!-- Social Sharing Metadata -->
+    <meta property="og:title" content="Songwall - Your Music Rating Community">
+    <meta property="og:description" content="Explore, rate, and share your favorite songs on Songwall. Join our community to discover new music.">
+    <meta property="og:image" content="/static/images/songwall-social.jpg">
+    <meta property="og:url" content="https://www.songwall.org/">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Songwall - Your Music Rating Community">
+    <meta name="twitter:description" content="Explore, rate, and share your favorite songs on Songwall. Join our community to discover new music.">
+    <meta name="twitter:image" content="/static/images/songwall-social.jpg">
+    
+    <title>Songwall - Your Music Rating Community</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/images/favicon.ico" sizes="32x32">
 </head>
 <body>
-    <header id="header">
+    <header>
         <div class="container">
             <a href="/"><h1>Songwall</h1></a>
             <nav>
@@ -23,58 +36,97 @@
     </header>
 
     <main>
-        <section>
-            <h2>Welcome to Songwall</h2>
-            <p>Explore, rate, post about, and share your favorite songs on your song wall. Login or Register to get started. </p>
-        </section>
-
-        <section class="display-songs">
-            <h2>Recently Rated</h2>
-            <div class="song-carousel">
-                {% if not recent_songs %}
-                <p>No recently rated songs.</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                    {% for song in recent_songs %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"></a>
-                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p> {{song.album_name }}</p>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
+        <section class="welcome-section">
+            <div class="container">
+                <h2>Welcome to Songwall</h2>
+                <p>Explore, rate, post about, and share your favorite songs on your song wall.</p>
+                <div class="cta-buttons">
+                    <a href="/register" class="btn btn-primary">Sign Up</a>
+                    <a href="/login" class="btn btn-secondary">Log In</a>
                 </div>
             </div>
         </section>
 
-        <section class="display-songs">
-            <h2>Top Rated </h2>
-            <div class="song-carousel">
-                {% if not top_rated_songs %}
-                <p>No top rated songs.</p>
-                {% else %}
-                <div class="song-list" id="top-rated-list">
-                    {% for song in top_rated_songs %}
-                    <div class="song2">
-                        <a href="{{ song.spotify_url }}" target="_blank"><img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}"></a>
-                        <h3> <a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                        <p>{{ song.artist_name }}</p>
-                        <p>{{song.album_name }}</p>
-                        <p>⭐ {{ song.avg_rating|round(1) }}/10  ({{ song.rating_count }} rates)</p>  
+        <div class="container">
+            <section class="display-songs">
+                <h2>Recently Rated</h2>
+                <div class="song-carousel">
+                    {% if not recent_songs %}
+                    <p>No recently rated songs.</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in recent_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                     {% endif %}
                 </div>
-            </div>
-        </section>
-        
+            </section>
 
-
-
-
+            <section class="display-songs">
+                <h2>Top Rated</h2>
+                <div class="song-carousel">
+                    {% if not top_rated_songs %}
+                    <p>No top rated songs.</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in top_rated_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                                <p>⭐ {{ song.avg_rating|round(1) }}/10 ({{ song.rating_count }})</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
     </main>
 
-        <a href="/blog"><p>&copy; 2025 Songwall. All rights reserved. </p> </a>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Songwall</h3>
+                    <p>Your personal music rating platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about">About</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/terms">Terms</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Songwall. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add animation to song cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const songs = document.querySelectorAll('.song2');
+            songs.forEach((song, index) => {
+                song.style.setProperty('--animation-order', index);
+            });
+        });
+    </script>
 </body>
 </html>
