@@ -583,7 +583,7 @@ def check_if_following(user_id, followed_id):
     ).scalar()
 
 
-
+#UNUSED NOW THAT WE HAVE IMPLEMENTED THE RECOMMENDATION ALGORITHM V1
 # Gets recent rated songs from the user (the recent 6), creates a set of artists from these so we dont have duplicates, and gets 3 songs from our database that the user hasn't already rated to suggest per artist 
 def get_potential_songs(user_id):
     # Fetch the user's recent rated songs
@@ -795,7 +795,7 @@ def rate_song(user, id): # randomly selects a rating, lowest rating being 4 to g
     
 
 def rate_sim(): # Looping through each testing user and getting an amount of songs between 6 and 10, and randomly rating each of these songs
-    test_users = db.session.query(User).filter(User.email.like('%@example%')).all()
+    test_users = db.session.query(User).all()
     for user in test_users:
         amount_ratings = random.randint(6,10)
         for _ in range(amount_ratings):

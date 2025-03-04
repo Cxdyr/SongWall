@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from app.api_auth import get_access_token
 from app.genre_search import get_popular_songs_by_genre
 from app.models import Post, Rating, Song, User, db
+from app.songwall_recommendations import get_user_recommendations, update_user_recommendations
 from app.songwall_search import search_songs
 from app.db_functions import (
     add_or_update_rating, add_post, add_songs_to_db, authenticate_user, check_if_following, create_user, create_users, delete_example_users, delete_user_by_id,
@@ -138,31 +139,56 @@ def genre_songs_ajax(genre):
     songs = get_popular_songs_by_genre(genre, g.access_token)
     return jsonify(songs=songs)
 
-#Logged in home page
-@app.route('/dashboard', methods=['GET', 'POST']) 
+# Logged in home page
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
+    # updates the cache if needed, but wont update the full userbase recommendations
+    update_cache_if_needed(app)
+    
+    # This ensures the current user's recommendations stay fresh with their latest activity
+    recommendations = update_user_recommendations(current_user.id, limit=10)
     followed_ratings = get_recent_follow_ratings(current_user.id)
-    potential_songs = get_potential_songs(current_user.id)
     most_viewed_songs = get_most_viewed_songs_last_30_days()
     recent_posts = get_recent_posts(4, 0)  # getting the 4 recent posts with offset 0
-    user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential
-
+    user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential 
+    
     # Get selected genre from query parameter; default to "pop"
     selected_genre = request.args.get('genre', 'pop')
     # Retrieve popular songs for the selected genre
     genre_songs = get_popular_songs_by_genre(selected_genre, g.access_token)
-
-    if request.method == 'POST':  
+    
+    if request.method == 'POST':
         song_id = request.form.get('song_id')
         post_message = request.form.get('post_message')
         if song_id and post_message:
             add_post(current_user.id, song_id, post_message)
             return redirect(url_for('dashboard'))
-        
-    return render_template('dashboard.html', followed_ratings=followed_ratings, recent_posts=recent_posts, user_songs=user_songs, potential_songs=potential_songs, top_songs=most_viewed_songs, selected_genre=selected_genre, genre_songs=genre_songs)
+    
+    return render_template(
+        'dashboard.html',
+        followed_ratings=followed_ratings,
+        recent_posts=recent_posts,
+        user_songs=user_songs,
+        top_songs=most_viewed_songs,
+        selected_genre=selected_genre,
+        genre_songs=genre_songs,
+        recommendations=recommendations
+    )
 
-
+# Route to explicitly refresh recommendations (optional for users who want to force refresh)
+@app.route('/refresh-recommendations')
+@login_required
+def refresh_recommendations():
+    """Force refresh recommendations for the current user"""
+    try:
+        update_user_recommendations(current_user.id, limit=10)
+        flash("Your recommendations have been refreshed!", "success")
+    except Exception as e:
+        flash("Could not refresh recommendations. Please try again later.", "warning")
+        print(f"Error refreshing recommendations: {e}")
+    
+    return redirect(url_for('dashboard'))
 
 
 # Load more posts route, this is used for the songwall activity 
@@ -449,7 +475,6 @@ def view_profile(username):
     return render_template('view_profile.html', profile_info=profile_info, is_following=is_following)
 
 
-    
 #View user posts page, for anyone by username will show posts from this user
 @app.route('/user_posts/<string:username>', methods=['GET'])
 @login_required

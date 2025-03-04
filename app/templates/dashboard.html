@@ -149,30 +149,32 @@
                 </div>
             </section>
 
-            <!-- Suggested Songs Section -->
-            <section class="display-songs">
-                <h2>Suggested Songs</h2>
-                <div class="song-carousel">
-                    {% if not potential_songs %}
-                    <p>Rate some songs to see this!</p>
-                    {% else %}
-                    <div class="song-list">
-                        {% for song in potential_songs %}
-                        <div class="song2">
-                            <a href="{{ song.spotify_url }}" target="_blank">
-                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
-                            </a>
-                            <div class="song2-info">
-                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                                <p>{{ song.artist_name }}</p>
-                                <p>{{ song.album_name }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+
+<!-- Recommendations Section -->
+<section class="display-songs">
+    <h2>Recommended For You <a href="{{ url_for('refresh_recommendations') }}" class="refresh-link" title="Refresh recommendations"><small>⟳</small></a></h2>
+    <div class="song-carousel">
+        {% if not recommendations %}
+        <p>Rate more songs to get personalized recommendations!</p>
+        {% else %}
+        <div class="song-list">
+            {% for song, score in recommendations %}
+            <div class="song2">
+                <a href="{{ song.spotify_url }}" target="_blank">
+                    <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                </a>
+                <div class="song2-info">
+                    <h3><a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a></h3>
+                    <p>{{ song.artist_name }}</p>
+                    <p>{{ song.album_name }}</p>
+                    <p class="recommendation-score">{{ (score * 100)|int }}% match</p>
                 </div>
-            </section>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
 
             <!-- Friends Ratings Section -->
             <section class="display-songs">
@@ -201,6 +203,7 @@
                     {% endif %}
                 </div>
             </section>
+
         </div>
     </main>
 
