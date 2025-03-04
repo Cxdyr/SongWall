@@ -14,30 +14,34 @@ class SongwallRecommender:
     def __init__(self):
         # Weights for different recommendation factors
         self.weights = {
-            'artist_preference': 0.60,  # Artist preference is weighed the highest
+            'artist_preference': 0.55,  # Artist preference is weighed the highest
             'album_preference': 0.05,   # Mild album weight
             'popular_songs': 0.20,      # Songs popular with other users
-            'view_history': 0.10,       # Based on user's viewing habits
+            'view_history': 0.15,       # Based on user's viewing habits
             'social': 0.05              # Based on follows/following
         }
         
         # Rating score weights (more gradual scale)
         self.rating_weights = {
-            10: 1.0,    # Highest weight
-            9: 0.9,     # Still very high
-            8: 0.7,     # Good
-            7: 0.5,     # Moderate
-            6: 0.3,     # Some interest
-            5: 0.2,     # Neutral
-            4: 0.1,     # Low interest
-            3: 0.05,    # Very low
-            2: 0.02,    # Minimal
-            1: 0.01     # Almost none
+            10: 0.7,     # Highest weight
+            9: 0.6,      # Still very high
+            8: 0.5,      # Good
+            7: 0.3,      # Moderate
+            6: 0.15,      # Some interest
+            5: -0.1,     # Slight negative
+            4: -0.2,     # Negative
+            3: -0.4,     # More negative
+            2: -0.7,     # Highly negative
+            1: -1.0      # Very negative
         }
         
         # Time decay parameters
         self.rating_half_life = 50      # Days until a rating loses half its influence
         self.view_half_life = 14        # Days until a view loses half its influence
+
+
+        self.recent_ratings_boost = 1.35  # slightly increased boost for recent ratings
+        self.recent_ratings_count = 6   # Number of most recent ratings to boost
     
     def _apply_time_decay(self, timestamp, half_life_days):
         """
@@ -111,6 +115,7 @@ class SongwallRecommender:
         Get artist preferences with balanced weighting to prevent one artist from dominating
         Excludes songs that match artist+title of already rated songs
         Applies time decay to prioritize recent ratings over older stale ones in our db
+        We also now apply boost for the recent ratings by 1.35x recent 5 ratings
         """
         # Get all user ratings with song information and timestamps
         all_ratings = db.session.query(Rating.rating, Song.artist_name, Song.id, Rating.time_stamp).join(Song).filter(Rating.user_id == user_id).all()
@@ -118,11 +123,19 @@ class SongwallRecommender:
         if not all_ratings:
             return {}
         
+        all_ratings.sort(key=lambda x: x[3], reverse=True)
+
+        recent_count = 0 # the amount processed
+
+        
         # Counts ratings per artist and calculate total artist score with time decay
         artist_ratings = defaultdict(list)
         for rating, artist, _, timestamp in all_ratings:
+            #checking if its one of the most recent songs, if it is we will boost it, if not we default weight it
+            recency_boost = self.recent_ratings_boost if recent_count < self.recent_ratings_count else 1.0
+            recent_count += 1
             # Store rating and its timestamp for time decay
-            artist_ratings[artist].append((rating, timestamp))
+            artist_ratings[artist].append((rating, timestamp, recency_boost))
         
         # Get user's rated songs for exclusion
         rated_songs = db.session.query(Rating.song_id).filter(Rating.user_id == user_id).all()
@@ -133,11 +146,11 @@ class SongwallRecommender:
         for artist, ratings_with_time in artist_ratings.items():
             # Calculate base score from ratings with time decay
             rating_score = 0
-            for rating, timestamp in ratings_with_time:
+            for rating, timestamp, recency_boost in ratings_with_time:
                 # Apply time decay factor based on rating timestamp
                 time_factor = self._apply_time_decay(timestamp, self.rating_half_life)
                 # Add weighted rating
-                rating_score += self.rating_weights.get(rating, 0) * time_factor
+                rating_score += self.rating_weights.get(rating, 0) * time_factor * recency_boost
             
             # Apply diminishing returns for multiple ratings of the same artist
             if len(ratings_with_time) > 2:
@@ -147,10 +160,10 @@ class SongwallRecommender:
             artist_scores[artist] = rating_score
         
         # Normalize artist scores
-        total = sum(artist_scores.values())
+        total = sum(abs(score) for score in artist_scores.values())
         if total > 0:
             for artist in artist_scores:
-                artist_scores[artist] /= total
+             artist_scores[artist] /= total
         
         # Get unrated songs by each artist, excluding different versions of already rated songs
         song_scores = {}
@@ -558,6 +571,12 @@ class SongwallRecommender:
             
         for song_id, score in social_scores.items():
             song_scores[song_id] += score * self.weights['social']
+
+        # Normalize final scores to 0-1 range
+        max_score = max(song_scores.values()) if song_scores else 1.0
+        if max_score > 0:
+            for song_id in song_scores:
+                song_scores[song_id] /= max_score
             
         # Sort by score and get top recommendations
         sorted_songs = sorted(song_scores.items(), key=lambda x: x[1], reverse=True)
@@ -632,28 +651,55 @@ class SongwallRecommender:
     
     def _store_recommendations(self, user_id, recommendations, rec_type="diverse"):
         """
-        Store recommendations in the database
-        
+        Store recommendations in the database with optimized approach for high concurrency
+    
         Parameters:
         user_id (int): User ID
         recommendations (list): List of (song_id, score) tuples
         rec_type (str): Type of recommendations ("diverse" or "pure")
         """
-        # Clear existing recommendations of this type
-        if rec_type == "diverse":
-            Recommendation.query.filter_by(user_id=user_id).delete()
-        else:
-            # For pure recommendations, store in a different table or with a different flag
-            # This depends on your database structure
-            # For now, we'll just use the same table with a type identifier
-            pass
-        
-        # Add new recommendations
+        # Get existing recommendations to determine which need updates and which are new
+        existing_recs = db.session.query(Recommendation.song_id, Recommendation.id).filter(
+            Recommendation.user_id == user_id
+        ).all()
+    
+        # Track existing recommendations and their IDs
+        existing_song_map = {song_id: rec_id for song_id, rec_id in existing_recs}
+        existing_song_ids = set(existing_song_map.keys())
+    
+        # Track which songs are in the new recommendations
+        new_song_ids = set()
+    
+        # Process new recommendations
         for song_id, score in recommendations:
-            rec = Recommendation(user_id=user_id, song_id=song_id, recommendation_score=float(score))
-            db.session.add(rec)
+            new_song_ids.add(song_id)
         
-        # Commit changes
+            if song_id in existing_song_ids:
+                # Update existing record using SQLAlchemy's update construct
+                db.session.query(Recommendation).filter(
+                    Recommendation.id == existing_song_map[song_id]
+                ).update(
+                    {"recommendation_score": float(score)},
+                    synchronize_session=False
+                )
+            else:
+                # Insert new record
+                rec = Recommendation(
+                    user_id=user_id,
+                    song_id=song_id,
+                    recommendation_score=float(score)
+                )
+                db.session.add(rec)
+    
+        # Delete recommendations that are no longer needed
+        to_delete = existing_song_ids - new_song_ids
+        if to_delete:
+            db.session.query(Recommendation).filter(
+                Recommendation.user_id == user_id,
+                Recommendation.song_id.in_(to_delete)
+            ).delete(synchronize_session=False)
+    
+        # Commit all changes
         db.session.commit()
 
 # Utility functions

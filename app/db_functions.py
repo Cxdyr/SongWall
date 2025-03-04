@@ -393,6 +393,8 @@ def get_profile_info(username):
         .first()
     )
 
+    rating_amount = len(user.ratings)
+    average_rating = round(sum(r.rating for r in user.ratings) / rating_amount, 2) if rating_amount > 0 else 0
     if user:
         user.ratings.sort(key=lambda r: r.rating, reverse=True)
 
@@ -404,8 +406,6 @@ def get_profile_info(username):
     pinned_rating = next((r for r in user.ratings if r.is_pinned), None)
     
     # Compute rating amount.
-    rating_amount = len(user.ratings)
-    average_rating = round(sum(r.rating for r in user.ratings) / rating_amount, 2) if rating_amount > 0 else 0
 
     return {
         'user': user,
