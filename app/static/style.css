@@ -721,7 +721,7 @@
     border: none;
     font-size: 1.05rem;
     background-color: var(--card-bg);
-    color: var(--text);
+    color: white;
   }
   
   .search-input-container input:focus {
