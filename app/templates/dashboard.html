@@ -20,35 +20,91 @@
     </header>
 
     <main>
-
-                    <!-- Friends Ratings Section -->
-                    <section class="display-songs">
-                        <h2>Friends Ratings</h2>
-                        <div class="song-carousel">
-                            {% if not followed_ratings %}
-                            <p>Follow some friends!</p>
-                            {% else %}
-                            <div class="song-list">
-                                {% for song in followed_ratings %}
-                                <div class="song2">
-                                    <a href="{{ song.spotify_url }}" target="_blank">
-                                        <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+        <div class="container">
+            <!-- Recent Activity Section -->
+            <section class="display-posts">
+                <h2>Recent Activity</h2>
+                <div id="posts-container">
+                    {% if recent_posts %}
+                        {% for post in recent_posts %}
+                        <div class="post">
+                            <div class="post-left">
+                                <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
+                                    <span>{{ post.user.username[0].upper() }}</span>
+                                </div> <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
+                                <p class="post-song">
+                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}">
+                                        🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}
                                     </a>
-                                    <div class="song2-info">
-                                        <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                                        <p>{{ song.artist_name }}</p>
-                                        <p>{{ song.album_name }}</p>
-                                        <p><a href="{{ url_for('view_profile', username=song.username) }}">{{ song.username }}</a></p>
-                                        <p>⭐ {{ song.rating }}/10</p>
-                                        <p>{{ song.time_stamp.strftime('%B %d, %Y') }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
+                                </p>
                             </div>
-                            {% endif %}
+                            <div class="post-right">
+                                <p class="post-message">{{ post.post_message }}</p>
+                                <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
+                            </div>
                         </div>
-                    </section>
+                        {% endfor %}
+                        <button id="load-more" data-offset="10">Load More</button>
+                    {% else %}
+                        <p>There are no recent posts.</p>
+                    {% endif %}
                 </div>
+            </section>
+
+<!-- Create Post Section -->
+{% if user_songs %}
+<section class="post-form-section">
+    <button id="toggle-post-form" class="btn btn-primary">Post +</button>
+    
+    <div class="post-form" id="post-form-container" style="display: none;">
+        <form method="POST" action="{{ url_for('dashboard') }}">
+            <div class="form-group select-group">
+                <label for="song_select">Choose a song</label>
+                <select name="song_id" id="song_select" required>
+                    <option value="" disabled selected>Select a song...</option>
+                    {% for song in user_songs %}
+                    <option value="{{ song.id }}">{{ song.track_name }} by {{ song.artist_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="post_message">Your thoughts</label>
+                <textarea name="post_message" id="post_message" placeholder="What's on your mind?" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+    </div>
+</section>
+{% endif %}
+
+            <!-- Recommendations Section -->
+            <section class="display-songs">
+                <h2>Recommended For You <a href="{{ url_for('refresh_recommendations') }}" class="refresh-link" title="Refresh recommendations"><small>⟳</small></a></h2>
+                <div class="song-carousel">
+                    {% if not recommendations %}
+                    <p>Rate more songs to get personalized recommendations!</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song, score in recommendations %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{ url_for('view_song', song_id=song.id) }}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                                <p class="recommendation-score">{{ (score * 100)|int }}% match</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
             <!-- Genre Selection Section -->
             <section>
                 <h2>Popular Songs</h2>
@@ -147,68 +203,8 @@
                     {% endif %}
                 </div>
             </section>
+
         </div>
-
-        <div class="container">
-            <!-- Recent Activity Section -->
-            <section class="display-posts">
-                <h2>Recent Activity</h2>
-                <div id="posts-container">
-                    {% if recent_posts %}
-                        {% for post in recent_posts %}
-                        <div class="post">
-                            <div class="post-left">
-                                <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
-                                    <span>{{ post.user.username[0].upper() }}</span>
-                                </div> <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
-                                <p class="post-song">
-                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}">
-                                        🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}
-                                    </a>
-                                </p>
-                            </div>
-                            <div class="post-right">
-                                <p class="post-message">{{ post.post_message }}</p>
-                                <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <button id="load-more" data-offset="10">Load More</button>
-                    {% else %}
-                        <p>There are no recent posts.</p>
-                    {% endif %}
-                </div>
-            </section>
-
-<!-- Create Post Section -->
-{% if user_songs %}
-<section class="post-form-section">
-    <button id="toggle-post-form" class="btn btn-primary">Post +</button>
-    
-    <div class="post-form" id="post-form-container" style="display: none;">
-        <form method="POST" action="{{ url_for('dashboard') }}">
-            <div class="form-group select-group">
-                <label for="song_select">Choose a song</label>
-                <select name="song_id" id="song_select" required>
-                    <option value="" disabled selected>Select a song...</option>
-                    {% for song in user_songs %}
-                    <option value="{{ song.id }}">{{ song.track_name }} by {{ song.artist_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="post_message">Your thoughts</label>
-                <textarea name="post_message" id="post_message" placeholder="What's on your mind?" required></textarea>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Post</button>
-        </form>
-    </div>
-</section>
-{% endif %}
-
-
     </main>
 
     <footer>

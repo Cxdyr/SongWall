@@ -150,7 +150,7 @@ def dashboard():
     recommendations = update_user_recommendations(current_user.id, limit=10)
     followed_ratings = get_recent_follow_ratings(current_user.id)
     most_viewed_songs = get_most_viewed_songs_last_30_days()
-    recent_posts = get_recent_posts(4, 0)  # getting the 4 recent posts with offset 0
+    recent_posts = get_recent_posts(3, 0)  # getting the 4 recent posts with offset 0
     user_songs = get_rated_songs_by_user(current_user.id)  # getting the rated songs for the user for posting potential 
     
     # Get selected genre from query parameter; default to "pop"
