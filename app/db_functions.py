@@ -181,6 +181,9 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
     if existing_rating:
         existing_rating.rating = rating  # Update existing rating
         existing_rating.comment = comment
+        
+        new_post = Post(post_message="Just re-rated, "+rating+"/10.",user_id=user_id,song_id=song.id)
+        db.session.add(new_post)
     else:
         new_rating = Rating(rating=rating, comment=comment, song_id=song.id, user_id=user_id, username=username)
         db.session.add(new_rating)

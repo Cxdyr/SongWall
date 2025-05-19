@@ -82,6 +82,7 @@ def register():
         
         if len(username)>9:
             flash('Username cannot exceed 9 characters', 'error')
+            return redirect(url_for('register'))
         
         success, result = create_user(email, username, password, first_name)  # Register/Create user function - adds to db 
         if not success:
