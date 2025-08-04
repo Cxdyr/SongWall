@@ -2,7 +2,7 @@
 
 **Songwall** is a full-stack web application built with **Flask** and deployed on **Heroku**, designed for discovering, rating, and recommending music. It integrates with the **Spotify Web API** to fetch real-time song metadata and uses a **PostgreSQL** database to persist user data, song information, and engagement metrics.
 
-🔗 Live Site: [https://songwall.org](https://songwall.org)
+🔗 Live Site: [https://songwall.org](https://www.songwall.org)
 
 ## ⚙️ Features
 
