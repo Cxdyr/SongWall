@@ -198,7 +198,7 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
 
 #Getting the top rated songs, takes amount usually 9 or 10, and gets the top rated songs and average rating for the index page 
 def get_top_rated_songs(amount):
-    """Retrieve the top-rated songs along with their average rating."""
+    """Retrieve the top-rated songs along with their average rating and total views."""
     top_songs = (
         db.session.query(
             Song.id, 
@@ -208,11 +208,16 @@ def get_top_rated_songs(amount):
             Song.album_name,
             Song.spotify_url,
             func.avg(Rating.rating).label("avg_rating"),
-            func.count(Rating.rating).label("rating_count")  
+            func.count(Rating.rating).label("rating_count"),
+            func.sum(View.views).label("total_views")  # Aggregate total views for the song
         )
         .join(Rating, Rating.song_id == Song.id)
-        .group_by(Song.id)
-        .order_by(func.avg(Rating.rating).desc())  # Sort by highest avg rating
+        .join(View, View.song_id == Song.id)  # Join to aggregate views
+        .group_by(Song.id, Song.track_name, Song.artist_name, Song.album_image, Song.album_name, Song.spotify_url)  # Group by all non-aggregated Song fields
+        .order_by(
+            func.avg(Rating.rating).desc(),  # Primary: Highest average rating first
+            func.sum(View.views).desc()  # Secondary: Most viewed for ties
+        )
         .limit(amount)
         .all()
     )
