@@ -199,11 +199,11 @@ def add_or_update_rating(user_id, username, spotify_id, rating, comment):
 #Getting the top rated songs, takes amount usually 9 or 10, and gets the top rated songs and average rating for the index page 
 def get_top_rated_songs(amount):
     """Retrieve the top-rated songs along with their average rating and total views."""
-    # Subquery to pre-aggregate total views per song (handles multiple View rows per song)
+    # Subquery to pre-aggregate total views per song (count View rows)
     view_subquery = (
         db.session.query(
             View.song_id,
-            func.coalesce(func.sum(View.views), 0).label('total_views')
+            func.coalesce(func.count(1), 0).label('total_views')
         )
         .group_by(View.song_id)
         .subquery()
@@ -219,23 +219,23 @@ def get_top_rated_songs(amount):
             Song.spotify_url,
             func.avg(Rating.rating).label("avg_rating"),
             func.count(Rating.rating).label("rating_count"),
-            view_subquery.c.total_views  # Use the pre-aggregated total views
+            view_subquery.c.total_views
         )
-        .outerjoin(Rating, Rating.song_id == Song.id)  # Left join to include songs with no ratings (avg=0)
-        .outerjoin(view_subquery, view_subquery.c.song_id == Song.id)  # Left outer join to subquery for views
+        .outerjoin(Rating, Rating.song_id == Song.id)  # Outer for songs with no ratings
+        .outerjoin(view_subquery, view_subquery.c.song_id == Song.id)  # Outer for songs with no views
         .group_by(
             Song.id, Song.track_name, Song.artist_name, Song.album_image, 
             Song.album_name, Song.spotify_url, view_subquery.c.total_views
         )
         .order_by(
-            func.coalesce(func.avg(Rating.rating), 0).desc(),  # Primary: Highest average rating first (coalesce for no ratings)
-            func.coalesce(view_subquery.c.total_views, 0).desc()  # Secondary: Most viewed for ties (coalesce for no views)
+            func.coalesce(func.avg(Rating.rating), 0).desc(),  # Highest avg rating (0 if none)
+            func.coalesce(view_subquery.c.total_views, 0).desc()  # Then most viewed
         )
         .limit(amount)
         .all()
     )
     
-    # Post-process to ensure avg_rating is rounded and never None
+    # Post-process to round avg_rating and handle None
     processed_songs = []
     for song in top_songs:
         avg_rating = song.avg_rating
@@ -243,6 +243,7 @@ def get_top_rated_songs(amount):
             avg_rating = 0.0
         else:
             avg_rating = round(float(avg_rating), 2)
+        
         processed_songs.append({
             'id': song.id,
             'track_name': song.track_name,
@@ -251,7 +252,7 @@ def get_top_rated_songs(amount):
             'album_name': song.album_name,
             'spotify_url': song.spotify_url,
             'avg_rating': avg_rating,
-            'rating_count': song.rating_count,
+            'rating_count': song.rating_count or 0,
             'total_views': song.total_views or 0
         })
     
