@@ -47,7 +47,34 @@
         </section>
 
             <main>
-        <div class="container">
+            <!-- Top Rated Section -->
+            <section class="display-songs">
+                <h2>Top Rated</h2>
+                <div class="song-carousel">
+                    {% if not top_rated_songs %}
+                    <p>No top rated songs.</p>
+                    {% else %}
+                    <div class="song-list">
+                        {% for song in top_rated_songs %}
+                        <div class="song2">
+                            <a href="{{ song.spotify_url }}" target="_blank">
+                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
+                            </a>
+                            <div class="song2-info">
+                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
+                                <p>{{ song.artist_name }}</p>
+                                <p>{{ song.album_name }}</p>
+                                <p>⭐ {{ song.avg_rating|round(1) }}/10 ({{ song.rating_count }})</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+                <div class="container">
             <!-- Recent Activity Section -->
             <section class="display-posts">
                 <h2>Recent Activity</h2>
@@ -76,34 +103,6 @@
                     {% endif %}
                 </div>
             </section>
-
-
-            <!-- Top Rated Section -->
-            <section class="display-songs">
-                <h2>Top Rated</h2>
-                <div class="song-carousel">
-                    {% if not top_rated_songs %}
-                    <p>No top rated songs.</p>
-                    {% else %}
-                    <div class="song-list">
-                        {% for song in top_rated_songs %}
-                        <div class="song2">
-                            <a href="{{ song.spotify_url }}" target="_blank">
-                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
-                            </a>
-                            <div class="song2-info">
-                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                                <p>{{ song.artist_name }}</p>
-                                <p>{{ song.album_name }}</p>
-                                <p>⭐ {{ song.avg_rating|round(1) }}/10 ({{ song.rating_count }})</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-            </section>
-        </div>
 
     </main>
 
