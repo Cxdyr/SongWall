@@ -84,11 +84,11 @@
   }
   
   main {
-    padding: var(--spacing-xl) 0;
+    padding: var(--spacing-lg) 0;
   }
   
   section {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
   }
   
   /* ===== HEADER ===== */
@@ -134,7 +134,7 @@
   .welcome-section {
     text-align: center;
     padding: var(--spacing-xl) var(--spacing-md);
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-md); /* was var(--spacing-xl) */
   }
   
   .welcome-section h2 {
@@ -266,10 +266,28 @@
     font-weight: 500;
   }
   
-  /* ===== POSTS ===== */
-  .display-posts {
+/* Center the Recent Activity section and posts */
+
+.display-posts {
+    /* display: flex;
+    flex-direction: column;
+    align-items: center; */
     margin-bottom: var(--spacing-xl);
-  }
+}
+
+.display-posts h2 {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.posts-container{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+
+}
   
   .post {
     background-color: var(--card-bg);

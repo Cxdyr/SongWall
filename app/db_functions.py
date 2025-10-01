@@ -48,6 +48,9 @@ def authenticate_user(email, password):
 
 
 
+#Get Top Users Profiles
+#def get_top_users(limit=10):
+#    users = User.query.join(Song, Rating.song_id == Song.id).
 
 #User ratings by user id, used for profile view and view/username 
 def get_user_ratings(user_id):

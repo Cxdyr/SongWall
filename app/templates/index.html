@@ -35,11 +35,10 @@
         </div>
     </header>
 
-    <main>
         <section class="welcome-section">
             <div class="container">
                 <h2>Welcome to Songwall</h2>
-                <p>Explore, rate, post about, and share your favorite songs on your song wall.</p>
+                <p>Explore, rate, post about, and share your favorite songs on your song wall. <br> Login to Find Songs and start Sharing!</p>
                 <div class="cta-buttons">
                     <a href="/register" class="btn btn-primary">Sign Up</a>
                     <a href="/login" class="btn btn-secondary">Log In</a>
@@ -47,31 +46,39 @@
             </div>
         </section>
 
+            <main>
         <div class="container">
-            <section class="display-songs">
-                <h2>Recently Rated</h2>
-                <div class="song-carousel">
-                    {% if not recent_songs %}
-                    <p>No recently rated songs.</p>
-                    {% else %}
-                    <div class="song-list">
-                        {% for song in recent_songs %}
-                        <div class="song2">
-                            <a href="{{ song.spotify_url }}" target="_blank">
-                                <img src="{{ song.album_image }}" alt="Album Art for {{ song.track_name }}">
-                            </a>
-                            <div class="song2-info">
-                                <h3><a href="{{url_for('view_song', song_id = song.id)}}">{{ song.track_name }}</a></h3>
-                                <p>{{ song.artist_name }}</p>
-                                <p>{{ song.album_name }}</p>
+            <!-- Recent Activity Section -->
+            <section class="display-posts">
+                <h2>Recent Activity</h2>
+                <div id="posts-container">
+                    {% if recent_posts %}
+                        {% for post in recent_posts %}
+                        <div class="post">
+                            <div class="post-left">
+                                <div class="author-avatar" style="--profile-accent: {{ post.user.theme_color or 'var(--primary)' }};">
+                                    <span>{{ post.user.username[0].upper() }}</span>
+                                </div> <a href="{{ url_for('view_profile', username=post.user.username) }}">{{ post.user.username }}</a>
+                                <p class="post-song">
+                                    <a href="{{ url_for('view_song', song_id=post.song.id) }}">
+                                        🎵 {{ post.song.track_name }} - {{ post.song.artist_name }}
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="post-right">
+                                <p class="post-message">{{ post.post_message }}</p>
+                                <p class="timestamp">{{ post.time_stamp.strftime('%Y-%m-%d') }}</p>
                             </div>
                         </div>
                         {% endfor %}
-                    </div>
+                    {% else %}
+                        <p>There are no recent posts.</p>
                     {% endif %}
                 </div>
             </section>
 
+
+            <!-- Top Rated Section -->
             <section class="display-songs">
                 <h2>Top Rated</h2>
                 <div class="song-carousel">
@@ -97,6 +104,7 @@
                 </div>
             </section>
         </div>
+
     </main>
 
     <footer>
@@ -118,8 +126,7 @@
                 <p>&copy; 2025 Songwall. All rights reserved.</p>
             </div>
         </div>
-    </footer>
-
+    </footer>      
     <script>
         // Add animation to song cards
         document.addEventListener('DOMContentLoaded', function() {

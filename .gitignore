@@ -6,3 +6,4 @@ instance
 config.py
 *.pyc
 *.env
+venv/

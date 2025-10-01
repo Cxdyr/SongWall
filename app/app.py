@@ -60,7 +60,9 @@ def index():
     update_cache_if_needed(current_app)
 
     recent_songs, top_rated_songs = get_cached_songs()
-    return render_template('index.html', recent_songs=recent_songs, top_rated_songs=top_rated_songs)
+    recent_posts = get_recent_posts(5, 0)  # getting the 4 recent posts with offset 0
+
+    return render_template('index.html', recent_songs=recent_songs, top_rated_songs=top_rated_songs, recent_posts=recent_posts)
 
 #Blog page
 @app.route('/blog')
@@ -544,4 +546,4 @@ if __name__ == "__main__":
 
 
 #if __name__ == "__main__":
- #   app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+#   app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
